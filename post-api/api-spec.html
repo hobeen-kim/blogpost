@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post API 스펙 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .api-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .endpoint {
+            background: #e8f5e8;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .method {
+            background: #4caf50;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+        
+        .test-form {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .response-area {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+            min-height: 100px;
+        }
+        
+        .json-response {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        .loading {
+            color: #007bff;
+            font-style: italic;
+        }
+        
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 1rem;
+            border-radius: 4px;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .success {
+            color: #155724;
+            background: #d4edda;
+            padding: 1rem;
+            border-radius: 4px;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        .param-table th,
+        .param-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .param-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        .optional {
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Post API 스펙 테스트</h1>
+            <p>블로그 포스트 API를 테스트하고 스펙을 확인할 수 있습니다</p>
+        </div>
+
+        <div class="api-section">
+            <h2>🔗 API 엔드포인트</h2>
+            
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <strong>/api/v1/posts</strong>
+                <p>블로그 포스트 목록을 페이지네이션과 함께 조회합니다.</p>
+            </div>
+
+            <h3>📋 파라미터</h3>
+            <table class="param-table">
+                <thead>
+                    <tr>
+                        <th>파라미터</th>
+                        <th>타입</th>
+                        <th>필수여부</th>
+                        <th>기본값</th>
+                        <th>설명</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>page</td>
+                        <td>Integer</td>
+                        <td class="optional">선택</td>
+                        <td>0</td>
+                        <td>페이지 번호 (0부터 시작)</td>
+                    </tr>
+                    <tr>
+                        <td>size</td>
+                        <td>Integer</td>
+                        <td class="optional">선택</td>
+                        <td>10</td>
+                        <td>페이지 크기 (한 페이지당 항목 수)</td>
+                    </tr>
+                    <tr>
+                        <td>category</td>
+                        <td>String</td>
+                        <td class="optional">선택</td>
+                        <td>-</td>
+                        <td>카테고리 필터</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>🧪 API 테스트</h3>
+            <div class="test-form">
+                <div class="form-group">
+                    <label for="baseUrl">Base URL:</label>
+                    <input type="text" id="baseUrl" value="http://localhost:8080" placeholder="http://localhost:8080">
+                </div>
+                
+                <div class="form-group">
+                    <label for="page">페이지 번호:</label>
+                    <input type="number" id="page" value="0" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="size">페이지 크기:</label>
+                    <input type="number" id="size" value="10" min="1" max="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">카테고리 (선택사항):</label>
+                    <input type="text" id="category" placeholder="예: 기술, 일상, 리뷰 등">
+                </div>
+                
+                <button onclick="testApi()">🚀 API 테스트 실행</button>
+                
+                <div class="response-area">
+                    <h4>📤 요청 URL:</h4>
+                    <div id="requestUrl">API 테스트를 실행하면 요청 URL이 여기에 표시됩니다.</div>
+                    
+                    <h4>📥 응답 결과:</h4>
+                    <div id="responseResult">API 테스트를 실행하면 응답이 여기에 표시됩니다.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="api-section">
+            <h2>📖 응답 스키마</h2>
+            <div class="json-response">{
+  "content": [
+    {
+      "postId": 1,
+      "title": "포스트 제목",
+      "category": "기술",
+      "description": "포스트 설명",
+      "url": "https://example.com/post/1",
+      "thumbnailUrl": "https://example.com/thumbnail/1.jpg",
+      "createdBy": "작성자",
+      "createdAt": "2024-01-01T10:00:00"
+    }
+  ],
+  "page": 0,
+  "size": 10,
+  "totalCount": 100
+}</div>
+        </div>
+
+        <div class="api-section">
+            <h2>🔧 cURL 예제</h2>
+            <div class="json-response"># 모든 포스트 조회 (기본 페이지네이션)
+curl -X GET "http://localhost:8080/api/v1/posts"
+
+# 특정 카테고리의 포스트 조회
+curl -X GET "http://localhost:8080/api/v1/posts?category=기술"
+
+# 페이지네이션 사용
+curl -X GET "http://localhost:8080/api/v1/posts?page=1&size=20"
+
+# 카테고리와 페이지네이션 조합
+curl -X GET "http://localhost:8080/api/v1/posts?category=기술&page=0&size=5"</div>
+        </div>
+    </div>
+
+    <script>
+        async function testApi() {
+            const baseUrl = document.getElementById('baseUrl').value;
+            const page = document.getElementById('page').value;
+            const size = document.getElementById('size').value;
+            const category = document.getElementById('category').value;
+            
+            // URL 구성
+            let url = `${baseUrl}/api/v1/posts?page=${page}&size=${size}`;
+            if (category) {
+                url += `&category=${encodeURIComponent(category)}`;
+            }
+            
+            // 요청 URL 표시
+            document.getElementById('requestUrl').textContent = url;
+            
+            // 로딩 상태 표시
+            const resultDiv = document.getElementById('responseResult');
+            resultDiv.innerHTML = '<div class="loading">API 요청 중...</div>';
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // 성공 응답 표시
+                resultDiv.innerHTML = `
+                    <div class="success">✅ 요청 성공 (${response.status})</div>
+                    <div class="json-response">${JSON.stringify(data, null, 2)}</div>
+                `;
+                
+            } catch (error) {
+                // 에러 응답 표시
+                resultDiv.innerHTML = `
+                    <div class="error">❌ 요청 실패: ${error.message}</div>
+                    <p>서버가 실행 중인지 확인하세요. (http://localhost:8080)</p>
+                `;
+            }
+        }
+        
+        // 페이지 로드 시 기본 URL 설정
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('requestUrl').textContent = 'http://localhost:8080/api/v1/posts?page=0&size=10';
+        });
+    </script>
+</body>
+</html>

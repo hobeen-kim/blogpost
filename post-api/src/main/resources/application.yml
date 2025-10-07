@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: post-api
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/post
+    username: postgres
+    password: 1234
+
+logging:
+  level:
+    org.springframework.r2dbc: DEBUG
