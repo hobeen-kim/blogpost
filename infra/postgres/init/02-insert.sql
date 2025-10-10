@@ -1,0 +1,2 @@
+-- insert into post (title, category, description, url, thumbnail_url, created_by, created_at) values
+-- ('')
