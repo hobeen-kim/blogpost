@@ -1,5 +1,0 @@
-jdk:
-  - openjdk21
-build:
-  directories:
-    - common
