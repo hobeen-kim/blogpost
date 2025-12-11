@@ -1,0 +1,7 @@
+target:
+  url: https://techblog.woowahan.com/post-sitemap.xml
+  adapter:
+    extractor:
+      type: sitemapExtractor
+    publisher:
+      type: mockPublisher
