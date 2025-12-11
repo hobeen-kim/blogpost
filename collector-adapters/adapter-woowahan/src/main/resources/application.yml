@@ -1,0 +1,5 @@
+target:
+  url: https://techblog.woowahan.com/feed/
+  adapter:
+    publisher:
+      type: mockPublisher
