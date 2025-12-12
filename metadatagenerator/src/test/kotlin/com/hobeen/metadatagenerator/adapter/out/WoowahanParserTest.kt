@@ -11,7 +11,6 @@ class WoowahanParserTest {
 
     @Test
     fun parse() {
-
         //given & when
         val test1 = woowahanParser.parse("https://techblog.woowahan.com/24820/")
         val test2 = woowahanParser.parse("https://techblog.woowahan.com/24568/")
