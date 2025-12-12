@@ -3,4 +3,4 @@ target:
   source: toss
   adapter:
     extractor:
-      type: sitemapExtractor
+      type: tossSitemapExtractor
