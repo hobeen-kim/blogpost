@@ -6,4 +6,8 @@ include(
     "collector-outport",
     "collector-adapters:adapter-common",
     "collector-adapters:adapter-woowahan",
+    "collector-adapters:adapter-toss",
+    "collector-adapters:adapter-musinsa",
+    "collector-adapters:adapter-kurly",
+    "collector-adapters:adapter-devsisters",
 )

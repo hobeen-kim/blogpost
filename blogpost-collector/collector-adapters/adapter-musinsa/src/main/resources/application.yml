@@ -1,0 +1,6 @@
+target:
+  url: https://medium.com/feed/musinsa-tech
+  source: musinsa
+  adapter:
+    extractor:
+      type: rssExtractor
