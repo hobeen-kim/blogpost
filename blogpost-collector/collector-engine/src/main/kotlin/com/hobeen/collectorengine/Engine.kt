@@ -4,12 +4,15 @@ import com.hobeen.collectorengine.command.CollectCommand
 import com.hobeen.collectorengine.port.Crawler
 import com.hobeen.collectorengine.port.Extractor
 import com.hobeen.collectorengine.port.Publisher
+import java.util.logging.Logger
 
 class Engine(
     private val crawler: Crawler,
     private val extractor: Extractor,
     private val publisher: Publisher,
 ) {
+
+    private val log = Logger.getLogger(this.javaClass.name)
 
     fun run(command: CollectCommand) {
 
@@ -21,5 +24,7 @@ class Engine(
 
         //pub
         publisher.publish(messages)
+
+        log.info("complete generate message ${messages.size}")
     }
 }

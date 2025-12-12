@@ -1,4 +1,4 @@
-package com.hobeen.collectoroutport.mock
+package com.hobeen.collectoroutport.publisher.mock
 
 import com.hobeen.collectorcommon.domain.Message
 import com.hobeen.collectorengine.port.Publisher

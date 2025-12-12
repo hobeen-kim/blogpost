@@ -1,6 +1,5 @@
 package com.hobeen.adaptercommon.fetcher
 
-import com.hobeen.collectoroutport.mock.MockPublisher
 import org.springframework.stereotype.Component
 import java.net.URI
 import java.net.http.HttpClient

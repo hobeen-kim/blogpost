@@ -3,5 +3,3 @@ target:
   adapter:
     extractor:
       type: sitemapExtractor
-    publisher:
-      type: mockPublisher
