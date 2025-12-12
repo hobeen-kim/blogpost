@@ -12,7 +12,7 @@ class RssExtractor: Extractor {
     private val xmlMapper = XmlMapper().findAndRegisterModules()
     private val illegalXmlCharsRegex = Regex("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]")
 
-    override fun extract(crawlingResult: CrawlingResult): List<Message> {
+    override fun extract(crawlingResult: CrawlingResult, source: String): List<Message> {
 
         return crawlingResult.htmls.flatMap { html ->
             val sanitizedBody = illegalXmlCharsRegex.replace(html, "")
@@ -22,13 +22,14 @@ class RssExtractor: Extractor {
             rss.channel.items?.map { item ->
                 Message(
                     title = item.title,
+                    source = source,
                     url = item.link,
                     pubDate = item.pubDate,
                     tags = item.categories ?: listOf(),
                     description = item.description,
                     thumbnail = null,
                 )
-            } ?: listOf<Message>()
+            } ?: listOf()
         }
     }
 }

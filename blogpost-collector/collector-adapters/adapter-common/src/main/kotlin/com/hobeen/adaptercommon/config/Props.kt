@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties(prefix = "target")
 class TargetProperties(
     var url: String = "",
+    var source: String = "",
     var adapter: AdapterProps,
 )
 

@@ -5,5 +5,5 @@ import com.hobeen.collectorcommon.domain.Message
 
 
 interface Extractor {
-    fun extract(crawlingResult: CrawlingResult): List<Message>
+    fun extract(crawlingResult: CrawlingResult, source: String): List<Message>
 }

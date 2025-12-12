@@ -13,7 +13,7 @@ class SitemapExtractor: Extractor {
     private val xmlMapper = XmlMapper().findAndRegisterModules()
     private val illegalXmlCharsRegex = Regex("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]")
 
-    override fun extract(crawlingResult: CrawlingResult): List<Message> {
+    override fun extract(crawlingResult: CrawlingResult, source: String,): List<Message> {
 
         return crawlingResult.htmls.flatMap { html ->
             val sanitizedBody = illegalXmlCharsRegex.replace(html, "")
@@ -23,6 +23,7 @@ class SitemapExtractor: Extractor {
             sitemap.url.map { item ->
                 Message(
                     title = "",
+                    source = source,
                     url = item.loc,
                     pubDate = item.lastmod?.let { localDateParse(it) },
                     tags = listOf(),

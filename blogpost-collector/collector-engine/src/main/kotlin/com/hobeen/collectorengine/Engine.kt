@@ -20,7 +20,7 @@ class Engine(
         val crawlingResult = crawler.crawling(command.url)
 
         //추출
-        val messages = extractor.extract(crawlingResult)
+        val messages = extractor.extract(crawlingResult, command.source)
 
         //pub
         publisher.publish(messages)

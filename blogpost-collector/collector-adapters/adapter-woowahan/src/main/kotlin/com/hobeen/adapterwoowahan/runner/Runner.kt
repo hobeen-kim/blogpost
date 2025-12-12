@@ -20,7 +20,8 @@ class Runner(
         )
 
         engine.run(command = CollectCommand(
-            url = configProvider.getUrl()
+            url = configProvider.getUrl(),
+            source = configProvider.getSource(),
         ))
     }
 }
