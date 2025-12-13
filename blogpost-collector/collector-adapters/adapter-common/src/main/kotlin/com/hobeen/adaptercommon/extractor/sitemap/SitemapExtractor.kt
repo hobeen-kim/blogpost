@@ -2,6 +2,7 @@ package com.hobeen.adaptercommon.extractor.sitemap
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.hobeen.collectorcommon.domain.Message
+import com.hobeen.collectorcommon.utils.getOnlyUrlPath
 import com.hobeen.collectorcommon.utils.localDateParse
 import com.hobeen.collectorengine.port.Extractor
 import com.hobeen.collectorengine.port.dto.CrawlingResult
@@ -24,7 +25,7 @@ class SitemapExtractor: Extractor {
                 Message(
                     title = "",
                     source = source,
-                    url = item.loc,
+                    url = getOnlyUrlPath(item.loc),
                     pubDate = item.lastmod?.let { localDateParse(it) },
                     tags = listOf(),
                     description = "",

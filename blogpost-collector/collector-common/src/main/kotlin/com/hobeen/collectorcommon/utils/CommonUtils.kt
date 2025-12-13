@@ -18,3 +18,11 @@ fun localDateParse(dateStr: String): LocalDateTime {
         return odt.atZoneSameInstant(seoulZone).toLocalDateTime()
     }
 }
+
+fun getOnlyUrlPath(url: String): String {
+    return url.split("?").first()
+}
+
+fun refineTitle(title: String): String {
+    return title.split("|").first().trim()
+}

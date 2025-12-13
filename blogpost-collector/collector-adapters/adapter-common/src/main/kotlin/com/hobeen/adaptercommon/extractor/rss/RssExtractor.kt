@@ -2,6 +2,8 @@ package com.hobeen.adaptercommon.extractor.rss
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.hobeen.collectorcommon.domain.Message
+import com.hobeen.collectorcommon.utils.getOnlyUrlPath
+import com.hobeen.collectorcommon.utils.refineTitle
 import com.hobeen.collectorengine.port.Extractor
 import com.hobeen.collectorengine.port.dto.CrawlingResult
 import org.springframework.stereotype.Component
@@ -21,9 +23,9 @@ class RssExtractor: Extractor {
 
             rss.channel.items?.map { item ->
                 Message(
-                    title = item.title,
+                    title = refineTitle(item.title),
                     source = source,
-                    url = item.link,
+                    url = getOnlyUrlPath(item.link),
                     pubDate = item.pubDate,
                     tags = item.categories ?: listOf(),
                     description = item.description,
