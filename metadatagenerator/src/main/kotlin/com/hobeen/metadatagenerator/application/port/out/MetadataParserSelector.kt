@@ -16,6 +16,12 @@ class MetadataParserSelector (
     private val adapterMap = adapters.associateBy { it.getName() }
 
     fun getParser(source: String): ParseHtmlMetadataPort {
-        return adapterMap[source] ?: adapterMap["default"]!!
+
+        val parserName = when(source) {
+            "musinsa" -> "medium"
+            else -> source
+        }
+
+        return adapterMap[parserName] ?: adapterMap["default"]!!
     }
 }

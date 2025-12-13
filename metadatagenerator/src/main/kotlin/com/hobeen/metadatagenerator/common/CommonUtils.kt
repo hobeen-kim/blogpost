@@ -18,3 +18,7 @@ fun localDateParse(dateStr: String): LocalDateTime {
         return odt.atZoneSameInstant(seoulZone).toLocalDateTime()
     }
 }
+
+fun refineTitle(title: String): String {
+    return title.split("|").first().trim()
+}

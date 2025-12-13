@@ -2,6 +2,7 @@ package com.hobeen.metadatagenerator.adapter.out
 
 import com.hobeen.metadatagenerator.application.port.out.ParseHtmlMetadataPort
 import com.hobeen.metadatagenerator.common.localDateParse
+import com.hobeen.metadatagenerator.common.refineTitle
 import com.hobeen.metadatagenerator.domain.Html
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -28,7 +29,7 @@ class TossParser: ParseHtmlMetadataPort {
             .map { it.replace("#", "") }
 
         return Html(
-            title = title,
+            title = refineTitle(title),
             pubDate = pubDate,
             thumbnail = thumbnail,
             tags = tags,
