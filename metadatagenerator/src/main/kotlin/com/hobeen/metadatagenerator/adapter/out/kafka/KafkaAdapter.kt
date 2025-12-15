@@ -13,7 +13,7 @@ class KafkaAdapter(
     private val kafkaCustomProperties: KafkaCustomProperties,
 ): SaveMessagePort, DlqPort {
     override fun save(message: EnrichedMessage) {
-        kafkaTemplate.send(kafkaCustomProperties.producer.topic, message.url, message)
+        kafkaTemplate.send(kafkaCustomProperties.producer.topic, message.source, message)
     }
 
     override fun sendDlq(key: String, data: Map<String, String>) {
