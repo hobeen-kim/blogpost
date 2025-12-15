@@ -30,4 +30,8 @@ class DeduplicateService(
 
     }
 
+    override fun addDuplicateSet(urls: List<String>) {
+        duplicateCheckPort.addDuplicateSet(urls)
+    }
+
 }

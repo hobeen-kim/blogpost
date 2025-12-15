@@ -22,6 +22,11 @@ class RedisDuplicateChecker(
         return added == 0L   // "있으면 true, 없으면 false"
     }
 
+    override fun addDuplicateSet(urls: List<String>) {
+        if (urls.isEmpty()) return
+        redisTemplate.opsForSet().add(KEY, *urls.toTypedArray())
+    }
+
     override fun delete(url: String) {
         redisTemplate.opsForSet().remove(KEY, url)
     }
