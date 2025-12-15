@@ -26,7 +26,7 @@ class SitemapExtractor: Extractor {
                     title = "",
                     source = source,
                     url = getOnlyUrlPath(item.loc),
-                    pubDate = item.lastmod?.let { localDateParse(it) },
+                    pubDate = null, //lastmod 가 있지만, 최근 수정일일뿐, 발행일이 아님
                     tags = listOf(),
                     description = "",
                     thumbnail = "",
