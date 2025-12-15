@@ -5,6 +5,9 @@ import com.hobeen.deduplicator.application.port.`in`.Deduplicator
 import com.hobeen.deduplicator.application.port.`in`.DlqUseCase
 import com.hobeen.deduplicator.domain.Message
 import org.springframework.kafka.annotation.KafkaListener
+import org.springframework.kafka.annotation.PartitionOffset
+import org.springframework.kafka.support.KafkaHeaders
+import org.springframework.messaging.handler.annotation.Header
 import org.springframework.stereotype.Component
 
 @Component
@@ -15,13 +18,13 @@ class KafkaConsumer (
 ) {
 
     @KafkaListener(topics = ["\${deduplicator.kafka.consumer.topic}"])
-    fun listen(data: String) {
+    fun listen(data: String, @Header(KafkaHeaders.RECEIVED_KEY) key: String) {
 
         try {
             val message = objectMapper.readValue(data, Message::class.java)
             deduplicator.saveIfNotDuplicated(message)
         } catch (e: Exception) {
-            dlqUseCase.sendDlq(data, data, e)
+            dlqUseCase.sendDlq(key, data, e)
         }
     }
 }

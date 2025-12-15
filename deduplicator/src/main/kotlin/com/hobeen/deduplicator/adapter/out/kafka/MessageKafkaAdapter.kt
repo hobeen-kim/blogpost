@@ -11,6 +11,6 @@ class MessageKafkaAdapter(
     private val kafkaCustomProperties: KafkaCustomProperties,
 ): MessageSavePort {
     override fun save(message: Message) {
-        kafkaTemplate.send(kafkaCustomProperties.producer.topic, message.url, message)
+        kafkaTemplate.send(kafkaCustomProperties.producer.topic, message.source, message)
     }
 }
