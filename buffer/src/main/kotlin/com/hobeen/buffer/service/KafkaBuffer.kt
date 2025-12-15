@@ -63,10 +63,10 @@ class KafkaBuffer(
                 rrIndex = sent.nextIndex
                 sendCount++
 
-                //5초 휴식 및 sendCount 초기화
+                //2초 휴식 및 sendCount 초기화
                 if(sendCount >= 5) {
                     log.info("5개 처리 완료")
-                    Thread.sleep(5000)
+                    Thread.sleep(2000)
                     sendCount = 0
                 }
             } else {
@@ -111,7 +111,7 @@ class KafkaBuffer(
             checked++
 
             val q = buffers[tp] ?: continue
-            val rec = q.firstOrNull() ?: continue
+            val rec = q.removeFirstOrNull() ?: continue
 
             // B 토픽은 파티션 1개 → 어떤 key를 쓰든 결과는 partition 0
             // (향후 B 파티션 늘어날 가능성까지 “무조건 1파티션” 유지하려면 key를 상수로 두는 걸 추천)
