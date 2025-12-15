@@ -1,0 +1,6 @@
+target:
+  url: https://medium.com/feed/daangn
+  source: daangn
+  adapter:
+    extractor:
+      type: rssExtractor

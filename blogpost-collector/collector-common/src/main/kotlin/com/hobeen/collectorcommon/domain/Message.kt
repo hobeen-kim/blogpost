@@ -8,6 +8,6 @@ data class Message (
     var url: String,
     val pubDate: LocalDateTime?,
     val tags: List<String>,
-    val description: String?,
+    var description: String?,
     val thumbnail: String?,
 )

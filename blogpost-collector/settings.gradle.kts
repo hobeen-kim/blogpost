@@ -10,4 +10,6 @@ include(
     "collector-adapters:adapter-musinsa",
     "collector-adapters:adapter-kurly",
     "collector-adapters:adapter-devsisters",
+    "collector-adapters:adapter-line",
+    "collector-adapters:adapter-daangn",
 )
