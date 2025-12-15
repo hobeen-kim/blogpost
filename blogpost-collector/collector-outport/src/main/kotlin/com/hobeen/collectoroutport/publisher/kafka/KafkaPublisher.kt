@@ -17,7 +17,7 @@ class KafkaPublisher(
     override fun publish(messages: List<Message>) {
         messages.forEach { message ->
             try {
-                kafkaTemplate.send("collector-post", message.url, message)
+                kafkaTemplate.send("collector-post", message.source, message)
             } catch (e: Exception) {
                 log.error("Failed to publish message to Kafka: ${message.title}", e)
             }
