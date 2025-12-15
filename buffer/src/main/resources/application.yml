@@ -1,0 +1,6 @@
+spring:
+  kafka:
+    consumer:
+      enable-auto-commit: false
+      properties:
+        max.poll.records: 200
