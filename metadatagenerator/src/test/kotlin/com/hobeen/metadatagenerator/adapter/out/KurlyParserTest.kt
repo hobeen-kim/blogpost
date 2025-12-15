@@ -4,21 +4,21 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
-class MediumParserTest {
+class KurlyParserTest {
 
-    val mediumParser = MediumParser()
+    val kurlyParser = KurlyParser()
 
     @Test
     fun parse() {
         //given & when
-        val test1 = mediumParser.parse("https://medium.com/musinsa-tech/하나의-id로-모든-경험을-잇다-팀-무신사-통합-회원-시스템-런치-여정-72f5b0218c72")
-//        val test2 = mediumParser.parse("https://toss.tech/article/27402")
+        val test1 = kurlyParser.parse("https://helloworld.kurly.com/blog/tech-spec-adoption-with-ai-automation/")
+        val test2 = kurlyParser.parse("https://toss.tech/article/27402")
 
         //then
-        assertThat(test1.title).isEqualTo("하나의 ID로 모든 경험을 잇다: 팀 무신사 통합 회원 시스템 런치 여정")
-        assertThat(test1.pubDate.withNano(0)).isEqualTo(LocalDateTime.of(2025, 12, 10, 7, 2, 14))
+        assertThat(test1.title).isEqualTo("개발자의 시간을 벌어주는 두 가지 도구: 잘 쓴 테크 스펙, 그리고 AI")
+        assertThat(test1.pubDate).isEqualTo(LocalDateTime.of(2025, 12, 4, 0, 0, 0))
         assertThat(test1.thumbnail).isNotBlank
-        assertThat(test1.description).isEqualTo("하나의 ID로 모든 경험을 잇다: 팀 무신사 통합 회원 시스템 런치 여정 안녕하세요. Core Member팀 김범석, Core Engineering팀 김대일입니다. 여러분께 Core …")
+        assertThat(test1.description).isEqualTo("컬리 프로덕트 웹개발 팀의 테크 스펙 정착기와 AI 자동화 시도")
 
 //        assertThat(test2.title).isEqualTo("잃어버린 개발자의 시간을 찾아서: 매일 하루를 아끼는 DevOps 이야기")
 //        assertThat(test2.pubDate).isEqualTo(LocalDateTime.of(2021, 6, 8, 0, 0, 0))

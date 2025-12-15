@@ -16,17 +16,17 @@ class WoowahanParserTest {
         val test2 = woowahanParser.parse("https://techblog.woowahan.com/24568/")
 
         //then
-        assertThat(test1.title).isNotEmpty
+        assertThat(test1.title).isNotBlank
         assertThat(test1.pubDate).isNotNull
-        assertThat(test1.thumbnail).isNotEmpty
+        assertThat(test1.thumbnail).isNotBlank
         assertThat(test1.tags).isNotEmpty
-        assertThat(test1.description).isNotEmpty
+        assertThat(test1.description).isNotBlank
 
-        assertThat(test2.title).isNotEmpty
+        assertThat(test2.title).isNotBlank
         assertThat(test2.pubDate).isNotNull
-        assertThat(test2.thumbnail).isNotEmpty
+        assertThat(test2.thumbnail).isNotBlank
         assertThat(test2.tags).isNotEmpty
-        assertThat(test2.description).isNotEmpty
+        assertThat(test2.description).isNotBlank
     }
 
 }
