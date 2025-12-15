@@ -32,8 +32,9 @@ class BanksaladParser: ParseHtmlMetadataPort {
 
         val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content") ?: ""
 
-        val tags = doc.select("p.post-header-categories a.cat-tag")
+        val tags = doc.select("""div[class*="templatesstyle__PostTag"] a""")
             .map { it.text().trim() }
+            .map { it.replace("#", "") }
 
         return Html(
             title = refineTitle(title),
