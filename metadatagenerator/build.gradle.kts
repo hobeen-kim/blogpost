@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.hobeen"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 description = "metadatagenerator"
 
 java {
