@@ -10,8 +10,8 @@ class TossSitemapExtractor: SitemapExtractor() {
 
     override fun extract(crawlingResult: CrawlingResult, source: String): List<Message> {
 
-        val filteredResults = crawlingResult.htmls.filter { it.contains("/article/") }
+        val result = super.extract(crawlingResult, source)
 
-        return super.extract(CrawlingResult(filteredResults), source)
+        return result.filter { it.url.contains("/article/") }
     }
 }
