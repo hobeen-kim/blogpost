@@ -1,6 +1,7 @@
 package com.hobeen.metadatagenerator.adapter.out
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
@@ -9,6 +10,7 @@ class MediumParserTest {
     val mediumParser = MediumParser()
 
     @Test
+    @DisplayName("medium parser test")
     fun parse() {
         //given & when
         val test1 = mediumParser.parse("https://medium.com/musinsa-tech/하나의-id로-모든-경험을-잇다-팀-무신사-통합-회원-시스템-런치-여정-72f5b0218c72")

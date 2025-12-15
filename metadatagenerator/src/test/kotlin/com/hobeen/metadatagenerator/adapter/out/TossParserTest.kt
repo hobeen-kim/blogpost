@@ -1,6 +1,7 @@
 package com.hobeen.metadatagenerator.adapter.out
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
@@ -9,6 +10,7 @@ class TossParserTest {
     val tossParser = TossParser()
 
     @Test
+    @DisplayName("toss parser test")
     fun parse() {
         //given & when
         val test1 = tossParser.parse("https://toss.tech/article/commonjs-esm-exports-field")

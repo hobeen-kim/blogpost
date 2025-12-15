@@ -3,6 +3,7 @@ package com.hobeen.metadatagenerator.adapter.out
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
 class WoowahanParserTest {
@@ -10,6 +11,7 @@ class WoowahanParserTest {
     val woowahanParser: WoowahanParser = WoowahanParser()
 
     @Test
+    @DisplayName("woowahan parser test")
     fun parse() {
         //given & when
         val test1 = woowahanParser.parse("https://techblog.woowahan.com/24820/")

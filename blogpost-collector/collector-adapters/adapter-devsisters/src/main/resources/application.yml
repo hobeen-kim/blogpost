@@ -3,4 +3,4 @@ target:
   source: devsisters
   adapter:
     extractor:
-      type: sitemapExtractor
+      type: devsistersSitemapExtractor

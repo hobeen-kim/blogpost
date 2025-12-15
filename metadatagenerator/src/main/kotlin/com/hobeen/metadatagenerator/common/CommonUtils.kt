@@ -8,6 +8,17 @@ private val seoulZone = ZoneId.of("Asia/Seoul")
 
 fun localDateParse(dateStr: String): LocalDateTime {
 
+    //2024-05-29
+    if(dateStr.length <= 10 && dateStr.split("-").size == 3) {
+        val snippets = dateStr.split("-")
+
+        val year = snippets[0].toInt()
+        val month = snippets[1].toInt()
+        val day = snippets[2].toInt()
+
+        return LocalDateTime.of(year, month, day, 0, 0, 0)
+    }
+
     //localdatetime
     if(dateStr.length <= 19) {
         return LocalDateTime.parse(dateStr)
