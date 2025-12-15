@@ -14,7 +14,7 @@ spring:
 metadatagenerator:
   kafka:
     consumer:
-      topic: deduplicated-post
+      topic: buffered-post
     producer:
       topic: enriched-post
       dlq-topic: enriched-post-dlq

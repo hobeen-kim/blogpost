@@ -22,13 +22,13 @@ class MetadataGenerateService(
         val html = parser.parse(message.url)
 
         return EnrichedMessage(
-            title = message.title ?: html.title,
+            title = if(message.title.isNullOrBlank()) html.title else message.title,
             source = message.source,
             url = message.url,
             pubDate = message.pubDate ?: html.pubDate,
             tags = message.tags.ifEmpty { html.tags },
-            description = message.description ?: html.description,
-            thumbnail = message.thumbnail ?: html.thumbnail,
+            description = if(message.description.isNullOrBlank()) html.description else message.description,
+            thumbnail = if(message.thumbnail.isNullOrBlank()) html.thumbnail else message.thumbnail,
         )
     }
 
