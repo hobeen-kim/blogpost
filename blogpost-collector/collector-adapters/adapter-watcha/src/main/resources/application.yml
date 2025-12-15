@@ -1,0 +1,6 @@
+target:
+  url: https://medium.com/feed/watcha
+  source: watcha
+  adapter:
+    extractor:
+      type: rssExtractor

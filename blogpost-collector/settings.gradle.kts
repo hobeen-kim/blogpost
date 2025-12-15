@@ -12,4 +12,5 @@ include(
     "collector-adapters:adapter-devsisters",
     "collector-adapters:adapter-line",
     "collector-adapters:adapter-daangn",
+    "collector-adapters:adapter-watcha",
 )

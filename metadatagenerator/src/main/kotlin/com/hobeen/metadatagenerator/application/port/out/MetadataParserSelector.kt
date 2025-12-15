@@ -20,6 +20,7 @@ class MetadataParserSelector (
         val parserName = when(source) {
             "musinsa" -> "medium"
             "daangn" -> "medium"
+            "watcha" -> "medium"
             else -> source
         }
 
