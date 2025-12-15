@@ -1,1 +1,31 @@
-spring.application.name=metadatagenerator
+spring:
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: metadatagenerator-group
+      auto-offset-reset: earliest
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 10000
+      lettuce:
+        pool: # Lettuce(?? Redis ?????)? ??? ? ??
+          max-active: 8        # ??? ??? ? ?? ?? ??? ??
+          max-idle: 8          # ?? ??? ??? ? ?? ?? ??? ??
+          min-idle: 0          # ?? ??? ??? ?? ??? ??
+          max-wait: -1         # ???? ??? ? ?? ?? ??(ms, -1? ??? ??)
+
+metadatagenerator:
+  kafka:
+    consumer:
+      topic: deduplicated-post
+    producer:
+      topic: enriched-post
+      dlq-topic: enriched-post-dlq

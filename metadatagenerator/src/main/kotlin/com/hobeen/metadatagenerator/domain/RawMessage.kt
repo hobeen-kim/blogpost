@@ -2,7 +2,7 @@ package com.hobeen.metadatagenerator.domain
 
 import java.time.LocalDateTime
 
-class RawMessage (
+data class RawMessage (
     val title: String?,
     val source: String,
     val url: String,
@@ -13,10 +13,10 @@ class RawMessage (
 ) {
     fun hasAllValues(): Boolean {
         return !title.isNullOrBlank()
-                || pubDate != null
-                || tags.isNotEmpty()
-                || !description.isNullOrBlank()
-                || !thumbnail.isNullOrBlank()
+                && pubDate != null
+                && tags.isNotEmpty()
+                && !description.isNullOrBlank()
+                && !thumbnail.isNullOrBlank()
     }
 
     fun toEnrichedMessage(): EnrichedMessage {

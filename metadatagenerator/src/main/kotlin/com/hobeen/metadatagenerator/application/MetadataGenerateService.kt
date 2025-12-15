@@ -1,6 +1,8 @@
 package com.hobeen.metadatagenerator.application
 
+import com.hobeen.metadatagenerator.application.port.`in`.MetadataGenerator
 import com.hobeen.metadatagenerator.application.port.out.MetadataParserSelector
+import com.hobeen.metadatagenerator.application.port.out.SaveMessagePort
 import com.hobeen.metadatagenerator.domain.EnrichedMessage
 import com.hobeen.metadatagenerator.domain.RawMessage
 import org.springframework.stereotype.Service
@@ -8,24 +10,29 @@ import org.springframework.stereotype.Service
 @Service
 class MetadataGenerateService(
     private val metadataParserSelector: MetadataParserSelector,
-) {
+    private val saveMessagePort: SaveMessagePort,
+): MetadataGenerator {
 
-    fun generate(rawMessage: RawMessage): EnrichedMessage {
+    override fun generate(message: RawMessage): EnrichedMessage {
 
-        if(rawMessage.hasAllValues()) return rawMessage.toEnrichedMessage()
+        if(message.hasAllValues()) return message.toEnrichedMessage()
         
         //metadata parse
-        val parser = metadataParserSelector.getParser(rawMessage.source)
-        val html = parser.parse(rawMessage.url)
+        val parser = metadataParserSelector.getParser(message.source)
+        val html = parser.parse(message.url)
 
         return EnrichedMessage(
-            title = rawMessage.title ?: html.title,
-            source = rawMessage.source,
-            url = rawMessage.url,
-            pubDate = rawMessage.pubDate ?: html.pubDate,
-            tags = rawMessage.tags.ifEmpty { html.tags },
-            description = rawMessage.description ?: html.description,
-            thumbnail = rawMessage.thumbnail ?: html.thumbnail,
+            title = message.title ?: html.title,
+            source = message.source,
+            url = message.url,
+            pubDate = message.pubDate ?: html.pubDate,
+            tags = message.tags.ifEmpty { html.tags },
+            description = message.description ?: html.description,
+            thumbnail = message.thumbnail ?: html.thumbnail,
         )
+    }
+
+    override fun save(message: EnrichedMessage) {
+        saveMessagePort.save(message)
     }
 }
