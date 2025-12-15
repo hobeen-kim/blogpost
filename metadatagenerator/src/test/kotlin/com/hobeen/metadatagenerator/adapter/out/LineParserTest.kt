@@ -17,6 +17,8 @@ class LineParserTest {
         val test2 = lineParser.parse("https://techblog.lycorp.co.jp/ko/why-did-an-athenz-engineer-take-on-the-kubestronaut-challenge")
 
         //then
+        assertThat(lineParser.getName()).isEqualTo("line")
+
         assertThat(test1.title).isEqualTo("코드 품질 개선 기법 11편: 반복되는 호출에 함수도 지친다")
         assertThat(test1.pubDate).isEqualTo(LocalDateTime.of(2025, 5, 14, 11, 0, 0))
         assertThat(test1.thumbnail).isNotBlank

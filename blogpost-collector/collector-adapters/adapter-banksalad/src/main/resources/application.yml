@@ -1,0 +1,6 @@
+target:
+  url: https://blog.banksalad.com/rss.xml
+  source: banksalad
+  adapter:
+    extractor:
+      type: rssExtractor

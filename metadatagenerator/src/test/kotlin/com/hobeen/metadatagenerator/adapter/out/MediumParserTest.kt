@@ -17,6 +17,8 @@ class MediumParserTest {
 //        val test2 = mediumParser.parse("https://toss.tech/article/27402")
 
         //then
+        assertThat(mediumParser.getName()).isEqualTo("medium")
+
         assertThat(test1.title).isEqualTo("하나의 ID로 모든 경험을 잇다: 팀 무신사 통합 회원 시스템 런치 여정")
         assertThat(test1.pubDate.withNano(0)).isEqualTo(LocalDateTime.of(2025, 12, 10, 7, 2, 14))
         assertThat(test1.thumbnail).isNotBlank

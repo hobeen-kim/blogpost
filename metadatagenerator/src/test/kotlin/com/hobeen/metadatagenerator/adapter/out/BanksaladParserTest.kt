@@ -5,19 +5,19 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
-class DevsistersParserTest {
+class BanksaladParserTest {
 
-    val devsistersParser = DevsistersParser()
+    val banksaladParser = BanksaladParser()
 
     @Test
-    @DisplayName("devsisters parser test")
+    @DisplayName("banksalad parser test")
     fun parse() {
         //given & when
-        val test1 = devsistersParser.parse("https://tech.devsisters.com/posts/ml-engineer-better-puzzle-game/")
-        val test2 = devsistersParser.parse("https://tech.devsisters.com/posts/attitude-of-qa/")
+        val test1 = banksaladParser.parse("https://tech.devsisters.com/posts/ml-engineer-better-puzzle-game/")
+        val test2 = banksaladParser.parse("https://tech.devsisters.com/posts/attitude-of-qa/")
 
         //then
-        assertThat(devsistersParser.getName()).isEqualTo("devsisters")
+        assertThat(banksaladParser.getName()).isEqualTo("devsisters")
 
         assertThat(test1.title).isEqualTo("머신러닝 엔지니어가 퍼즐 게임을 더 재미있게 만드는 방법")
         assertThat(test1.pubDate).isEqualTo(LocalDateTime.of(2024, 5, 29, 0, 0, 0))

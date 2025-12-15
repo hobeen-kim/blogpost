@@ -18,6 +18,8 @@ class WoowahanParserTest {
         val test2 = woowahanParser.parse("https://techblog.woowahan.com/24568/")
 
         //then
+        assertThat(woowahanParser.getName()).isEqualTo("woowahan")
+
         assertThat(test1.title).isNotBlank
         assertThat(test1.pubDate).isNotNull
         assertThat(test1.thumbnail).isNotBlank

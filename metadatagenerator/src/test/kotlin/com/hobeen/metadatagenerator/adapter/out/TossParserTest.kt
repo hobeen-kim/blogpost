@@ -17,6 +17,8 @@ class TossParserTest {
         val test2 = tossParser.parse("https://toss.tech/article/27402")
 
         //then
+        assertThat(tossParser.getName()).isEqualTo("toss")
+
         assertThat(test1.title).isEqualTo("CommonJS와 ESM에 모두 대응하는 라이브러리 개발하기: exports field")
         assertThat(test1.pubDate).isEqualTo(LocalDateTime.of(2022, 10, 4, 0, 0, 0))
         assertThat(test1.thumbnail).isNotBlank

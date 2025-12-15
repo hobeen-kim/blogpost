@@ -17,6 +17,8 @@ class KurlyParserTest {
         val test2 = kurlyParser.parse("http://thefarmersfront.github.io/blog/experience-the-kurly-interview-process/")
 
         //then
+        assertThat(kurlyParser.getName()).isEqualTo("kurly")
+
         assertThat(test1.title).isEqualTo("개발자의 시간을 벌어주는 두 가지 도구: 잘 쓴 테크 스펙, 그리고 AI")
         assertThat(test1.pubDate).isEqualTo(LocalDateTime.of(2025, 12, 4, 0, 0, 0))
         assertThat(test1.thumbnail).isNotBlank
