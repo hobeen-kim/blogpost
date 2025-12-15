@@ -5,6 +5,8 @@ import com.hobeen.inserter.application.port.`in`.DlqUseCase
 import com.hobeen.inserter.application.port.`in`.SaveMessageUseCase
 import com.hobeen.inserter.domain.EnrichedMessage
 import org.springframework.kafka.annotation.KafkaListener
+import org.springframework.kafka.support.KafkaHeaders
+import org.springframework.messaging.handler.annotation.Header
 import org.springframework.stereotype.Component
 
 @Component
@@ -15,13 +17,13 @@ class KafkaConsumer (
 ) {
 
     @KafkaListener(topics = ["\${inserter.kafka.consumer.topic}"])
-    fun listen(data: String) {
+    fun listen(data: String, @Header(KafkaHeaders.RECEIVED_KEY) key: String) {
 
         try {
             val message = objectMapper.readValue(data, EnrichedMessage::class.java)
             saveMessageUseCase.save(message)
         } catch (e: Exception) {
-            dlqUseCase.sendDlq(data, data, e)
+            dlqUseCase.sendDlq(key, data, e)
         }
     }
 }
