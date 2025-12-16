@@ -21,9 +21,9 @@ class WoowahanParser: ParseHtmlMetadataPort {
         val description = doc.selectFirst("head meta[name=description]")?.attr("content") ?: ""
 
         val pubDateStr = doc.selectFirst("head meta[property=article:published_time]")?.attr("content")
-        val pubDate = pubDateStr?.let { localDateParse(it) } ?: throw IllegalArgumentException("pubDate 오류")
+        val pubDate = pubDateStr?.let { localDateParse(it) }
 
-        val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content") ?: ""
+        val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content")
 
         val tags = doc.select("p.post-header-categories a.cat-tag")
             .map { it.text().trim() }

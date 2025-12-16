@@ -21,9 +21,9 @@ class DevsistersParser: ParseHtmlMetadataPort {
         val description = doc.selectFirst("head meta[name=description]")?.attr("content") ?: ""
 
         val pubDateStr = doc.selectFirst("time")?.attr("dateTime")
-        val pubDate = pubDateStr?.let { localDateParse(it) } ?: LocalDateTime.now()
+        val pubDate = pubDateStr?.let { localDateParse(it) }
 
-        val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content") ?: ""
+        val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content")
 
         return Html(
             title = refineTitle(title),

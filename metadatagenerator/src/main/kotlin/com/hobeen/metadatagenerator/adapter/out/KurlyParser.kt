@@ -1,12 +1,10 @@
 package com.hobeen.metadatagenerator.adapter.out
 
 import com.hobeen.metadatagenerator.application.port.out.ParseHtmlMetadataPort
-import com.hobeen.metadatagenerator.common.localDateParse
 import com.hobeen.metadatagenerator.common.refineTitle
 import com.hobeen.metadatagenerator.domain.Html
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.springframework.cglib.core.Local
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
@@ -24,7 +22,7 @@ class KurlyParser: ParseHtmlMetadataPort {
 
         val pubDate = getPubDate(doc)
 
-        val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content") ?: ""
+        val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content")
 
         return Html(
             title = refineTitle(title).replace(" - 컬리 기술 블로그", ""),
@@ -35,16 +33,16 @@ class KurlyParser: ParseHtmlMetadataPort {
         )
     }
 
-    private fun getPubDate(doc: Document): LocalDateTime {
+    private fun getPubDate(doc: Document): LocalDateTime? {
         //게시 날짜: 2025.12.04.
-        val pubDateStr = doc.selectFirst("span.post-date")?.text() ?: return LocalDateTime.now()
+        val pubDateStr = doc.selectFirst("span.post-date")?.text() ?: return null
 
         //[2025,12,04,]
         val dateSnippets = pubDateStr
             .split(" ").last().trim()
             .split(".")
 
-        if(dateSnippets.size != 4) return LocalDateTime.now()
+        if(dateSnippets.size != 4) return null
 
         val year = dateSnippets[0].toInt()
         val month = dateSnippets[1].toInt()

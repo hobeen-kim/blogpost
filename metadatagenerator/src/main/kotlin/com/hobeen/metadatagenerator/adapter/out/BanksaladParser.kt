@@ -30,7 +30,7 @@ class BanksaladParser: ParseHtmlMetadataPort {
         val el = doc.selectFirst("""span[class*="postDetailsstyle__PostDate"]""")
         val dateText = el?.text()?.trim()
 
-        val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content") ?: ""
+        val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content")
 
         val tags = doc.select("""div[class*="templatesstyle__PostTag"] a""")
             .map { it.text().trim() }
@@ -45,14 +45,14 @@ class BanksaladParser: ParseHtmlMetadataPort {
         )
     }
 
-    private fun parseDate(dateStr: String?): LocalDateTime {
+    private fun parseDate(dateStr: String?): LocalDateTime? {
 
-        if(dateStr == null) return LocalDateTime.now()
+        if(dateStr == null) return null
 
-        try {
-            return LocalDate.parse(dateStr, formatter).atStartOfDay()
+        return try {
+            LocalDate.parse(dateStr, formatter).atStartOfDay()
         } catch (e: DateTimeParseException) {
-            return LocalDateTime.now()
+            null
         }
 
     }

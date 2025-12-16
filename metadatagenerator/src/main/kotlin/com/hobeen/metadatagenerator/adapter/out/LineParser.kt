@@ -1,12 +1,11 @@
 package com.hobeen.metadatagenerator.adapter.out
 
+import com.hobeen.metadatagenerator.domain.Html
 import com.hobeen.metadatagenerator.application.port.out.ParseHtmlMetadataPort
 import com.hobeen.metadatagenerator.common.localDateParse
 import com.hobeen.metadatagenerator.common.refineTitle
-import com.hobeen.metadatagenerator.domain.Html
 import org.jsoup.Jsoup
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 
 @Component
 class LineParser: ParseHtmlMetadataPort {
@@ -23,9 +22,9 @@ class LineParser: ParseHtmlMetadataPort {
         }.joinToString(separator = " ")
 
         val pubDateStr = doc.selectFirst("head meta[property=article:published_time]")?.attr("content")
-        val pubDate = pubDateStr?.let { localDateParse(it) } ?: LocalDateTime.now()
+        val pubDate = pubDateStr?.let { localDateParse(it) }
 
-        val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content") ?: ""
+        val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content")
 
         return Html(
             title = refineTitle(title),

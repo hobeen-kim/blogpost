@@ -22,7 +22,7 @@ class TossParser: ParseHtmlMetadataPort {
         //og:description
         val description = getDescription(doc)
         val pubDate = getPubDate(doc)
-        val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content") ?: ""
+        val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content")
 
         val tags = doc.select("a.p-chip")
             .map { it.text().trim() }
@@ -47,16 +47,14 @@ class TossParser: ParseHtmlMetadataPort {
         return description
     }
 
-    private fun getPubDate(doc: Document): LocalDateTime {
+    private fun getPubDate(doc: Document): LocalDateTime? {
         //2022년 10월 6월
-        val pubDateStr = doc.selectFirst("div.esnk6d50")?.text()
-
-        if(pubDateStr == null) throw IllegalArgumentException("pubdate 없음")
+        val pubDateStr = doc.selectFirst("div.esnk6d50")?.text() ?: return null
 
         //[2022년, 10월, 6일]
         val dateSnippets = pubDateStr.split(" ")
 
-        if(dateSnippets.size != 3) throw IllegalArgumentException("pubdate 오류 : $pubDateStr")
+        if(dateSnippets.size != 3) return null
 
         val year = dateSnippets[0].substring(0, dateSnippets[0].length - 1).toInt()
         val month = dateSnippets[1].substring(0, dateSnippets[1].length - 1).toInt()
