@@ -39,6 +39,18 @@ class PostPersistenceAdapter(
         }
     }
 
+    override fun update(message: EnrichedMessage) {
+
+        val post = postRepository.findByUrl(message.url) ?: throw IllegalArgumentException("post save 실패 : url = ${message.url}")
+
+        val tags = message.tags.map { tagName ->
+            saveTag(tagName)
+        }
+
+        post.updateTag(tags)
+        post.update(message)
+    }
+
     private fun saveTag(tagName: String): Tag {
         tagRepository.insertIgnore(name = tagName)
         return tagRepository.findByName(tagName) ?: throw IllegalArgumentException("tag save 실패 : tagName = $tagName")

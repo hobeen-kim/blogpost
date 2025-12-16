@@ -1,3 +1,5 @@
+
+
 spring:
   kafka:
     consumer:
@@ -23,3 +25,6 @@ inserter:
       topic: enriched-post
     producer:
       dlq-topic: inserter-post-dlq
+
+server:
+  port: 8081

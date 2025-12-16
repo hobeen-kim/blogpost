@@ -9,15 +9,15 @@ class Post (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var postId: Long? = null,
-    val title: String,
-    val source: String,
-    val url: String,
-    val pubDate: LocalDateTime,
-    val description: String,
-    val thumbnail: String,
+    var title: String,
+    var source: String,
+    var url: String,
+    var pubDate: LocalDateTime,
+    var description: String,
+    var thumbnail: String,
 
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val tags: MutableList<PostTag>
+    val postTags: MutableList<PostTag>
 ) {
     companion object {
         fun create(message: EnrichedMessage): Post {
@@ -28,8 +28,28 @@ class Post (
                 pubDate = message.pubDate,
                 description = message.description,
                 thumbnail = message.thumbnail,
-                tags = mutableListOf(),
+                postTags = mutableListOf(),
             )
        }
+    }
+
+    fun updateTag(tags: List<Tag>) {
+        this.postTags.removeIf { !tags.contains(it.tag) }
+
+        val remains = postTags.map { it.tag }
+        tags.forEach {
+            if (!remains.contains(it)) {
+                this.postTags.add(PostTag.create(post = this, tag = it))
+            }
+        }
+    }
+
+    fun update(message: EnrichedMessage) {
+        title = message.title
+        source = message.source
+        url = message.url
+        pubDate = message.pubDate
+        description = message.description
+        thumbnail = message.thumbnail
     }
 }

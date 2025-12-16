@@ -7,8 +7,8 @@ plugins {
 }
 
 group = "com.hobeen"
-version = "0.0.1"
-description = "inserter"
+version = "0.0.1-SNAPSHOT"
+description = "apiserver"
 
 java {
     toolchain {
@@ -18,34 +18,22 @@ java {
 
 repositories {
     mavenCentral()
-    maven {
-        url = uri("https://maven.pkg.github.com/hobeen-kim/blogpost-collector")
-        credentials {
-            username = (findProperty("gpr.user") as String?) ?: System.getenv("GITHUB_ACTOR")
-            password = (findProperty("gpr.key") as String?) ?: System.getenv("GITHUB_TOKEN")
-        }
-    }
 }
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    //spring
+    //web
     implementation("org.springframework.boot:spring-boot-starter-web")
-    //kafka
-    implementation("org.springframework.kafka:spring-kafka")
-    //db
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    runtimeOnly("org.postgresql:postgresql")
     //dataformat
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    //custom package
-    implementation("com.hobeen:blogpost-common:1.0.2")
-    //test
+    //db
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    runtimeOnly("org.postgresql:postgresql")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testImplementation("org.springframework.kafka:spring-kafka-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: api-server
+  jpa:
+    database: postgresql
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100

@@ -9,11 +9,14 @@ import org.springframework.stereotype.Component
 @Component
 class Application(
     private val saveMessagePort: SaveMessagePort,
-    private val dlqPort: DlqPort,
 ): SaveMessageUseCase {
 
     override fun save(message: EnrichedMessage) {
         saveMessagePort.save(message)
+    }
+
+    override fun update(message: EnrichedMessage) {
+        saveMessagePort.update(message)
     }
 
 

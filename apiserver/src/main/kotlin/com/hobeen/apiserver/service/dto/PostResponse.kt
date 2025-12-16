@@ -1,5 +1,6 @@
 package com.hobeen.apiserver.service.dto
 
+import com.hobeen.apiserver.entity.Post
 import java.time.LocalDateTime
 
 data class PostResponse (
@@ -11,4 +12,19 @@ data class PostResponse (
     val description: String,
     val thumbnail: String,
     val tags: List<String>,
-)
+) {
+    companion object {
+        fun of(post: Post): PostResponse {
+            return PostResponse(
+                postId = post.postId,
+                title = post.title,
+                source = post.source,
+                url = post.url,
+                pubDate = post.pubDate,
+                description = post.description,
+                thumbnail = post.thumbnail,
+                tags = post.tags.map { it.tag.name },
+            )
+        }
+    }
+}

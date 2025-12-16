@@ -4,4 +4,5 @@ import com.hobeen.inserter.adapter.out.persistence.entity.Post
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface PostRepository: JpaRepository<Post, Long> {
+    fun findByUrl(url: String): Post?
 }

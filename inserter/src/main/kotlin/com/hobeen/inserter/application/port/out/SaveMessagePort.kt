@@ -5,4 +5,6 @@ import com.hobeen.inserter.domain.EnrichedMessage
 interface SaveMessagePort {
 
     fun save(message: EnrichedMessage)
+
+    fun update(message: EnrichedMessage)
 }
