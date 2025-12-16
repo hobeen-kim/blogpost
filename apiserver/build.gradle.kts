@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.hobeen"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 description = "apiserver"
 
 java {
@@ -28,6 +28,8 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    //security
+    implementation("org.springframework.boot:spring-boot-starter-security")
     //db
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("org.postgresql:postgresql")

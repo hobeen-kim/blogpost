@@ -1,0 +1,64 @@
+package com.hobeen.apiserver.config
+
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
+import org.springframework.security.config.Customizer
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer
+import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+
+@Configuration
+@EnableWebSecurity
+class SecurityConfig {
+
+    @Bean
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+        http
+            .httpBasic(httpBasicPolicy())
+            .formLogin { it.disable() }
+            .csrf(csrfPolicy())
+            .cors(getCorsPolicy())
+            .sessionManagement(sessionManagementPolicy())
+            .authorizeHttpRequests(getAuthorizeRequests())
+        return http.build()
+    }
+
+    fun httpBasicPolicy(): Customizer<HttpBasicConfigurer<HttpSecurity>> {
+        return Customizer { httpBasic -> httpBasic.disable() }
+    }
+
+    fun csrfPolicy(): Customizer<CsrfConfigurer<HttpSecurity>> {
+        return Customizer { csrf -> csrf.disable() }
+    }
+
+    fun sessionManagementPolicy(): Customizer<SessionManagementConfigurer<HttpSecurity>> {
+        return Customizer { sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+    }
+
+    fun getCorsPolicy(): Customizer<CorsConfigurer<HttpSecurity>> {
+        return Customizer<CorsConfigurer<HttpSecurity>> { cors: CorsConfigurer<HttpSecurity> ->
+            val configuration = CorsConfiguration()
+            configuration.allowedOrigins = listOf("http://localhost:8000")
+            configuration.addAllowedMethod("*")
+            configuration.addAllowedHeader("*")
+
+            val source = UrlBasedCorsConfigurationSource()
+            source.registerCorsConfiguration("/**", configuration)
+            cors.configurationSource(source)
+        }
+    }
+
+    private fun getAuthorizeRequests(): (AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry) -> Unit = {
+        it
+            .anyRequest().permitAll()
+    }
+}

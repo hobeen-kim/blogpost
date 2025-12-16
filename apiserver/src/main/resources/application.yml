@@ -6,3 +6,8 @@ spring:
     properties:
       hibernate:
         default_batch_fetch_size: 100
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydb
+    username: myuser
+    password: mypassword
+    driver-class-name: org.postgresql.Driver
