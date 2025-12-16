@@ -38,18 +38,7 @@ class PostPersistenceAdapter(
     }
 
     private fun saveTag(tagName: String): Tag {
-
-        val tagWrapper = tagRepository.findByName(tagName)
-
-        //db 에 존재하는 이름이면 그대로 return
-        return tagWrapper
-            ?: try {
-                tagRepository.save(Tag(name = tagName))
-            } catch (e: DataIntegrityViolationException) {
-                //조회 이후 생성되었을 때 (unique)
-                tagRepository.findByName(tagName) ?: throw IllegalArgumentException("tag unique 제약 위반이지만 조회되지 않음 : tagName = $tagName")
-            } catch (e: Exception) {
-                throw IllegalArgumentException("tag save 실패 : tagName = $tagName, e: ${e.message}")
-            }
+        tagRepository.insertIgnore(name = tagName)
+        return tagRepository.findByName(tagName) ?: throw IllegalArgumentException("tag save 실패 : tagName = $tagName")
     }
 }
