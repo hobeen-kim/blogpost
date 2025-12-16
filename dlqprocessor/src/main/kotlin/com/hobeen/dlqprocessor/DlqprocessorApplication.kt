@@ -1,0 +1,11 @@
+package com.hobeen.dlqprocessor
+
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+
+@SpringBootApplication
+class DlqprocessorApplication
+
+fun main(args: Array<String>) {
+    runApplication<DlqprocessorApplication>(*args)
+}

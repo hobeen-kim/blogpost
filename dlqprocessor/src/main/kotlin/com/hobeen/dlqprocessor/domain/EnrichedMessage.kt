@@ -1,0 +1,29 @@
+package com.hobeen.dlqprocessor.domain
+
+import java.time.LocalDateTime
+
+data class EnrichedMessage (
+    val title: String,
+    val source: String,
+    val url: String,
+    val pubDate: LocalDateTime,
+    val tags: List<String>,
+    val description: String,
+    val thumbnail: String,
+): Message {
+    override fun getTopic(): String {
+        return "enriched-post"
+    }
+
+    override fun getKey(): String {
+        return source
+    }
+
+    fun hasAllValues(): Boolean {
+        return title.isNotBlank() &&
+                source.isNotBlank() &&
+                url.isNotBlank() &&
+                thumbnail.isNotBlank()
+
+    }
+}
