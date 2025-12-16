@@ -9,11 +9,12 @@ data class AlarmDto (
 ) {
     fun toText(): String {
         return """
-            message=$message
-            source=$source
-            url=$url
-            rawData=$rawData
-            exception=${exception?.let { exception::class.java.simpleName }}
+--------------ALARM----------------
+**message**=$message
+**source**=$source
+**url**=$url
+**rawData**=$rawData
+**exception**=${exception?.let { exception::class.java.simpleName }}
         """.trimIndent()
     }
 }
