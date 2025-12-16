@@ -9,10 +9,12 @@ import com.hobeen.inserter.adapter.out.persistence.repository.PostTagRepository
 import com.hobeen.inserter.adapter.out.persistence.repository.TagRepository
 import com.hobeen.inserter.application.port.out.SaveMessagePort
 import com.hobeen.inserter.domain.EnrichedMessage
+import jakarta.transaction.Transactional
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Component
 
 @Component
+@Transactional
 class PostPersistenceAdapter(
     private val tagRepository: TagRepository,
     private val postRepository: PostRepository,
