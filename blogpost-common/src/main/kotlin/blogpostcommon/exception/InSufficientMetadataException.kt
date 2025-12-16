@@ -1,4 +1,4 @@
-package com.hobeen.exception
+package com.hobeen.blogpostcommon.exception
 
 class InSufficientMetadataException(
     override val message: String
