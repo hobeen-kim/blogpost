@@ -51,12 +51,12 @@ class TossParser: ParseHtmlMetadataPort {
         //2022년 10월 6월
         val pubDateStr = doc.selectFirst("div.esnk6d50")?.text()
 
-        if(pubDateStr == null) return LocalDateTime.now()
+        if(pubDateStr == null) throw IllegalArgumentException("pubdate 없음")
 
         //[2022년, 10월, 6일]
         val dateSnippets = pubDateStr.split(" ")
 
-        if(dateSnippets.size != 3) return LocalDateTime.now()
+        if(dateSnippets.size != 3) throw IllegalArgumentException("pubdate 오류 : $pubDateStr")
 
         val year = dateSnippets[0].substring(0, dateSnippets[0].length - 1).toInt()
         val month = dateSnippets[1].substring(0, dateSnippets[1].length - 1).toInt()
