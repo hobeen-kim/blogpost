@@ -17,7 +17,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # 태그 조회/생성하려면 필요
+          fetch-depth: 0  # 태그 조회/생성에 필요
+
+      - name: MaΩke gradlew executable
+        run: chmod +x blogpost-common/gradlew
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -25,6 +28,10 @@ jobs:
           distribution: temurin
           java-version: "17"
           cache: gradle
+          cache-dependency-path: |
+            blogpost-common/**/*.gradle*
+            blogpost-common/gradle.properties
+            blogpost-common/gradle/wrapper/gradle-wrapper.properties
 
       - name: Read version
         id: ver
@@ -43,8 +50,9 @@ jobs:
         run: |
           TAG="blogpost-common-v$VERSION"
 
+          # 태그가 이미 있으면 릴리즈 단계만 스킵(그래도 publish는 계속)
           if git rev-parse "$TAG" >/dev/null 2>&1; then
-            echo "Tag already exists: $TAG"
+            echo "Tag already exists: $TAG (skip release creation)"
             exit 0
           fi
 
@@ -61,6 +69,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Gradle Wrapper가 루트에 있다고 가정
-          ./gradlew -p blogpost-common publish
-
+          ./blogpost-common/gradlew -p blogpost-common publish
