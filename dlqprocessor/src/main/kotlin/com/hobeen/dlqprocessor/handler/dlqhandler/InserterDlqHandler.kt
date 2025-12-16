@@ -23,6 +23,10 @@ class InserterDlqHandler(
     alarmPort = alarmPort,
 ) {
     override fun handleTypeRecord(message: TypedDlqMessage<EnrichedMessage>) {
+
+        //post 중복 에러면 무시
+        if(message.exception == "PostDuplicatedException") return
+
         //몇변처리된 건지 확인 (3번 이상이면 알림)
         if(processCounter.isOverReprocessLimit(message.data.url)) sendAlarm(alarmMessage = "reprocess limit over", message = message)
 

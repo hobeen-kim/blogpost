@@ -10,7 +10,7 @@ class ReprocessKafkaAdapter(
     private val kafkaTemplate: KafkaTemplate<String, Message>,
 ): ReprocessPort {
     override fun save(message: Message) {
-        kafkaTemplate.send(message.getTopic(), message.getKey(), message)
+        kafkaTemplate.send(message.topic(), message.key(), message)
     }
 
 }

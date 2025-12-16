@@ -11,11 +11,12 @@ data class EnrichedMessage (
     val description: String,
     val thumbnail: String,
 ): Message {
-    override fun getTopic(): String {
+
+    override fun topic(): String {
         return "enriched-post"
     }
 
-    override fun getKey(): String {
+    override fun key(): String {
         return source
     }
 

@@ -2,7 +2,7 @@ package com.hobeen.dlqprocessor.domain
 
 interface Message {
 
-    fun getTopic(): String
+    fun topic(): String
 
-    fun getKey(): String
+    fun key(): String
 }
