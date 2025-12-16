@@ -21,6 +21,7 @@ class MetadataParserSelector (
             "musinsa" -> "medium"
             "daangn" -> "medium"
             "watcha" -> "medium"
+            "yogiyo" -> "medium"
             else -> source
         }
 
