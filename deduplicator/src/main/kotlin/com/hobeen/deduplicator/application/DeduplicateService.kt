@@ -34,4 +34,8 @@ class DeduplicateService(
         duplicateCheckPort.addDuplicateSet(urls)
     }
 
+    override fun clearDuplicateSet() {
+        duplicateCheckPort.clearCache()
+    }
+
 }

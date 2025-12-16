@@ -24,6 +24,8 @@ class SupabaseCall (
     @PostConstruct
     fun call() {
 
+        deduplicator.clearDuplicateSet()
+
         var page = 1
         var totalCount = 0
         val perPage = 1000

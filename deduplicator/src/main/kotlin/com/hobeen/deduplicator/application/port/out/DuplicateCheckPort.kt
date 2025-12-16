@@ -7,4 +7,6 @@ interface DuplicateCheckPort {
     fun addDuplicateSet(urls: List<String>)
 
     fun delete(url: String)
+
+    fun clearCache()
 }

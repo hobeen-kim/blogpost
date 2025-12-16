@@ -31,4 +31,8 @@ class RedisDuplicateChecker(
         redisTemplate.opsForSet().remove(KEY, url)
     }
 
+    override fun clearCache() {
+        redisTemplate.opsForSet().remove(KEY)
+    }
+
 }
