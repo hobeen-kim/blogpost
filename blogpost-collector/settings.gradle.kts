@@ -14,4 +14,6 @@ include(
     "collector-adapters:adapter-daangn",
     "collector-adapters:adapter-watcha",
     "collector-adapters:adapter-banksalad",
+    "collector-adapters:adapter-yogiyo",
+    "collector-adapters:adapter-ridi",
 )

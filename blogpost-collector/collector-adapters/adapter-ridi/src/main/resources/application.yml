@@ -1,0 +1,8 @@
+target:
+  url: https://ridicorp.com/story-category/tech-blog/
+  source: ridi
+  adapter:
+    crawler:
+      type: ridiCrawler
+    extractor:
+      type: ridiExtractor

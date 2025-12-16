@@ -1,0 +1,6 @@
+target:
+  url: https://techblog.yogiyo.co.kr/feed
+  source: yogiyo
+  adapter:
+    extractor:
+      type: rssExtractor
