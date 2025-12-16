@@ -1,5 +1,6 @@
 package com.hobeen.inserter.adapter.out.persistence
 
+import com.hobeen.blogpostcommon.exception.PostDuplicatedException
 import com.hobeen.inserter.adapter.out.persistence.entity.Post
 import com.hobeen.inserter.adapter.out.persistence.entity.PostTag
 import com.hobeen.inserter.adapter.out.persistence.entity.Tag
@@ -24,7 +25,12 @@ class PostPersistenceAdapter(
         }
 
         val post = Post.create(message)
-        postRepository.save(post)
+
+        try {
+            postRepository.save(post)
+        } catch (e: DataIntegrityViolationException) {
+            throw PostDuplicatedException(message.url)
+        }
 
         tags.forEach {
             postTagRepository.save(PostTag.create(post = post, tag = it))
