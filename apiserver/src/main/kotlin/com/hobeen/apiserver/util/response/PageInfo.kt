@@ -7,8 +7,6 @@ data class PageInfo(
     val size: Int,
     val totalPages: Int,
     val totalElements: Long,
-    val isLast: Boolean,
-    val isFirst: Boolean,
     val hasNext: Boolean,
     val hasPrevious: Boolean,
 ) {
@@ -19,8 +17,6 @@ data class PageInfo(
                 page.size,
                 page.totalPages,
                 page.totalElements,
-                page.isFirst,
-                page.isLast,
                 page.hasNext(),
                 page.hasPrevious()
             )
