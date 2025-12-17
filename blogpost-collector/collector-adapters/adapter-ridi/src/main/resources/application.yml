@@ -6,3 +6,6 @@ target:
       type: ridiCrawler
     extractor:
       type: ridiExtractor
+
+ridi:
+  end-page: 3

@@ -16,8 +16,8 @@ class ConfigProvider(
 
     @PostConstruct
     fun check() {
-        if(properties.url.isBlank()) { throw throw IllegalArgumentException("target.url parameter is required")}
-        if(properties.source.isBlank()) { throw throw IllegalArgumentException("target.source parameter is required")}
+        if(properties.url.isBlank()) { throw IllegalArgumentException("target.url parameter is required")}
+        if(properties.source.isBlank()) { throw IllegalArgumentException("target.source parameter is required")}
     }
 
     fun getUrl(): String {

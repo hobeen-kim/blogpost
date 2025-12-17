@@ -57,15 +57,6 @@ target:
 #          type: rssExtractor
 #          useDefaultThumbnail: false
 #          defaultThumbnail: ""
-    ridi:
-      url: https://ridicorp.com/feed/
-      adapter:
-        crawler:
-          type: htmlCrawler
-        extractor:
-          type: rssExtractor
-          useDefaultThumbnail: false
-          defaultThumbnail: ""
     nhn:
       url: https://meetup.toast.com/rss
       adapter:
@@ -102,3 +93,5 @@ target:
           type: rssExtractor
           useDefaultThumbnail: true
           defaultThumbnail: ""
+
+# codeit : https://sprint.codeit.kr/blog/sitemap.xml
