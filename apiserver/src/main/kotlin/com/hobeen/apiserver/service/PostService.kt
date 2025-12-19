@@ -16,4 +16,8 @@ class PostService(
             PostResponse.of(it)
         }
     }
+
+    fun searchPosts(search: String, pageable: Pageable): List<PostResponse> {
+        return postRepository.findBySearch(search, pageable).map { PostResponse.of(it) }
+    }
 }

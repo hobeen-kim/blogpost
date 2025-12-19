@@ -2,12 +2,15 @@ package com.hobeen.apiserver.controller
 
 import com.hobeen.apiserver.service.PostService
 import com.hobeen.apiserver.service.dto.PostResponse
+import com.hobeen.apiserver.util.response.ApiResponse
 import com.hobeen.apiserver.util.response.PagedApiResponse
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -23,4 +26,13 @@ class PostController (
         return PagedApiResponse.of(postService.getPosts(pageable))
     }
 
+    @GetMapping("search")
+    fun getSearchPosts(
+        @RequestParam(value = "q") query: String,
+    ): ApiResponse<List<PostResponse>> {
+
+        val pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "pubDate")
+
+        return ApiResponse.of(postService.searchPosts(query, pageable))
+    }
 }
