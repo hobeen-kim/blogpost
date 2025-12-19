@@ -31,7 +31,8 @@
 :collector-adapters:adapter-yogiyo:build \
 :collector-adapters:adapter-ridi:build \
 :collector-adapters:adapter-nhn:build \
-:collector-adapters:adapter-ffbits:build
+:collector-adapters:adapter-ffbits:build \
+:collector-adapters:adapter-socar:build
 
 ```
 
@@ -53,6 +54,7 @@
 ```aiexclude
 3 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-ffbits/build/libs/adapter-ffbits-1.0.1.jar --spring.profiles.active=local >> /home/hobeenkim/logs/adapter-ffbits.log 2>&1
 5 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-woowahan/build/libs/adapter-woowahan-1.0.1.jar --spring.profiles.active=local >> /home/hobeenkim/logs/adapter-woowahan.log 2>&1
+8 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-socar/build/libs/adapter-socar-1.0.1.jar --spring.profiles.active=local >> /home/hobeenkim/logs/adapter-socar.log 2>&1
 10 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-toss/build/libs/adapter-toss-1.0.1.jar --spring.profiles.active=local >> /home/hobeenkim/logs/adapter-toss.log 2>&1
 15 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-musinsa/build/libs/adapter-musinsa-1.0.1.jar --spring.profiles.active=local >> /home/hobeenkim/logs/adapter-musinsa.log 2>&1
 20 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-kurly/build/libs/adapter-kurly-1.0.1.jar --spring.profiles.active=local >> /home/hobeenkim/logs/adapter-kurly.log 2>&1

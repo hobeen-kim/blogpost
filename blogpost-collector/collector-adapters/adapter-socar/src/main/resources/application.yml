@@ -1,13 +1,11 @@
 target:
-  url: https://tech.socarcorp.kr/posts/
+  url: https://tech.socarcorp.kr/feed
   source: socar
   adapter:
-    crawler:
-      type: socarCrawler
     extractor:
-      type: socarJsoupExtractor
+      type: rssV1Extractor
 alarm:
   slack:
     enabled: true
 socar:
-  end-page: 13
+  end-page: 2
