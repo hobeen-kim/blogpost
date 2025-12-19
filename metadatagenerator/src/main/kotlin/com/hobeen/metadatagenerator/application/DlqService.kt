@@ -24,19 +24,4 @@ class DlqService(
 
         log.warn("sent dlq : ${key}")
     }
-
-    override fun sendDlq(
-        key: String,
-        data: RawMessage,
-        exception: Exception
-    ) {
-        val dlqData: MutableMap<String, String> = HashMap()
-        dlqData["data"] = data.toString()
-        dlqData["exception"] = exception.javaClass.getSimpleName()
-        dlqData["message"] = exception.message ?: "unknown error message"
-
-        dlqPort.sendDlq(key, dlqData)
-
-        log.warn("sent dlq : ${key}")
-    }
 }

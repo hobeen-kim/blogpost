@@ -42,7 +42,7 @@ class KafkaConsumer (
             log.info("처리 끝 : ${message.url}, ${System.currentTimeMillis() - time}ms")
 
         } catch (e: Exception) {
-            dlqUseCase.sendDlq(message.source, message, e)
+            dlqUseCase.sendDlq(message.source, data, e)
         }
     }
 }
