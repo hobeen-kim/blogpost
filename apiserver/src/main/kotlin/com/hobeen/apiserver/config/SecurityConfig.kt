@@ -57,7 +57,7 @@ class SecurityConfig {
     fun getCorsPolicy(): Customizer<CorsConfigurer<HttpSecurity>> {
         return Customizer<CorsConfigurer<HttpSecurity>> { cors: CorsConfigurer<HttpSecurity> ->
             val configuration = CorsConfiguration()
-            configuration.allowedOrigins = listOf("http://localhost:8000")
+            configuration.allowedOrigins = listOf("http://localhost:8000", "https://devtag.hobeen.com")
             configuration.addAllowedMethod("*")
             configuration.addAllowedHeader("*")
 
