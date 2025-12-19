@@ -4,5 +4,5 @@ import com.hobeen.dlqprocessor.domain.Message
 
 interface ReprocessPort {
 
-    fun save(message: Message)
+    fun save(reprocessStep: String, message: Message)
 }

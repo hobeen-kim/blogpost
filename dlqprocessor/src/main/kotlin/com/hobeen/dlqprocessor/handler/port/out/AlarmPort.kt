@@ -1,8 +1,8 @@
 package com.hobeen.dlqprocessor.handler.port.out
 
-import com.hobeen.dlqprocessor.handler.port.out.dto.AlarmDto
+import com.hobeen.dlqprocessor.handler.port.out.dto.AlarmRequest
 
 interface AlarmPort {
 
-    fun sendAlarm(alarmData: AlarmDto)
+    fun sendAlarm(alarmData: AlarmRequest)
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.hobeen.dlqprocessor.domain.DlqMessage
 import com.hobeen.dlqprocessor.domain.TypedDlqMessage
 import com.hobeen.dlqprocessor.handler.port.out.AlarmPort
-import com.hobeen.dlqprocessor.handler.port.out.dto.AlarmDto
+import com.hobeen.dlqprocessor.handler.port.out.dto.AlarmRequest
 
 abstract class AbstractJsonHandler<T>(
     private val objectMapper: ObjectMapper,
@@ -29,8 +29,8 @@ abstract class AbstractJsonHandler<T>(
 
     private fun handleException(message: DlqMessage, key: String, exception: Exception) {
 
-        val dto = AlarmDto(
-            message = "cannot read json data",
+        val dto = AlarmRequest(
+            message = "cannot read json data from ${payloadType.simpleName} class",
             source = "rawData",
             url = key,
             rawData = message.toString(),

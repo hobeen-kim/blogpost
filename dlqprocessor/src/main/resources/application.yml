@@ -15,7 +15,16 @@ spring:
       host: localhost
       port: 6379
       timeout: 10000
+
 dlqprocessor:
   kafka:
+    deduplicator:
+      dlq: deduplicated-post-dlq
+    metadatagenerator:
+      dlq: enriched-post-dlq
     inserter:
       dlq: inserter-post-dlq
+
+alarm:
+  slack:
+    enabled: true

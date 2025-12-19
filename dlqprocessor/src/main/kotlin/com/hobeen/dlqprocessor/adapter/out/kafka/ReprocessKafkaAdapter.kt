@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component
 class ReprocessKafkaAdapter(
     private val kafkaTemplate: KafkaTemplate<String, Message>,
 ): ReprocessPort {
-    override fun save(message: Message) {
-        kafkaTemplate.send(message.topic(), message.key(), message)
+    override fun save(reprocessStep: String, message: Message) {
+        kafkaTemplate.send(reprocessStep, message.key(), message)
     }
 
 }

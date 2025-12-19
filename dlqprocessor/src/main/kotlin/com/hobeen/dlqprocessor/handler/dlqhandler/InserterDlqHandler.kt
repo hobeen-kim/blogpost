@@ -1,7 +1,6 @@
 package com.hobeen.dlqprocessor.handler.dlqhandler
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.hobeen.dlqprocessor.common.formatLastTwoCausesStacktrace
 import com.hobeen.dlqprocessor.domain.EnrichedMessage
 import com.hobeen.dlqprocessor.domain.TypedDlqMessage
 import com.hobeen.dlqprocessor.handler.AbstractJsonHandler
@@ -9,7 +8,7 @@ import com.hobeen.dlqprocessor.handler.port.out.AlarmPort
 import com.hobeen.dlqprocessor.handler.port.out.ReprocessPort
 import org.springframework.stereotype.Component
 import com.hobeen.dlqprocessor.handler.port.out.ProcessCounter
-import com.hobeen.dlqprocessor.handler.port.out.dto.AlarmDto
+import com.hobeen.dlqprocessor.handler.port.out.dto.AlarmRequest
 
 @Component
 class InserterDlqHandler(
@@ -45,15 +44,15 @@ class InserterDlqHandler(
         )
 
         //다시 insert 하도록 저장
-        reprocessPort.save(enrichedMessage)
+        reprocessPort.save("enriched-post", enrichedMessage)
     }
 
     override fun handleTypedException(
         message: TypedDlqMessage<EnrichedMessage>,
         e: Exception
     ) {
-        val dto = AlarmDto(
-            message = formatLastTwoCausesStacktrace(e),
+        val dto = AlarmRequest(
+            message = "Dlqprocessor:InserterDlqHandler",
             source = message.data.source,
             url = message.data.url,
             rawData = message.toString(),
@@ -64,7 +63,7 @@ class InserterDlqHandler(
     }
 
     private fun sendAlarm(alarmMessage: String, message: TypedDlqMessage<EnrichedMessage>) {
-        val dto = AlarmDto(
+        val dto = AlarmRequest(
             message = alarmMessage,
             source = message.data.source,
             url = message.data.url,
