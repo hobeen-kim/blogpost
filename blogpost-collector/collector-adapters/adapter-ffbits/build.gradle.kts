@@ -4,7 +4,7 @@ plugins {
     id("io.spring.dependency-management")
 }
 
-description = "collector-adapter-nhn"
+description = "collector-adapter-ffbits"
 
 dependencies {
     implementation(project(":collector-adapters:adapter-common"))
