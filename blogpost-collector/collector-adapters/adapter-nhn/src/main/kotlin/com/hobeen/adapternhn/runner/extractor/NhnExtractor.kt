@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.hobeen.collectorcommon.domain.Message
 import com.hobeen.collectorengine.port.Extractor
 import com.hobeen.collectorengine.port.dto.CrawlingResult
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 
 @Component
@@ -28,12 +27,19 @@ class NhnExtractor(
                     title = post.postPerLang.title,
                     url = "https://meetup.nhncloud.com/posts/${post.postId}",
                     pubDate = post.publishTime.toLocalDateTime(),
-                    tags = post.postPerLang.tag.split(",").map { it.trim().replace("#", "") },
+                    tags = getTags(post.postPerLang.tag),
                     description = post.postPerLang.description,
                     thumbnail = post.postPerLang.repImageUrl
                 )
             }
         }
+    }
+
+    private fun getTags(tagStr: String): List<String> {
+        return tagStr // "#a, #b, #c"
+            .split("#") // ["", "a, ", "b, ", "c, "]
+            .map { it.trim().replace(",", "") } // ["", "a", "b", "c"]
+            .filterNot { it.isBlank() } // ["a", "b", "c"]
     }
 
 }

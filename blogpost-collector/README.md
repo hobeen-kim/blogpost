@@ -29,7 +29,9 @@
 :collector-adapters:adapter-watcha:build \
 :collector-adapters:adapter-banksalad:build \
 :collector-adapters:adapter-yogiyo:build \
-:collector-adapters:adapter-ridi:build
+:collector-adapters:adapter-ridi:build \
+:collector-adapters:adapter-nhn:build \
+
 ```
 
 ## 전체 실행
@@ -59,4 +61,5 @@
 45 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-banksalad/build/libs/adapter-banksalad-0.0.1.jar >> /home/hobeenkim/logs/adapter-banksalad.log 2>&1
 50 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-yogiyo/build/libs/adapter-yogiyo-0.0.1.jar >> /home/hobeenkim/logs/adapter-yogiyo.log 2>&1
 55 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-ridi/build/libs/adapter-ridi-0.0.1.jar >> /home/hobeenkim/logs/adapter-ridi.log 2>&1
+0 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-nhn/build/libs/adapter-nhn-0.0.1.jar >> /home/hobeenkim/logs/adapter-nhn.log 2>&1
 ```
