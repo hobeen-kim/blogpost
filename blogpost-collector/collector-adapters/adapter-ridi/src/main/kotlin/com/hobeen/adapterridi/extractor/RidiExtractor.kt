@@ -1,4 +1,4 @@
-package com.hobeen.adapterridi.runner.extractor
+package com.hobeen.adapterridi.extractor
 
 import com.hobeen.adaptercommon.extractor.jsoup.JsoupAbstractExtractor
 import com.hobeen.collectorcommon.domain.Message

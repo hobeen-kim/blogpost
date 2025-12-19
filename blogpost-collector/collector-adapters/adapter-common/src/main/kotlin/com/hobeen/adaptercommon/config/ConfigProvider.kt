@@ -9,9 +9,6 @@ import org.springframework.stereotype.Component
 @Component
 class ConfigProvider(
     private val properties: TargetProperties,
-    private val crawlers: Map<String, Crawler>,
-    private val extractors: Map<String, Extractor>,
-    private val publishers: Map<String, Publisher>,
 ) {
 
     @PostConstruct
@@ -28,15 +25,15 @@ class ConfigProvider(
         return properties.source
     }
 
-    fun crawler(): Crawler {
-        return crawlers[properties.adapter.crawler.type] ?: throw IllegalArgumentException("Crawler not found: ${properties.adapter.crawler.type}")
+    fun crawler(): CrawlerProps {
+        return properties.adapter.crawler
     }
 
-    fun extractor(): Extractor {
-        return extractors[properties.adapter.extractor.type] ?: throw IllegalArgumentException("Extractor not found: ${properties.adapter.extractor.type}")
+    fun extractor(): ExtractorProps {
+        return properties.adapter.extractor
     }
 
-    fun publisher(): Publisher {
-        return publishers[properties.adapter.publisher.type] ?: throw IllegalArgumentException("Publisher not found: ${properties.adapter.publisher.type}")
+    fun publisher(): PublisherProps {
+        return properties.adapter.publisher
     }
 }

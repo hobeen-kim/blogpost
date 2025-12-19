@@ -1,4 +1,4 @@
-package com.hobeen.adapterbanksalad.runner
+package com.hobeen.adapternhn.runner
 
 import com.hobeen.adaptercommon.config.AdapterSelector
 import com.hobeen.adaptercommon.config.ConfigProvider

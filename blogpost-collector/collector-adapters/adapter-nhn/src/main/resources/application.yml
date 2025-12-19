@@ -1,0 +1,11 @@
+target:
+  url: https://meetup.nhncloud.com/tcblog/v1.0/posts
+  source: nhn
+  adapter:
+    crawler:
+      type: nhnCrawler
+    extractor:
+      type: nhnExtractor
+
+nhn:
+  per-page: 400

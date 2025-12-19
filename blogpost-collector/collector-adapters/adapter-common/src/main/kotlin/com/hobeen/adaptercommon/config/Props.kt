@@ -4,25 +4,40 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "target")
 class TargetProperties(
-    var url: String = "",
-    var source: String = "",
-    var adapter: AdapterProps,
+    val url: String = "",
+    val source: String = "",
+    val adapter: AdapterProps,
 )
 
 data class AdapterProps(
-    var crawler: CrawlerProps = CrawlerProps(),
-    var extractor: ExtractorProps = ExtractorProps(),
-    var publisher: PublisherProps = PublisherProps(),
+    val crawler: CrawlerProps = CrawlerProps(),
+    val extractor: ExtractorProps = ExtractorProps(),
+    val publisher: PublisherProps = PublisherProps(),
 )
 
 data class CrawlerProps(
-    var type: String = "htmlCrawler",
-)
+    val type: String = "htmlCrawler",
+    val properties: Map<String, String> = mutableMapOf()
+) {
+    fun getProps(name: String): String {
+        return properties[name] ?: throw IllegalArgumentException("$name property is required")
+    }
+}
 
 data class ExtractorProps(
     var type: String = "rssExtractor",
-)
+    val properties: Map<String, String> = mutableMapOf()
+) {
+    fun getProps(name: String): String {
+        return properties[name] ?: throw IllegalArgumentException("$name property is required")
+    }
+}
 
 data class PublisherProps(
     var type: String = "kafkaPublisher",
-)
+    val properties: Map<String, String> = mutableMapOf()
+) {
+    fun getProps(name: String): String {
+        return properties[name] ?: throw IllegalArgumentException("$name property is required")
+    }
+}

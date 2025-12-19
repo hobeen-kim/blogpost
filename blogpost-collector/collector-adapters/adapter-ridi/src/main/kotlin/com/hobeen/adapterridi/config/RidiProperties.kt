@@ -1,4 +1,4 @@
-package com.hobeen.adapterridi.runner.config
+package com.hobeen.adapterridi.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

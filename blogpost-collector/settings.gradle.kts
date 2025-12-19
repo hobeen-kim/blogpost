@@ -16,4 +16,5 @@ include(
     "collector-adapters:adapter-banksalad",
     "collector-adapters:adapter-yogiyo",
     "collector-adapters:adapter-ridi",
+    "collector-adapters:adapter-nhn",
 )
