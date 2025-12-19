@@ -1,7 +1,7 @@
-package com.hobeen.adapternhn.runner.crawler
+package com.hobeen.adapternhn.crawler
 
 import com.hobeen.adaptercommon.fetcher.HttpFetcher
-import com.hobeen.adapternhn.runner.config.NhnProperties
+import com.hobeen.adapternhn.config.NhnProperties
 import com.hobeen.collectorengine.port.Crawler
 import com.hobeen.collectorengine.port.dto.CrawlingResult
 import org.springframework.stereotype.Component

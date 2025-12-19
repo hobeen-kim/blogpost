@@ -1,4 +1,4 @@
-package com.hobeen.adapternhn.runner.extractor
+package com.hobeen.adapternhn.extractor
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hobeen.collectorcommon.domain.Message

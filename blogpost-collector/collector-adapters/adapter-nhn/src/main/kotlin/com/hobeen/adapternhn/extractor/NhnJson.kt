@@ -1,4 +1,4 @@
-package com.hobeen.adapternhn.runner.extractor
+package com.hobeen.adapternhn.extractor
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.ZonedDateTime

@@ -4,3 +4,6 @@ target:
   adapter:
     extractor:
       type: devsistersSitemapExtractor
+alarm:
+  slack:
+    enabled: true

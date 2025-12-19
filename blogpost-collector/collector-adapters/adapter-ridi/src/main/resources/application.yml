@@ -6,6 +6,8 @@ target:
       type: ridiCrawler
     extractor:
       type: ridiExtractor
-
+alarm:
+  slack:
+    enabled: true
 ridi:
   end-page: 3

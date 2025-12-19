@@ -6,6 +6,8 @@ target:
       type: nhnCrawler
     extractor:
       type: nhnExtractor
-
+alarm:
+  slack:
+    enabled: true
 nhn:
   per-page: 400

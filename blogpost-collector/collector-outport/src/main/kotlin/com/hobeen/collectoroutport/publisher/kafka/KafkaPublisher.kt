@@ -3,7 +3,6 @@ package com.hobeen.collectoroutport.publisher.kafka
 import com.hobeen.collectorcommon.domain.Message
 import com.hobeen.collectorengine.port.Publisher
 import org.slf4j.LoggerFactory
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 

@@ -4,3 +4,6 @@ target:
   adapter:
     extractor:
       type: sitemapExtractor
+alarm:
+  slack:
+    enabled: true

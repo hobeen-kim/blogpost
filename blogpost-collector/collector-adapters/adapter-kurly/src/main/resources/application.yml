@@ -4,3 +4,6 @@ target:
   adapter:
     extractor:
       type: rssExtractor
+alarm:
+  slack:
+    enabled: true

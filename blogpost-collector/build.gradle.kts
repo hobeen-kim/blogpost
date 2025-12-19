@@ -11,10 +11,17 @@ plugins {
 
 allprojects {
     group = "com.hobeen"
-    version = "0.0.1"
+    version = "1.0.1"
 
     repositories {
         mavenCentral()
+        maven {
+            url = uri("https://maven.pkg.github.com/hobeen-kim/blogpost-collector")
+            credentials {
+                username = (findProperty("gpr.user") as String?) ?: System.getenv("GITHUB_ACTOR")
+                password = (findProperty("gpr.key") as String?) ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
 }
 

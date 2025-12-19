@@ -4,3 +4,6 @@ target:
   adapter:
     extractor:
       type: lineRssExtractor
+alarm:
+  slack:
+    enabled: true

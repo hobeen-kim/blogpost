@@ -4,3 +4,6 @@ target:
   adapter:
     extractor:
       type: tossSitemapExtractor
+alarm:
+  slack:
+    enabled: true
