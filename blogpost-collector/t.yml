@@ -57,23 +57,5 @@ target:
 #          type: rssExtractor
 #          useDefaultThumbnail: false
 #          defaultThumbnail: ""
-#    geeknews: # rss version 이 다름 (1.0)
-#      url: https://feeds.feedburner.com/geeknews-feed
-#      adapter:
-#        crawler:
-#          type: htmlCrawler
-#        extractor:
-#          type: rssExtractor
-#          useDefaultThumbnail: false
-#          defaultThumbnail: ""
-    44bits:
-      url: https://www.44bits.io/ko/feed/all
-      adapter:
-        crawler:
-          type: htmlCrawler
-        extractor:
-          type: rssExtractor
-          useDefaultThumbnail: true
-          defaultThumbnail: ""
 
 # codeit : https://sprint.codeit.kr/blog/sitemap.xml

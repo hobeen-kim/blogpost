@@ -18,4 +18,5 @@ include(
     "collector-adapters:adapter-ridi",
     "collector-adapters:adapter-nhn",
     "collector-adapters:adapter-ffbits",
+    "collector-adapters:adapter-socar",
 )
