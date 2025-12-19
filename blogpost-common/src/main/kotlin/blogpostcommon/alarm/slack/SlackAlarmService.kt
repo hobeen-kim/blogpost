@@ -11,8 +11,6 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-@Component
-@ConditionalOnProperty(prefix = "alarm.slack", name = ["enabled"], havingValue = "true")
 class SlackAlarmService(
     private val slackProperties: SlackProperties,
 ): AlarmService {
