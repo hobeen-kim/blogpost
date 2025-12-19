@@ -17,4 +17,5 @@ include(
     "collector-adapters:adapter-yogiyo",
     "collector-adapters:adapter-ridi",
     "collector-adapters:adapter-nhn",
+    "collector-adapters:adapter-ffbits",
 )

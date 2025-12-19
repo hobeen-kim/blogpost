@@ -1,0 +1,13 @@
+target:
+  url: https://www.44bits.io/ko
+  source: ffbits
+  adapter:
+    crawler:
+      type: ffbitsCrawler
+    extractor:
+      type: ffbitsExtractor
+alarm:
+  slack:
+    enabled: true
+ffbits:
+  end-page: 14

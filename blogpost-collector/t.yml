@@ -57,15 +57,6 @@ target:
 #          type: rssExtractor
 #          useDefaultThumbnail: false
 #          defaultThumbnail: ""
-    nhn:
-      url: https://meetup.toast.com/rss
-      adapter:
-        crawler:
-          type: htmlCrawler
-        extractor:
-          type: rssExtractor
-          useDefaultThumbnail: false
-          defaultThumbnail: ""
 #    geeknews: # rss version 이 다름 (1.0)
 #      url: https://feeds.feedburner.com/geeknews-feed
 #      adapter:
@@ -75,15 +66,6 @@ target:
 #          type: rssExtractor
 #          useDefaultThumbnail: false
 #          defaultThumbnail: ""
-    gaeraeblog:
-      url: https://feeds.feedburner.com/gaeraeblog
-      adapter:
-        crawler:
-          type: htmlCrawler
-        extractor:
-          type: rssExtractor
-          useDefaultThumbnail: false
-          defaultThumbnail: ""
     44bits:
       url: https://www.44bits.io/ko/feed/all
       adapter:
