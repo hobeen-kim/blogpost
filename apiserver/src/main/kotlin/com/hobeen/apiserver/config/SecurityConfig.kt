@@ -9,10 +9,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer
 import org.springframework.security.config.annotation.web.configurers.CorsConfigurer
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.header.writers.StaticHeadersWriter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
@@ -27,6 +29,7 @@ class SecurityConfig {
             .formLogin { it.disable() }
             .csrf(csrfPolicy())
             .cors(getCorsPolicy())
+            .headers(headersPolicy())
             .sessionManagement(sessionManagementPolicy())
             .authorizeHttpRequests(getAuthorizeRequests())
         return http.build()
@@ -38,6 +41,13 @@ class SecurityConfig {
 
     fun csrfPolicy(): Customizer<CsrfConfigurer<HttpSecurity>> {
         return Customizer { csrf -> csrf.disable() }
+    }
+
+    fun headersPolicy(): Customizer<HeadersConfigurer<HttpSecurity>> {
+        return Customizer { headers ->
+            headers.cacheControl { it.disable() }
+            headers.addHeaderWriter(StaticHeadersWriter("Cache-Control", "max-age=3600"))
+        }
     }
 
     fun sessionManagementPolicy(): Customizer<SessionManagementConfigurer<HttpSecurity>> {
