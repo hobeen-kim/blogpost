@@ -26,6 +26,8 @@ class SupabaseCall (
 
         deduplicator.clearDuplicateSet()
 
+        initializing.set(true)
+
         var page = 1
         var totalCount = 0
         val perPage = 1000
