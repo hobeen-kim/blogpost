@@ -30,7 +30,8 @@
 :collector-adapters:adapter-banksalad:build \
 :collector-adapters:adapter-yogiyo:build \
 :collector-adapters:adapter-ridi:build \
-:collector-adapters:adapter-nhn:build
+:collector-adapters:adapter-nhn:build \
+:collector-adapters:adapter-ffbits:build
 
 ```
 
@@ -50,6 +51,7 @@
 
 # crontab -e
 ```aiexclude
+3 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-ffbits/build/libs/adapter-ffbits-1.0.1.jar --spring.profiles.active=local >> /home/hobeenkim/logs/adapter-ffbits.log 2>&1
 5 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-woowahan/build/libs/adapter-woowahan-1.0.1.jar --spring.profiles.active=local >> /home/hobeenkim/logs/adapter-woowahan.log 2>&1
 10 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-toss/build/libs/adapter-toss-1.0.1.jar --spring.profiles.active=local >> /home/hobeenkim/logs/adapter-toss.log 2>&1
 15 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-musinsa/build/libs/adapter-musinsa-1.0.1.jar --spring.profiles.active=local >> /home/hobeenkim/logs/adapter-musinsa.log 2>&1
@@ -62,4 +64,5 @@
 50 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-yogiyo/build/libs/adapter-yogiyo-1.0.1.jar --spring.profiles.active=local >> /home/hobeenkim/logs/adapter-yogiyo.log 2>&1
 55 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-ridi/build/libs/adapter-ridi-1.0.1.jar --spring.profiles.active=local >> /home/hobeenkim/logs/adapter-ridi.log 2>&1
 0 * * * * /usr/bin/java -jar /home/hobeenkim/blogpost/blogpost-collector/collector-adapters/adapter-nhn/build/libs/adapter-nhn-1.0.1.jar --spring.profiles.active=local >> /home/hobeenkim/logs/adapter-nhn.log 2>&1
+
 ```
