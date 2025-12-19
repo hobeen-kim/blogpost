@@ -10,4 +10,4 @@ alarm:
   slack:
     enabled: true
 ffbits:
-  end-page: 14
+  end-page: 2
