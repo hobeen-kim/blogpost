@@ -22,7 +22,14 @@ class SupabaseCall (
     private val log = LoggerFactory.getLogger(this::class.java)
 
     @PostConstruct
-    fun call() {
+    fun initializeCache() {
+        val count = call()
+
+        log.info("supabase 에서 initialize 완료 : $count insert")
+    }
+
+
+    fun call(): Int {
 
         deduplicator.clearDuplicateSet()
 
@@ -41,8 +48,7 @@ class SupabaseCall (
             if(urlDto.isLast()) initializing.set(false)
         }
 
-        log.info("supabase 에서 initialize 완료 : $totalCount insert ")
-
+        return totalCount
     }
 
     private fun getUrls(page: Int, perPage: Int): UrlDto {

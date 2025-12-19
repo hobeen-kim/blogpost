@@ -12,7 +12,7 @@ class CacheResetController(
 ) {
 
     @PostMapping
-    fun resetCache() {
-        supabaseCall.call()
+    fun resetCache(): Int {
+        return supabaseCall.call()
     }
 }
