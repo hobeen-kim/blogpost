@@ -10,4 +10,4 @@ alarm:
   slack:
     enabled: true
 nhn:
-  per-page: 400
+  per-page: 20
