@@ -6,4 +6,6 @@ import java.time.LocalDateTime
 interface GetTargetPort {
 
     fun getTargets(criteria: LocalDateTime): List<Target>
+
+    fun getTarget(source: String): Target?
 }

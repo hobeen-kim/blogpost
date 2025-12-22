@@ -15,26 +15,14 @@ data class AdapterProps(
 data class CrawlerProps(
     val type: String = "htmlCrawler",
     val properties: Map<String, String> = mutableMapOf()
-) {
-    fun getProps(name: String): String {
-        return properties[name] ?: throw IllegalArgumentException("$name property is required")
-    }
-}
+)
 
 data class ExtractorProps(
     val type: String = "rssExtractor",
     val properties: Map<String, String> = mutableMapOf()
-) {
-    fun getProps(name: String): String {
-        return properties[name] ?: throw IllegalArgumentException("$name property is required")
-    }
-}
+)
 
 data class PublisherProps(
     val type: String = "kafkaPublisher",
     val properties: Map<String, String> = mutableMapOf()
-) {
-    fun getProps(name: String): String {
-        return properties[name] ?: throw IllegalArgumentException("$name property is required")
-    }
-}
+)

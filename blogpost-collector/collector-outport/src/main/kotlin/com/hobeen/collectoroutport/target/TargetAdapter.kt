@@ -45,10 +45,22 @@ class TargetAdapter(
                     extractor = objectMapper.treeToValue(it.extractor, ExtractorProps::class.java),
                     publisher = objectMapper.treeToValue(it.publisher, PublisherProps::class.java),
                 ),
-
-
             )
         }
+    }
+
+    override fun getTarget(source: String): Target? {
+        val entity = targetRepository.findBySource(source) ?: return null
+
+        return Target(
+            url = entity.url,
+            source = entity.source,
+            adapter = AdapterProps(
+                crawler = objectMapper.treeToValue(entity.crawler, CrawlerProps::class.java),
+                extractor = objectMapper.treeToValue(entity.extractor, ExtractorProps::class.java),
+                publisher = objectMapper.treeToValue(entity.publisher, PublisherProps::class.java),
+            ),
+        )
     }
 
     override fun save(results: List<CollectResult>) {
