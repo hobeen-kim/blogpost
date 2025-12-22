@@ -23,4 +23,5 @@ data class TargetEntity (
 
     var nextRunAt: LocalDateTime,
     val cron: String,
+    var active: Boolean,
 )

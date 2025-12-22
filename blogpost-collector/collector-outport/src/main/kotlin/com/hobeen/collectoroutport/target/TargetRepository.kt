@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 interface TargetRepository: JpaRepository<TargetEntity, String> {
 
-    fun findAllByNextRunAtBefore(time: LocalDateTime): List<TargetEntity>
+    fun findAllByActiveIsTrueAndNextRunAtBefore(time: LocalDateTime): List<TargetEntity>
 
     fun findBySource(source: String): TargetEntity?
 }

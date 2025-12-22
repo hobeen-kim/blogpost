@@ -26,7 +26,7 @@ class TargetAdapter(
 
     override fun getTargets(criteria: LocalDateTime): List<Target> {
 
-        val targets = targetRepository.findAllByNextRunAtBefore(criteria)
+        val targets = targetRepository.findAllByActiveIsTrueAndNextRunAtBefore(criteria)
 
         targets.forEach { target ->
             val cron = CronExpression.parse(target.cron)

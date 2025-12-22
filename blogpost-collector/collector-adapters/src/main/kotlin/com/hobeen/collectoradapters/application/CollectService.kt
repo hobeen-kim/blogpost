@@ -10,7 +10,6 @@ import com.hobeen.collectorcommon.port.out.SaveResultPort
 import com.hobeen.collectorengine.Engine
 import com.hobeen.collectorengine.command.CollectCommand
 import com.hobeen.collectorengine.port.Alarm
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
