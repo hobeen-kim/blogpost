@@ -1,5 +1,6 @@
 package com.hobeen.collectoradapters.common.extractor.rss
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.hobeen.collectorcommon.domain.Message
 import com.hobeen.collectorcommon.utils.getOnlyUrlPath
@@ -14,9 +15,9 @@ class RssExtractor: Extractor {
     private val xmlMapper = XmlMapper().findAndRegisterModules()
     private val illegalXmlCharsRegex = Regex("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]")
 
-    override fun extract(crawlingResult: CrawlingResult, source: String, props: Map<String, String>): List<Message> {
+    override fun extract(crawlingResult: CrawlingResult, source: String, props: JsonNode): List<Message> {
 
-        val urlFilter = props["url-filter"]
+        val urlFilter = props["url-filter"]?.asText()
 
         return crawlingResult.htmls.flatMap { html ->
             val sanitizedBody = illegalXmlCharsRegex.replace(html, "")

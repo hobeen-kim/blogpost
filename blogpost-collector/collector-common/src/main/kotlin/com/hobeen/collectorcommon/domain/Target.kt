@@ -1,5 +1,8 @@
 package com.hobeen.collectorcommon.domain
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
+
 data class Target (
     val url: String,
     val source: String,
@@ -7,22 +10,22 @@ data class Target (
 )
 
 data class AdapterProps(
-    val crawler: CrawlerProps = CrawlerProps(),
-    val extractor: ExtractorProps = ExtractorProps(),
-    val publisher: PublisherProps = PublisherProps(),
+    val crawler: CrawlerProps,
+    val extractor: ExtractorProps,
+    val publisher: PublisherProps,
 )
 
 data class CrawlerProps(
     val type: String = "htmlCrawler",
-    val properties: Map<String, String> = mutableMapOf()
+    val properties: JsonNode,
 )
 
 data class ExtractorProps(
     val type: String = "rssExtractor",
-    val properties: Map<String, String> = mutableMapOf()
+    val properties: JsonNode,
 )
 
 data class PublisherProps(
     val type: String = "kafkaPublisher",
-    val properties: Map<String, String> = mutableMapOf()
+    val properties: JsonNode
 )
