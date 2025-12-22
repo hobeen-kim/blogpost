@@ -17,7 +17,7 @@ abstract class AbstractPagedHtmlCrawler(
         if(endPage < 1) { throw IllegalArgumentException("crawling endPage is not valid") }
 
         for(page in 1..endPage) {
-            val pagedUrl = getPagedUrl(url, page)
+            val pagedUrl = getPagedUrl(url, page, props)
             val body = httpFetcher.fetch(pagedUrl)
             results.add(body)
         }
@@ -27,5 +27,5 @@ abstract class AbstractPagedHtmlCrawler(
         )
     }
 
-    abstract fun getPagedUrl(url: String, page: Int): String
+    abstract fun getPagedUrl(url: String, page: Int, props: JsonNode): String
 }
