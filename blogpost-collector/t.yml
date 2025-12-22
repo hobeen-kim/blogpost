@@ -48,14 +48,5 @@ target:
 #          type: rssExtractor
 #          useDefaultThumbnail: true
 #          defaultThumbnail: https://hyperconnect.github.io/assets/opengraph_default_image.jpg
-#    socar: # rss version 이 다름 (1.0)
-#      url: https://tech.socarcorp.kr/feed
-#      adapter:
-#        crawler:
-#          type: htmlCrawler
-#        extractor:
-#          type: rssExtractor
-#          useDefaultThumbnail: false
-#          defaultThumbnail: ""
 
 # codeit : https://sprint.codeit.kr/blog/sitemap.xml

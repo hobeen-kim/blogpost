@@ -9,7 +9,7 @@ description = "adapter-common"
 dependencies {
     api(project(":collector-common"))
     api(project(":collector-engine"))
-    implementation(project(":collector-outport"))
+    api(project(":collector-outport"))
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")

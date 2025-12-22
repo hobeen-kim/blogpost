@@ -1,5 +1,7 @@
 package com.hobeen.collectorengine
 
+import com.hobeen.collectorcommon.domain.CollectResult
+import com.hobeen.collectorcommon.domain.CollectStatus
 import com.hobeen.collectorengine.command.CollectCommand
 import com.hobeen.collectorengine.port.Alarm
 import com.hobeen.collectorengine.port.Crawler
@@ -16,21 +18,24 @@ class Engine(
 
     private val log = Logger.getLogger(this.javaClass.name)
 
-    fun run(command: CollectCommand) {
+    fun run(command: CollectCommand): CollectResult {
 
         try {
             //크롤링
-            val crawlingResult = crawler.crawling(command.url)
+            val crawlingResult = crawler.crawling(command.url, command.crawlerProps)
 
             //추출
-            val messages = extractor.extract(crawlingResult, command.source)
+            val messages = extractor.extract(crawlingResult, command.source, command.extractorProps)
 
             //pub
             publisher.publish(messages)
 
-            log.info("complete generate message ${messages.size}")
+            log.info("complete generate message from ${command.source} ${messages.size}")
+
+            return CollectResult.of(source = command.source, messages.size)
         } catch(e: Exception) {
             alarm.errorAlarm(command, e)
+            return CollectResult.of(command.source, e)
         }
     }
 }

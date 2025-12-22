@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 class HtmlCrawler(
     private val httpFetcher: HttpFetcher,
 ): Crawler {
-    override fun crawling(url: String): CrawlingResult {
+    override fun crawling(url: String, props: Map<String, String>): CrawlingResult {
         val body = httpFetcher.fetch(url)
 
         return CrawlingResult(

@@ -6,9 +6,11 @@ import com.hobeen.collectorengine.Engine
 import com.hobeen.collectorengine.command.CollectCommand
 import com.hobeen.collectorengine.port.Alarm
 import org.springframework.boot.CommandLineRunner
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
+@Profile("auto-run")
 class Runner(
     private val configProvider: ConfigProvider,
     private val adapterSelector: AdapterSelector,
@@ -27,6 +29,9 @@ class Runner(
         engine.run(command = CollectCommand(
             url = configProvider.getUrl(),
             source = configProvider.getSource(),
+            crawlerProps = configProvider.crawler().properties,
+            extractorProps = configProvider.extractor().properties,
+            publisherProps = configProvider.publisher().properties,
         ))
     }
 }

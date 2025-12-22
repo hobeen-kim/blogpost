@@ -1,11 +1,8 @@
-package com.hobeen.adaptercommon.config
+package com.hobeen.collectorcommon.domain
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-
-@ConfigurationProperties(prefix = "target")
-class TargetProperties(
-    val url: String = "",
-    val source: String = "",
+data class Target (
+    val url: String,
+    val source: String,
     val adapter: AdapterProps,
 )
 

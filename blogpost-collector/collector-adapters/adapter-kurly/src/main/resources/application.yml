@@ -1,9 +1,0 @@
-target:
-  url: https://helloworld.kurly.com/feed.xml
-  source: kurly
-  adapter:
-    extractor:
-      type: rssExtractor
-alarm:
-  slack:
-    enabled: true

@@ -8,7 +8,7 @@ import org.jsoup.nodes.Document
 
 abstract class JsoupAbstractExtractor: Extractor {
 
-    override fun extract(crawlingResult: CrawlingResult, source: String): List<Message> {
+    override fun extract(crawlingResult: CrawlingResult, source: String, props: Map<String, String>): List<Message> {
         return crawlingResult.htmls.flatMap { html ->
             val doc: Document = Jsoup.parse(html)
             extract(doc, source)

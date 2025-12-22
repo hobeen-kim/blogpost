@@ -20,4 +20,15 @@ class AlarmImpl(
             exceptionPrintStackDepth = 2
         ))
     }
+
+    override fun errorAlarm(message: String, exception: Exception) {
+        alarmService.sendAlarm(AlarmDto(
+            alarmMsg = message,
+            source = "unknown",
+            url = "unknown",
+            rawData = "",
+            exception = exception,
+            exceptionPrintStackDepth = 2
+        ))
+    }
 }

@@ -1,9 +1,0 @@
-target:
-  url: https://toss.tech/sitemap.xml
-  source: toss
-  adapter:
-    extractor:
-      type: tossSitemapExtractor
-alarm:
-  slack:
-    enabled: true

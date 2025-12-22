@@ -1,9 +1,0 @@
-target:
-  url: https://techblog.woowahan.com/post-sitemap.xml
-  source: woowahan
-  adapter:
-    extractor:
-      type: sitemapExtractor
-alarm:
-  slack:
-    enabled: true

@@ -4,5 +4,5 @@ import com.hobeen.collectorengine.port.dto.CrawlingResult
 
 interface Crawler {
 
-    fun crawling(url: String): CrawlingResult
+    fun crawling(url: String, props: Map<String, String>): CrawlingResult
 }

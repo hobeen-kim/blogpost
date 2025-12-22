@@ -1,9 +1,0 @@
-target:
-  url: https://tech.devsisters.com/sitemap.xml
-  source: devsisters
-  adapter:
-    extractor:
-      type: devsistersSitemapExtractor
-alarm:
-  slack:
-    enabled: true

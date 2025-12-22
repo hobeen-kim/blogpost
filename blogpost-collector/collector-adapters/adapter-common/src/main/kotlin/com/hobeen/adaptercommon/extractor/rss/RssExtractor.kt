@@ -14,7 +14,9 @@ class RssExtractor: Extractor {
     private val xmlMapper = XmlMapper().findAndRegisterModules()
     private val illegalXmlCharsRegex = Regex("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]")
 
-    override fun extract(crawlingResult: CrawlingResult, source: String): List<Message> {
+    override fun extract(crawlingResult: CrawlingResult, source: String, props: Map<String, String>): List<Message> {
+
+        val urlFilter = props["url-filter"]
 
         return crawlingResult.htmls.flatMap { html ->
             val sanitizedBody = illegalXmlCharsRegex.replace(html, "")
@@ -31,7 +33,13 @@ class RssExtractor: Extractor {
                     description = item.description,
                     thumbnail = null,
                 )
-            } ?: listOf()
+            }?.filter { urlFilter(urlFilter, it.url) } ?: listOf()
         }
+    }
+
+    fun urlFilter(filter: String?, url: String): Boolean {
+        if (filter == null) return true
+
+        return url.contains(filter)
     }
 }

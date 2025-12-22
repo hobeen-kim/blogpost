@@ -1,9 +1,0 @@
-target:
-  url: https://techblog.lycorp.co.jp/ko/feed/index.xml
-  source: line
-  adapter:
-    extractor:
-      type: lineRssExtractor
-alarm:
-  slack:
-    enabled: true
