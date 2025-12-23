@@ -11,7 +11,7 @@ data class NaverJson(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class NaverPost(
     val postTitle: String,
-    val postImage: String,
+    val postImage: String?,
     val postHtml: String,
     val postPublishedAt: Long,
     val url: String,

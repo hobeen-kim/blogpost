@@ -15,7 +15,7 @@ class NaverCrawler(
         val perPage = props["per-page"]?.asInt() ?: throw IllegalArgumentException("crawling per-page is not set")
         if(perPage < 1) { throw IllegalArgumentException("crawling per-page is not valid") }
 
-        val result = fetcher.fetch("$url?size=${perPage}")
+        val result = fetcher.fetch("$url?category=2&size=${perPage}")
 
         return CrawlingResult(
             htmls = listOf(result),
