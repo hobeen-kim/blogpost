@@ -12,6 +12,7 @@ import java.time.LocalDateTime
 @Table(name = "target")
 data class TargetEntity (
     @Id
+    val targetName: String,
     val source: String,
     val url: String,
     @JdbcTypeCode(SqlTypes.JSON)

@@ -3,11 +3,11 @@ package com.hobeen.collectoradapters.common.extractor.jsoup
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.hobeen.blogpostcommon.util.localDateParse
 import com.hobeen.collectorcommon.domain.Message
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 
 @Component
 class JsoupDefaultExtractor(
@@ -25,7 +25,7 @@ class JsoupDefaultExtractor(
                 title = getProps(props, "title-query")?.let { getDataFrom(post, it) },
                 source = source,
                 url = getProps(props, "url-query")?.let { getDataFrom(post, it) } ?: throw IllegalArgumentException("url miss"),
-                pubDate = getProps(props, "pub-query")?.let { getDataFrom(post, it) }?.let { getPubDate(it) },
+                pubDate = getProps(props, "pub-query")?.let { getDataFrom(post, it) }?.let { localDateParse(it) },
                 tags = getProps(props, "tag-query")?.let {getTag(doc, it) } ?: listOf(),
                 description = getProps(props, "description-query")?.let { getDataFrom(post, it) },
                 thumbnail = getProps(props, "thumbnail-query")?.let { getDataFrom(post, it) },
@@ -82,17 +82,5 @@ class JsoupDefaultExtractor(
         }
 
         return tags
-    }
-
-    private fun getPubDate(dateStr: String): LocalDateTime? {
-        val snippets = dateStr.split("-")
-
-        if(snippets.size != 3) return null
-
-        val year = snippets[0].toInt()
-        val month = snippets[1].toInt()
-        val day = snippets[2].toInt()
-
-        return LocalDateTime.of(year, month, day, 0, 0, 0)
     }
 }

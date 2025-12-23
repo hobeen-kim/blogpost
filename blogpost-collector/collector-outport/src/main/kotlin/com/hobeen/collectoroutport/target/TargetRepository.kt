@@ -7,5 +7,5 @@ interface TargetRepository: JpaRepository<TargetEntity, String> {
 
     fun findAllByActiveIsTrueAndNextRunAtBefore(time: LocalDateTime): List<TargetEntity>
 
-    fun findBySource(source: String): TargetEntity?
+    fun findByTargetName(targetName: String): TargetEntity?
 }

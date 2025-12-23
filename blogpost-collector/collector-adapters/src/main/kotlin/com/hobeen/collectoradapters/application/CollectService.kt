@@ -73,12 +73,12 @@ class CollectService(
         }
     }
 
-    override fun collect(source: String): CollectResult {
-        val target = getTargetPort.getTarget(source) ?: return CollectResult(
-            source = source,
+    override fun collect(targetName: String): CollectResult {
+        val target = getTargetPort.getTarget(targetName) ?: return CollectResult(
+            source = targetName,
             count = 0,
             status = CollectStatus.FAIL,
-            message = "not found source"
+            message = "not found targetName : $targetName"
         )
 
         return collect(target)

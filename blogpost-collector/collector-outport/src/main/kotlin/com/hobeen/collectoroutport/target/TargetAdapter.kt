@@ -49,8 +49,8 @@ class TargetAdapter(
         }
     }
 
-    override fun getTarget(source: String): Target? {
-        val entity = targetRepository.findBySource(source) ?: return null
+    override fun getTarget(targetName: String): Target? {
+        val entity = targetRepository.findByTargetName(targetName) ?: return null
 
         return Target(
             url = entity.url,

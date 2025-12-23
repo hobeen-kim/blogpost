@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.hobeen.collectorcommon.domain.Message
 import com.hobeen.collectorcommon.utils.getOnlyUrlPath
-import com.hobeen.collectorcommon.utils.localDateParse
 import com.hobeen.collectorengine.port.Extractor
 import com.hobeen.collectorengine.port.dto.CrawlingResult
 import org.springframework.stereotype.Component

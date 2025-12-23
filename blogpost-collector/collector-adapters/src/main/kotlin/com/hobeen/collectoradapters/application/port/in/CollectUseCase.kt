@@ -10,5 +10,5 @@ interface CollectUseCase {
 
     fun collect(target: Target): CollectResult
 
-    fun collect(source: String): CollectResult
+    fun collect(targetName: String): CollectResult
 }

@@ -7,5 +7,5 @@ interface GetTargetPort {
 
     fun getTargets(criteria: LocalDateTime): List<Target>
 
-    fun getTarget(source: String): Target?
+    fun getTarget(targetName: String): Target?
 }

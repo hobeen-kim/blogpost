@@ -1,7 +1,6 @@
 package com.hobeen.collectorcommon.domain
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 
 data class Target (
     val url: String,
