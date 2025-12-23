@@ -39,7 +39,7 @@ class DefaultParser(
     }
 
     private fun getPubDefault(props: JsonNode): LocalDateTime? {
-        val pubStr = props["pub-default"].asText()
+        val pubStr = props["pub-default"]?.asText()
 
         if(pubStr.isNullOrBlank()) return null
 

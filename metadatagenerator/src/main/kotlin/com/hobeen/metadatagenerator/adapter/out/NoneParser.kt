@@ -28,14 +28,14 @@ class NoneParser: ParseHtmlMetadataPort {
     }
 
     private fun getDefault(props: JsonNode, default: String): String? {
-        val defaultValue = props[default].asText()
+        val defaultValue = props[default]?.asText()
 
         return if(defaultValue.isNullOrBlank()) defaultValue
         else null
     }
 
     private fun getPubDefault(props: JsonNode): LocalDateTime? {
-        val pubStr = props["pub-default"].asText()
+        val pubStr = props["pub-default"]?.asText()
 
         if(pubStr.isNullOrBlank()) return null
 
