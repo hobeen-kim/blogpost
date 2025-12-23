@@ -16,7 +16,7 @@ class JsoupDefaultExtractor(
 
     override fun extract(doc: Document, source: String, props: JsonNode): List<Message> {
 
-        val listQuery = props["list-query"]?.asText()
+        val listQuery = props["list-query"].asText()
 
         val posts = doc.select(listQuery)
 
@@ -26,7 +26,7 @@ class JsoupDefaultExtractor(
                 source = source,
                 url = getProps(props, "url-query")?.let { getDataFrom(post, it) } ?: throw IllegalArgumentException("url miss"),
                 pubDate = getProps(props, "pub-query")?.let { getDataFrom(post, it) }?.let { localDateParse(it) },
-                tags = getProps(props, "tag-query")?.let {getTag(doc, it) } ?: listOf(),
+                tags = getProps(props, "tag-query")?.let {getTag(post, it) } ?: listOf(),
                 description = getProps(props, "description-query")?.let { getDataFrom(post, it) },
                 thumbnail = getProps(props, "thumbnail-query")?.let { getDataFrom(post, it) },
             )

@@ -27,6 +27,8 @@ class Engine(
             //추출
             val messages = extractor.extract(crawlingResult, command.source, command.extractorProps)
 
+            if(messages.isEmpty()) throw IllegalArgumentException("message is empty")
+
             //pub
             publisher.publish(messages)
 
