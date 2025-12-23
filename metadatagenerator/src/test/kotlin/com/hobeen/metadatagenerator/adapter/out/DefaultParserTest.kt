@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.hobeen.metadatagenerator.adapter.out.persistence.ParsePropsEntity
 import com.hobeen.metadatagenerator.adapter.out.persistence.ParsePropsRepository
 import com.hobeen.metadatagenerator.adapter.out.redis.RedisRepository
+import com.hobeen.metadatagenerator.domain.ParseProps
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
@@ -16,13 +17,8 @@ import java.time.LocalDateTime
 
 class DefaultParserTest {
 
-    val parsePropsRepository = mockk<ParsePropsRepository>()
-    val redisRepository = mockk<RedisRepository>()
-
     val defaultParser = DefaultParser(
-        parsePropsRepository = parsePropsRepository,
         objectMapper = ObjectMapper(),
-        redisRepository = redisRepository,
     )
 
     val jsonNodeFactory = JsonNodeFactory.instance
@@ -64,17 +60,15 @@ class DefaultParserTest {
         )
         val propNode = ObjectNode(jsonNodeFactory, propsMap)
 
-        every { parsePropsRepository.getParsePropsBySource("banksalad") } returns ParsePropsEntity(
+        val parserProps = ParseProps(
             source = "banksalad",
-            props = propNode
+            parser = "default",
+            props = propNode,
         )
 
-        every { redisRepository.get("banksalad")} returns null
-        every { redisRepository.save(any(ParsePropsEntity::class))} returns Unit
-
         //when
-        val test1 = defaultParser.parse("https://blog.banksalad.com/pnc/pit-stop-2024/", "banksalad")
-        val test2 = defaultParser.parse("https://blog.banksalad.com/tech/pycon19/", "banksalad")
+        val test1 = defaultParser.parse("https://blog.banksalad.com/pnc/pit-stop-2024/", parserProps)
+        val test2 = defaultParser.parse("https://blog.banksalad.com/tech/pycon19/", parserProps)
 
         //then
         assertThat(test1.title).isEqualTo("함께 만들 더 큰 파도 : 뱅크샐러드 Pit Stop 제작기")
@@ -121,17 +115,15 @@ class DefaultParserTest {
         )
         val propNode = ObjectNode(jsonNodeFactory, propsMap)
 
-        every { parsePropsRepository.getParsePropsBySource("devsisters") } returns ParsePropsEntity(
+        val parserProps = ParseProps(
             source = "devsisters",
-            props = propNode
+            parser = "default",
+            props = propNode,
         )
 
-        every { redisRepository.get("devsisters")} returns null
-        every { redisRepository.save(any(ParsePropsEntity::class))} returns Unit
-
         //when
-        val test1 = defaultParser.parse("https://tech.devsisters.com/posts/ml-engineer-better-puzzle-game/", "devsisters")
-        val test2 = defaultParser.parse("https://tech.devsisters.com/posts/attitude-of-qa/", "devsisters")
+        val test1 = defaultParser.parse("https://tech.devsisters.com/posts/ml-engineer-better-puzzle-game/", parserProps)
+        val test2 = defaultParser.parse("https://tech.devsisters.com/posts/attitude-of-qa/", parserProps)
 
         //then
         assertThat(test1.title).isEqualTo("머신러닝 엔지니어가 퍼즐 게임을 더 재미있게 만드는 방법")
@@ -178,17 +170,15 @@ class DefaultParserTest {
         )
         val propNode = ObjectNode(jsonNodeFactory, propsMap)
 
-        every { parsePropsRepository.getParsePropsBySource("kurly") } returns ParsePropsEntity(
-            source = "kurly",
-            props = propNode
+        val parserProps = ParseProps(
+            source = "devsisters",
+            parser = "default",
+            props = propNode,
         )
 
-        every { redisRepository.get("kurly")} returns null
-        every { redisRepository.save(any(ParsePropsEntity::class))} returns Unit
-
         //when
-        val test1 = defaultParser.parse("https://helloworld.kurly.com/blog/tech-spec-adoption-with-ai-automation/", "kurly")
-        val test2 = defaultParser.parse("http://thefarmersfront.github.io/blog/experience-the-kurly-interview-process/", "kurly")
+        val test1 = defaultParser.parse("https://helloworld.kurly.com/blog/tech-spec-adoption-with-ai-automation/", parserProps)
+        val test2 = defaultParser.parse("http://thefarmersfront.github.io/blog/experience-the-kurly-interview-process/", parserProps)
 
         //then
         assertThat(test1.title).isEqualTo("개발자의 시간을 벌어주는 두 가지 도구: 잘 쓴 테크 스펙, 그리고 AI")
@@ -235,17 +225,15 @@ class DefaultParserTest {
         )
         val propNode = ObjectNode(jsonNodeFactory, propsMap)
 
-        every { parsePropsRepository.getParsePropsBySource("ridi") } returns ParsePropsEntity(
-            source = "ridi",
-            props = propNode
+        val parserProps = ParseProps(
+            source = "devsisters",
+            parser = "default",
+            props = propNode,
         )
 
-        every { redisRepository.get("ridi")} returns null
-        every { redisRepository.save(any(ParsePropsEntity::class))} returns Unit
-
         //when
-        val test1 = defaultParser.parse("https://ridicorp.com/story/rigrid-server-driven-ui/", "ridi")
-        val test2 = defaultParser.parse("https://ridicorp.com/story/idc-outage/", "ridi")
+        val test1 = defaultParser.parse("https://ridicorp.com/story/rigrid-server-driven-ui/", parserProps)
+        val test2 = defaultParser.parse("https://ridicorp.com/story/idc-outage/", parserProps)
 
         //then
         assertThat(test1.title).isEqualTo("RiGrid, Server Driven UI로 변화에 민첩하게 대응하기")
@@ -299,17 +287,15 @@ class DefaultParserTest {
         )
         val propNode = ObjectNode(jsonNodeFactory, propsMap)
 
-        every { parsePropsRepository.getParsePropsBySource("socar") } returns ParsePropsEntity(
-            source = "socar",
-            props = propNode
+        val parserProps = ParseProps(
+            source = "devsisters",
+            parser = "default",
+            props = propNode,
         )
 
-        every { redisRepository.get("socar")} returns null
-        every { redisRepository.save(any(ParsePropsEntity::class))} returns Unit
-
         //when
-        val test1 = defaultParser.parse("https://tech.socarcorp.kr/dev/2024/06/11/fms-trip-event-pipeline.html", "socar")
-        val test2 = defaultParser.parse("https://tech.socarcorp.kr/security/2019/09/02/aviatrix-fqdn.html", "socar")
+        val test1 = defaultParser.parse("https://tech.socarcorp.kr/dev/2024/06/11/fms-trip-event-pipeline.html", parserProps)
+        val test2 = defaultParser.parse("https://tech.socarcorp.kr/security/2019/09/02/aviatrix-fqdn.html", parserProps)
 
         //then
         assertThat(test1.title).isEqualTo("FMS(Fleet Management System) 주행이벤트 파이프라인 개선기")
@@ -361,17 +347,15 @@ class DefaultParserTest {
         )
         val propNode = ObjectNode(jsonNodeFactory, propsMap)
 
-        every { parsePropsRepository.getParsePropsBySource("woowahan") } returns ParsePropsEntity(
-            source = "woowahan",
-            props = propNode
+        val parserProps = ParseProps(
+            source = "devsisters",
+            parser = "default",
+            props = propNode,
         )
 
-        every { redisRepository.get("woowahan")} returns null
-        every { redisRepository.save(any(ParsePropsEntity::class))} returns Unit
-
         //when
-        val test1 = defaultParser.parse("https://techblog.woowahan.com/24820/", "woowahan")
-        val test2 = defaultParser.parse("https://techblog.woowahan.com/24568/", "woowahan")
+        val test1 = defaultParser.parse("https://techblog.woowahan.com/24820/", parserProps)
+        val test2 = defaultParser.parse("https://techblog.woowahan.com/24568/", parserProps)
 
         //then
         assertThat(test1.title).isNotBlank
@@ -423,17 +407,15 @@ class DefaultParserTest {
         )
         val propNode = ObjectNode(jsonNodeFactory, propsMap)
 
-        every { parsePropsRepository.getParsePropsBySource("toss") } returns ParsePropsEntity(
-            source = "toss",
-            props = propNode
+        val parserProps = ParseProps(
+            source = "devsisters",
+            parser = "default",
+            props = propNode,
         )
 
-        every { redisRepository.get("toss")} returns null
-        every { redisRepository.save(any(ParsePropsEntity::class))} returns Unit
-
         //when
-        val test1 = defaultParser.parse("https://toss.tech/article/commonjs-esm-exports-field", "toss")
-        val test2 = defaultParser.parse("https://toss.tech/article/27402", "toss")
+        val test1 = defaultParser.parse("https://toss.tech/article/commonjs-esm-exports-field", parserProps)
+        val test2 = defaultParser.parse("https://toss.tech/article/27402", parserProps)
 
         //then
         assertThat(test1.title).isEqualTo("CommonJS와 ESM에 모두 대응하는 라이브러리 개발하기: exports field")
