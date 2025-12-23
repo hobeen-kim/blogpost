@@ -14,15 +14,15 @@ class CollectController (
     private val collectUseCase: CollectUseCase
 ) {
 
-    @PostMapping("/sources/{sourceName}")
+    @PostMapping("/targets/{targetName}")
     fun collect(
-        @PathVariable sourceName: String
+        @PathVariable targetName: String
     ): ResponseEntity<CollectResult> {
 
         val result = try {
-             collectUseCase.collect(sourceName)
+             collectUseCase.collect(targetName)
         } catch (e: Exception) {
-            CollectResult.of(sourceName, e)
+            CollectResult.of(targetName, e)
         }
 
         return ResponseEntity.ok(result)
