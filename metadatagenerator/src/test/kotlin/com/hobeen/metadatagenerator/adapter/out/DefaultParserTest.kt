@@ -5,9 +5,10 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
-class BanksaladParserTest {
+class DefaultParserTest {
 
-    val banksaladParser = BanksaladParser()
+    mock
+    val banksaladParser = DefaultParser()
 
     @Test
     @DisplayName("banksalad parser test")

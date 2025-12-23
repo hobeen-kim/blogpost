@@ -1,7 +1,6 @@
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
-    id("org.springframework.boot") version "3.5.8"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.serialization") version "1.9.25"
 
@@ -9,7 +8,7 @@ plugins {
 }
 
 group = "com.hobeen"
-version = "1.1.3"
+version = "1.1.4"
 
 repositories {
     mavenCentral()
@@ -33,10 +32,18 @@ publishing {
     }
 }
 
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:3.5.8")
+    }
+}
+
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     //spring
-    implementation("org.springframework.boot:spring-boot-starter")
+    api("org.springframework.boot:spring-boot-autoconfigure") // @AutoConfiguration, conditionals
+    api("org.springframework.boot:spring-boot-configuration-processor") // (선택) 메타데이터
+
     //dataformat
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
