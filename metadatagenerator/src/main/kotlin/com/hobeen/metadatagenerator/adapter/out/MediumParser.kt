@@ -4,6 +4,7 @@ import com.hobeen.metadatagenerator.application.port.out.ParseHtmlMetadataPort
 import com.hobeen.metadatagenerator.common.localDateParse
 import com.hobeen.metadatagenerator.common.refineTitle
 import com.hobeen.metadatagenerator.domain.Html
+import com.hobeen.metadatagenerator.domain.ParseProps
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.springframework.cglib.core.Local
@@ -16,7 +17,7 @@ class MediumParser: ParseHtmlMetadataPort {
         return "medium"
     }
 
-    override fun parse(url: String): Html {
+    override fun parse(url: String, parserProps: ParseProps): Html {
         val doc = Jsoup.connect(url)
             .userAgent(
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " +

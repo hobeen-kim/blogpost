@@ -2,6 +2,7 @@ package com.hobeen.metadatagenerator.application
 
 import com.hobeen.blogpostcommon.exception.InSufficientMetadataException
 import com.hobeen.metadatagenerator.application.port.`in`.MetadataGenerator
+import com.hobeen.metadatagenerator.application.port.out.GetParsePropPort
 import com.hobeen.metadatagenerator.application.port.out.MetadataParserSelector
 import com.hobeen.metadatagenerator.application.port.out.SaveMessagePort
 import com.hobeen.metadatagenerator.domain.EnrichedMessage
@@ -14,6 +15,7 @@ import java.time.LocalDateTime
 class MetadataGenerateService(
     private val metadataParserSelector: MetadataParserSelector,
     private val saveMessagePort: SaveMessagePort,
+    private val getParsePropPort: GetParsePropPort,
 ): MetadataGenerator {
 
     override fun generate(message: RawMessage): EnrichedMessage {
@@ -21,8 +23,10 @@ class MetadataGenerateService(
         if(message.hasAllValues()) return message.toEnrichedMessage()
         
         //metadata parse
-        val parser = metadataParserSelector.getParser(message.source)
-        val html = parser.parse(message.url)
+        val parserProp = getParsePropPort.getParseProp(message.source)
+
+        val parser = metadataParserSelector.getParser(parserProp.parser)
+        val html = parser.parse(message.url, parserProp)
 
         return EnrichedMessage(
             title = if(message.title.isNullOrBlank()) html.title else message.title,

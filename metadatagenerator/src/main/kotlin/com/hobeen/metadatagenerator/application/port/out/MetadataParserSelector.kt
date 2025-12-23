@@ -1,5 +1,6 @@
 package com.hobeen.metadatagenerator.application.port.out
 
+import com.hobeen.blogpostcommon.exception.ParserMissingException
 import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Component
 
@@ -15,16 +16,8 @@ class MetadataParserSelector (
 
     private val adapterMap = adapters.associateBy { it.getName() }
 
-    fun getParser(source: String): ParseHtmlMetadataPort {
+    fun getParser(parserName: String): ParseHtmlMetadataPort {
 
-        val parserName = when(source) {
-            "musinsa" -> "medium"
-            "daangn" -> "medium"
-            "watcha" -> "medium"
-            "yogiyo" -> "medium"
-            else -> source
-        }
-
-        return adapterMap[parserName] ?: adapterMap["default"]!!
+        return adapterMap[parserName] ?: throw ParserMissingException("parserName")
     }
 }

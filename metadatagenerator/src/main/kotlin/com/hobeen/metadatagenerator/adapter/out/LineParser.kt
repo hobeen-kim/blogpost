@@ -4,6 +4,7 @@ import com.hobeen.metadatagenerator.domain.Html
 import com.hobeen.metadatagenerator.application.port.out.ParseHtmlMetadataPort
 import com.hobeen.metadatagenerator.common.localDateParse
 import com.hobeen.metadatagenerator.common.refineTitle
+import com.hobeen.metadatagenerator.domain.ParseProps
 import org.jsoup.Jsoup
 import org.springframework.stereotype.Component
 
@@ -13,7 +14,7 @@ class LineParser: ParseHtmlMetadataPort {
         return "line"
     }
 
-    override fun parse(url: String): Html {
+    override fun parse(url: String, parserProps: ParseProps): Html {
         val doc = Jsoup.connect(url).get()
         val title = doc.title()
 

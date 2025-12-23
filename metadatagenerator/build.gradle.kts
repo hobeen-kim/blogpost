@@ -3,10 +3,12 @@ plugins {
     kotlin("plugin.spring") version "1.9.25"
     id("org.springframework.boot") version "3.5.8"
     id("io.spring.dependency-management") version "1.1.7"
+
+    kotlin("plugin.jpa") version "1.9.25"
 }
 
 group = "com.hobeen"
-version = "0.0.1"
+version = "0.1.0"
 description = "metadatagenerator"
 
 java {
@@ -31,6 +33,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.kafka:spring-kafka")
 
+    //db
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    runtimeOnly("org.postgresql:postgresql")
+
     //jsoup
     implementation("org.jsoup:jsoup:1.21.2")
 
@@ -40,11 +47,12 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     //custom package
-    implementation("com.hobeen:blogpost-common:1.0.1")
+    implementation("com.hobeen:blogpost-common:1.1.5")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.kafka:spring-kafka-test")
+    testImplementation("io.mockk:mockk:1.13.12")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

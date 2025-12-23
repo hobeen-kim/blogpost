@@ -13,8 +13,8 @@ class LineParserTest {
     @DisplayName("line parser test")
     fun parse() {
         //given & when
-        val test1 = lineParser.parse("https://techblog.lycorp.co.jp/ko/techniques-for-improving-code-quality-11")
-        val test2 = lineParser.parse("https://techblog.lycorp.co.jp/ko/why-did-an-athenz-engineer-take-on-the-kubestronaut-challenge")
+        val test1 = lineParser.parse("https://techblog.lycorp.co.jp/ko/techniques-for-improving-code-quality-11", "line")
+        val test2 = lineParser.parse("https://techblog.lycorp.co.jp/ko/why-did-an-athenz-engineer-take-on-the-kubestronaut-challenge", "line")
 
         //then
         assertThat(lineParser.getName()).isEqualTo("line")
