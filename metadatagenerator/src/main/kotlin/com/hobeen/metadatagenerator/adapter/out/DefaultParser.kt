@@ -1,5 +1,6 @@
 package com.hobeen.metadatagenerator.adapter.out
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hobeen.blogpostcommon.util.localDateParse
 import com.hobeen.metadatagenerator.application.port.out.ParseHtmlMetadataPort
@@ -8,6 +9,7 @@ import com.hobeen.metadatagenerator.domain.Html
 import com.hobeen.metadatagenerator.domain.ParseProps
 import org.jsoup.Jsoup
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 
 @Component
 class DefaultParser(
@@ -29,11 +31,20 @@ class DefaultParser(
 
         return Html(
             title = refineTitle(title),
-            pubDate = pubDate,
+            pubDate = pubDate ?: getPubDefault(parserProps.props),
             thumbnail = thumbnail,
             tags = tags,
             description = description,
         )
+    }
 
+    private fun getPubDefault(props: JsonNode): LocalDateTime? {
+        val pubStr = props["pub-default"].asText()
+
+        if(pubStr.isNullOrBlank()) return null
+
+        if(pubStr == "now") return LocalDateTime.now()
+
+        return localDateParse(pubStr)
     }
 }
