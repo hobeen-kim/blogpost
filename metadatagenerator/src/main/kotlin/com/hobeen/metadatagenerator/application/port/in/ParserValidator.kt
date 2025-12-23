@@ -5,5 +5,5 @@ import com.hobeen.metadatagenerator.application.port.`in`.dto.HtmlResponse
 
 interface ParserValidator {
 
-    fun validate(url: String, props: JsonNode): HtmlResponse
+    fun validate(url: String, parser: String, props: JsonNode): HtmlResponse
 }
