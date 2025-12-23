@@ -47,7 +47,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     //custom package
-    implementation("com.hobeen:blogpost-common:1.1.5")
+    implementation("com.hobeen:blogpost-common:1.1.6")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")

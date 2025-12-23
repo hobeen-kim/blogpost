@@ -48,7 +48,8 @@ class DefaultParserTest {
         )
 
         val tag = mapOf(
-            "value1" to TextNode("""div[class*="templatesstyle__PostTag"] a""")
+            "tag1" to TextNode("""div[class*="templatesstyle__PostTag"] a"""),
+            "text" to TextNode("")
         )
 
         val propsMap = mapOf(
@@ -274,8 +275,9 @@ class DefaultParserTest {
         )
 
         val tag = mapOf(
-            "value1" to TextNode("span.tag > a"),
-            "value2" to TextNode("span.category > a"),
+            "tag1" to TextNode("span.tag > a"),
+            "tag2" to TextNode("span.category > a"),
+            "text" to TextNode(""),
         )
 
         val propsMap = mapOf(
@@ -335,7 +337,8 @@ class DefaultParserTest {
         )
 
         val tag = mapOf(
-            "value1" to TextNode("p.post-header-categories a.cat-tag"),
+            "tag1" to TextNode("p.post-header-categories a.cat-tag"),
+            "text" to TextNode(""),
         )
 
         val propsMap = mapOf(
@@ -395,7 +398,8 @@ class DefaultParserTest {
         )
 
         val tag = mapOf(
-            "value1" to TextNode("a.p-chip"),
+            "tag1" to TextNode("a.p-chip"),
+            "text" to TextNode(""),
         )
 
         val propsMap = mapOf(
@@ -408,7 +412,7 @@ class DefaultParserTest {
         val propNode = ObjectNode(jsonNodeFactory, propsMap)
 
         val parserProps = ParseProps(
-            source = "devsisters",
+            source = "toss",
             parser = "default",
             props = propNode,
         )
@@ -429,5 +433,67 @@ class DefaultParserTest {
         assertThat(test2.thumbnail).isNotBlank
         assertThat(test2.tags).containsExactlyInAnyOrder("Frontend", "DevOps", "SLASH22")
         assertThat(test2.description).isEqualTo("서비스가 지속적으로 최고의 사용자 경험을 제공하기 위해서는 개발자 경험(DX)이 뒷받침되어야 합니다. 토스에서 SSR을 도입하면서 겪었던 개발자 경험의 다양한 어려움과 이를 수호하기 위한 해결법을 공유합니다.")
+    }
+
+    @Test
+    @DisplayName("aws parser test")
+    fun parseAws() {
+        //given
+        val titleMap = mapOf(
+            "title" to TextNode(""),
+            "delete1" to TextNode(" | AWS 기술 블로그"),
+        )
+
+        val descriptionMap = mapOf(
+            "selectFirst" to TextNode("head meta[property=og:description]"),
+            "attr" to TextNode("content")
+        )
+
+        val pubDate = mapOf(
+            "selectFirst" to TextNode("head meta[property=og:updated_time]"),
+            "attr" to TextNode("content"),
+        )
+
+        val thumbnail = mapOf(
+            "selectFirst" to TextNode("head meta[property=og:image]"),
+            "attr" to TextNode("content"),
+        )
+
+        val tag = mapOf(
+            "tag1" to TextNode("head meta[property=article:tag]"),
+            "attr" to TextNode("content"),
+        )
+
+        val propsMap = mapOf(
+            "title" to ObjectNode(jsonNodeFactory, titleMap),
+            "description" to ObjectNode(jsonNodeFactory, descriptionMap),
+            "pubDate" to ObjectNode(jsonNodeFactory, pubDate),
+            "thumbnail" to ObjectNode(jsonNodeFactory, thumbnail),
+            "tag" to ObjectNode(jsonNodeFactory, tag),
+        )
+        val propNode = ObjectNode(jsonNodeFactory, propsMap)
+
+        val parserProps = ParseProps(
+            source = "aws",
+            parser = "default",
+            props = propNode,
+        )
+
+        //when
+        val test1 = defaultParser.parse("https://aws.amazon.com/ko/blogs/tech/doalltech-saas/", parserProps)
+        val test2 = defaultParser.parse("https://aws.amazon.com/ko/blogs/tech/amazon-rds-mysql-blue-green-after-restoring/", parserProps)
+
+        //then
+        assertThat(test1.title).isEqualTo("건설 솔루션 기업 두올테크의 Amazon ECS 기반 SaaS 플랫폼 전환 여정")
+        assertThat(test1.pubDate).isEqualTo(LocalDateTime.of(2025, 12, 23, 14, 8, 41))
+        assertThat(test1.thumbnail).isEqualTo("https://d2908q01vomqb2.cloudfront.net/2a459380709e2fe4ac2dae5733c73225ff6cfee1/2025/12/23/doalltech_banner-1119x630.png")
+        assertThat(test1.tags).containsExactlyInAnyOrder("Amazon API Gateway","Amazon Cognito","Amazon EC2 Container Service","Amazon Elastic Container Service","SaaS")
+        assertThat(test1.description).isEqualTo("들어가며 많은 기업들이 기존 솔루션을 SaaS로 전환하고자 하지만, 여러 기술적 허들로 인해 전환을 미루고 있습니다. 특히 고객사별 데이터를 안전하게 격리하면서도 공유 인프라에서 효율적으로 서비스해야 하는 멀티테넌트 구조의 설계가 복잡하게 느껴지고, 레거시 시스템의 기술적 부채와 특정 OS나 프레임워크에 종속된 기존 애플리케이션을 현대화된 환경으로 전환하려면 여러 재개발이 필요합니다. 건설 산업 B2B 솔루션 기업 두올테크(Doalltech)는 이러한 문제점들을 Pool […]")
+
+        assertThat(test2.title).isEqualTo("Amazon RDS MySQL 블루/그린 배포환경에서 전환 작업 이후 복구 환경 구성을 위한 동기화 기법")
+        assertThat(test2.pubDate).isEqualTo(LocalDateTime.of(2023, 4, 21, 6, 40, 42))
+        assertThat(test2.thumbnail).isEqualTo("https://d2908q01vomqb2.cloudfront.net/2a459380709e2fe4ac2dae5733c73225ff6cfee1/2023/04/20/Blank-Flowchart-New-Page-5-643x630.png")
+        assertThat(test2.tags).containsExactlyInAnyOrder("Amazon Aurora", "Amazon RDS")
+        assertThat(test2.description).isEqualTo("Amazon Aurora와 Amazon Relational Database Service(Amazon RDS) 고객은 블루/그린 배포 자체 관리에 도움이 되도록 데이터베이스 복제 및 프로모션 가능한 읽기 전용 복제본을 사용할 수 있습니다. 이런 블루/그린 배포 방식에서 데이터베이스 업그레이드 작업을 한 후 문제가 있으면 기존 장비로 다시 복구를 진행해야 합니다. 하지만 이미 신규 장비에는 새로운 데이터가 쌓여 있어 일부 데이터를 버리거나 수동으로 변경된 […]")
     }
 }
