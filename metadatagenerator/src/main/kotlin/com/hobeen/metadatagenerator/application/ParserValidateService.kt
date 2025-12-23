@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component
 class ParserValidateService(
     private val metadataParserSelector: MetadataParserSelector,
 ): ParserValidator {
-    override fun validate(url: String, parser: String, props: JsonNode): HtmlResponse {
+    override fun validate(url: String, parserName: String, props: JsonNode): HtmlResponse {
 
         val parserProp = ParseProps(
             source = "test",
-            parser = parser,
+            parser = parserName,
             props = props
         )
 
