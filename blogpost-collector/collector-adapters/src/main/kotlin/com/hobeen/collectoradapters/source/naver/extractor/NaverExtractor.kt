@@ -31,7 +31,7 @@ class NaverExtractor(
                     pubDate = getDateTime(post.postPublishedAt),
                     tags = listOf(),
                     description = post.postHtml,
-                    thumbnail = post.postImage?.let { "https://d2.naver.com${post.postImage}" } ?: "https://d2.naver.com/static/img/app/common/empty_img0.png",
+                    thumbnail = post.postImage?.let { "https://d2.naver.com${post.postImage}" },
                 )
             }
         }
