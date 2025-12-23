@@ -1,5 +1,8 @@
 package com.hobeen.metadatagenerator.adapter.out
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.hobeen.metadatagenerator.domain.ParseProps
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -9,12 +12,15 @@ class LineParserTest {
 
     val lineParser = LineParser()
 
+    val jsonNodeFactory = JsonNodeFactory.instance
+
     @Test
     @DisplayName("line parser test")
     fun parse() {
         //given & when
-        val test1 = lineParser.parse("https://techblog.lycorp.co.jp/ko/techniques-for-improving-code-quality-11", "line")
-        val test2 = lineParser.parse("https://techblog.lycorp.co.jp/ko/why-did-an-athenz-engineer-take-on-the-kubestronaut-challenge", "line")
+
+        val test1 = lineParser.parse("https://techblog.lycorp.co.jp/ko/techniques-for-improving-code-quality-11", ParseProps("line", "line", ObjectNode(jsonNodeFactory)))
+        val test2 = lineParser.parse("https://techblog.lycorp.co.jp/ko/why-did-an-athenz-engineer-take-on-the-kubestronaut-challenge", ParseProps("line", "line", ObjectNode(jsonNodeFactory)))
 
         //then
         assertThat(lineParser.getName()).isEqualTo("line")
