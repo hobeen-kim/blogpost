@@ -38,6 +38,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     runtimeOnly("org.postgresql:postgresql")
 
+    //web
+    implementation("org.springframework.boot:spring-boot-starter-web")
+
     //jsoup
     implementation("org.jsoup:jsoup:1.21.2")
 

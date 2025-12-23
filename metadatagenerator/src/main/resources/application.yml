@@ -1,3 +1,5 @@
+
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/mydb
@@ -33,3 +35,5 @@ metadatagenerator:
     producer:
       topic: enriched-post
       dlq-topic: enriched-post-dlq
+server:
+  port: 8084

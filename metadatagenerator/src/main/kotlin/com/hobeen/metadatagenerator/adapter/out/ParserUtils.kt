@@ -16,6 +16,7 @@ fun getDataFrom(doc: Document, map: Map<String, String>?): String? {
         when(entry.key) {
             "title" -> result = doc.title()
             "selectFirst" -> element = doc.selectFirst(entry.value)
+            "selectFirst2" -> element = doc.selectFirst(entry.value)
             "attr" -> result = element?.attr(entry.value)
             "text" -> result = element?.text()
             "trim" -> result = result?.trim()
@@ -57,6 +58,7 @@ fun getTag(doc: Element, map: Map<String, String>?): List<String> {
 
         when(entry.key) {
             "selectFirst" -> {}
+            "selectFirst2" -> {}
             "attr" -> docs.forEach { doc -> tags.addAll(doc.mapNotNull { it.attr(entry.value) }) }
             "text" -> docs.forEach { doc -> tags.addAll(doc.mapNotNull { it.text() }) }
             "trim" -> {}
@@ -78,12 +80,13 @@ private fun sort(key: String): Int {
         "tag2" -> 0
         "title" -> 0
         "selectFirst" -> 1
-        "attr" -> 2
-        "text" -> 3
-        "trim" -> 4
-        "delete1" -> 5
-        "delete2" -> 6
-        "prefix" -> 7
-        else -> 8
+        "selectFirst2" -> 2
+        "attr" -> 3
+        "text" -> 4
+        "trim" -> 5
+        "delete1" -> 6
+        "delete2" -> 7
+        "prefix" -> 8
+        else -> 9
     }
 }
