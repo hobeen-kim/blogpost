@@ -13,7 +13,7 @@ class Engine(
     private val crawler: Crawler,
     private val extractor: Extractor,
     private val publisher: Publisher,
-    private val alarm: Alarm,
+    private val alarm: Alarm? = null,
 ) {
 
     private val log = Logger.getLogger(this.javaClass.name)
@@ -34,7 +34,7 @@ class Engine(
 
             return CollectResult.of(source = command.source, messages.size)
         } catch(e: Exception) {
-            alarm.errorAlarm(command, e)
+            alarm?.errorAlarm(command, e)
             return CollectResult.of(command.source, e)
         }
     }

@@ -30,7 +30,8 @@ class CollectService(
         }
 
         targets.forEach { target ->
-            collect(target)
+            val result = collect(target)
+            saveResultPort.save(result)
         }
     }
 
@@ -60,14 +61,10 @@ class CollectService(
                 command = collectCommand
             )
 
-            saveResultPort.save(result)
-
             return result
 
         } catch (e: Exception) {
             val failResult = CollectResult.of(target.source, e)
-
-            saveResultPort.save(failResult)
 
             return failResult
         }
