@@ -2,7 +2,7 @@
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/mydb
+    url: jdbc:postgresql://localhost:5432/mydb
     username: myuser
     password: mypassword
   data:
