@@ -4,11 +4,11 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 
-class ParseCommands(
+data class ParseCommands(
     val commands: List<ParseCommand>,
 )
 
-class ParseCommand(
+data class ParseCommand(
     val order: Int,
     val command: Command,
     val value: String,
