@@ -1,21 +1,34 @@
 package com.hobeen.metadatagenerator.domain
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.hobeen.blogpostcommon.util.Command
+import com.hobeen.blogpostcommon.util.ParseCommand
 
 data class ParseProps (
     val source: String,
     val parser: String,
     val props: JsonNode,
-) {
-    fun getProps(key: String, objectMapper: ObjectMapper): Map<String, String>? {
-        val propNode = props[key] ?: return null
+    val metadata: MetadataNodes,
+)
 
-        return try {
-            objectMapper.convertValue(propNode, object : TypeReference<Map<String, String>>() {})
-        } catch (e: Exception) {
-            null
-        }
+data class MetadataNodes(
+    val title: List<MetadataNode>,
+    val description: List<MetadataNode>,
+    val thumbnail: List<MetadataNode>,
+    val pubDate: List<MetadataNode>,
+    val tags: List<List<MetadataNode>>,
+)
+
+data class MetadataNode(
+    val order: Int,
+    val command: Command,
+    val value: String,
+) {
+    fun toCommand(): ParseCommand {
+        return ParseCommand(
+            order = order,
+            command = command,
+            value = value,
+        )
     }
 }

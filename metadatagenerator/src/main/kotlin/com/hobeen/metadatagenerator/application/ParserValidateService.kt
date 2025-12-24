@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.hobeen.metadatagenerator.application.port.`in`.ParserValidator
 import com.hobeen.metadatagenerator.application.port.`in`.dto.HtmlResponse
 import com.hobeen.metadatagenerator.application.port.out.MetadataParserSelector
+import com.hobeen.metadatagenerator.domain.MetadataNodes
 import com.hobeen.metadatagenerator.domain.ParseProps
 import org.springframework.stereotype.Component
 
@@ -11,12 +12,13 @@ import org.springframework.stereotype.Component
 class ParserValidateService(
     private val metadataParserSelector: MetadataParserSelector,
 ): ParserValidator {
-    override fun validate(url: String, parserName: String, props: JsonNode): HtmlResponse {
+    override fun validate(url: String, parserName: String, props: JsonNode, metadata: MetadataNodes): HtmlResponse {
 
         val parserProp = ParseProps(
             source = "test",
             parser = parserName,
-            props = props
+            props = props,
+            metadata = metadata
         )
 
         val parser = metadataParserSelector.getParser(parserProp.parser)

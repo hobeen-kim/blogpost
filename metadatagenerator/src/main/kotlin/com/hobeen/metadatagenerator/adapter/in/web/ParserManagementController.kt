@@ -19,6 +19,6 @@ class ParserManagementController(
     fun validateParser(
         @RequestBody request: ParserValidateRequest,
     ): ResponseEntity<HtmlResponse> {
-        return ResponseEntity.ok(parserValidator.validate(request.url, request.parser, request.props))
+        return ResponseEntity.ok(parserValidator.validate(request.url, request.parser, request.props, request.metadata))
     }
 }
