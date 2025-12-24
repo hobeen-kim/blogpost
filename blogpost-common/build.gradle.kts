@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.hobeen"
-version = "1.1.6"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
@@ -42,6 +42,9 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
+
+    //jsoup
+    implementation("org.jsoup:jsoup:1.21.2")
 
     //test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
