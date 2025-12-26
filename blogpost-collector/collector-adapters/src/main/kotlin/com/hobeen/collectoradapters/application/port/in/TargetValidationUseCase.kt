@@ -9,4 +9,6 @@ import java.time.LocalDateTime
 interface TargetValidationUseCase {
 
     fun validate(command: TargetValidateCommand, publisher: MemoryPublisher)
+
+    fun validate(targetName: String, publisher: MemoryPublisher)
 }

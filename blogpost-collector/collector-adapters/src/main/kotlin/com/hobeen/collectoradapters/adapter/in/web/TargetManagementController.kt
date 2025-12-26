@@ -6,6 +6,7 @@ import com.hobeen.collectoradapters.application.port.`in`.dto.TargetValidateComm
 import com.hobeen.collectoradapters.common.publisher.MemoryPublisher
 import com.hobeen.collectorcommon.domain.Message
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -27,6 +28,20 @@ class TargetManagementController(
         targetValidationUseCase.validate(command, publisher)
 
 
+
+        return ResponseEntity.ok(TargetValidateResponse.of(
+            messages = publisher.getMessages()
+        ))
+    }
+
+    @PostMapping("targets/validate/{targetName}")
+    fun validate(
+        @PathVariable targetName: String
+    ): ResponseEntity<TargetValidateResponse> {
+
+        val publisher = MemoryPublisher()
+
+        targetValidationUseCase.validate(targetName, publisher)
 
         return ResponseEntity.ok(TargetValidateResponse.of(
             messages = publisher.getMessages()

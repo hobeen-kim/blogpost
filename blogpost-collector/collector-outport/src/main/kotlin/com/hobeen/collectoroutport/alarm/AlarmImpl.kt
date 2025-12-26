@@ -12,9 +12,9 @@ class AlarmImpl(
 ): Alarm {
     override fun errorAlarm(command: CollectCommand, exception: Exception) {
         alarmService.sendAlarm(AlarmDto(
-            alarmMsg = "${command.source} can not be collected",
-            source = command.source,
-            url = command.url,
+            alarmMsg = "${command.target.source} can not be collected",
+            source = command.target.source,
+            url = command.target.url,
             rawData = "",
             exception = exception,
             exceptionPrintStackDepth = 2

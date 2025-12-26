@@ -3,82 +3,65 @@ package com.hobeen.collectoradapters.common.extractor.jsoup
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.hobeen.blogpostcommon.util.ParseCommands
+import com.hobeen.blogpostcommon.util.getDataFrom
 import com.hobeen.blogpostcommon.util.localDateParse
 import com.hobeen.collectorcommon.domain.Message
+import com.hobeen.collectorcommon.domain.MetadataNode
+import com.hobeen.collectorcommon.domain.MetadataNodes
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.springframework.stereotype.Component
 
 @Component
-class JsoupDefaultExtractor(
-    private val objectMapper: ObjectMapper,
-): JsoupAbstractExtractor() {
+class JsoupDefaultExtractor: JsoupAbstractExtractor() {
 
-    override fun extract(doc: Document, source: String, props: JsonNode): List<Message> {
+    override fun extract(doc: Document, source: String, nodes: MetadataNodes): List<Message> {
 
-        val listQuery = props["list-query"].asText()
-
-        val posts = doc.select(listQuery)
+        val posts = doc.select(nodes.list.value)
 
         return posts.map { post ->
+
+            val title = getProperty(post, nodes.title) ?: ""
+            val url = getProperty(post, nodes.url)
+            val description = getProperty(post, nodes.description) ?: ""
+            val thumbnail = getProperty(post, nodes.thumbnail)
+            val pubDateStr = getProperty(post, nodes.pubDate)
+            val pubDate = localDateParse(pubDateStr)
+            val tags = getTags(post, nodes.tags)
+
             Message(
-                title = getProps(props, "title-query")?.let { getDataFrom(post, it) },
+                title = title,
                 source = source,
-                url = getProps(props, "url-query")?.let { getDataFrom(post, it) } ?: throw IllegalArgumentException("url miss"),
-                pubDate = getProps(props, "pub-query")?.let { getDataFrom(post, it) }?.let { localDateParse(it) },
-                tags = getProps(props, "tag-query")?.let {getTag(post, it) } ?: listOf(),
-                description = getProps(props, "description-query")?.let { getDataFrom(post, it) },
-                thumbnail = getProps(props, "thumbnail-query")?.let { getDataFrom(post, it) },
+                url = url ?: throw IllegalArgumentException("url miss"),
+                pubDate = pubDate,
+                tags = tags,
+                description = description,
+                thumbnail = thumbnail,
             )
         }
     }
 
-    private fun getProps(props: JsonNode, key: String): Map<String, String>? {
-        val propNode = props[key] ?: return null
+    private fun getProperty(doc: Element, node: List<MetadataNode>): String? {
+        val commands = ParseCommands(node.map { it.toCommand() })
 
-        return objectMapper.convertValue(propNode, object : TypeReference<Map<String, String>>() {})
+        val data = getDataFrom(doc, commands) ?: return null
+
+        if(data.isEmpty()) return null
+
+        return data[0]
     }
 
-    private fun getDataFrom(doc: Element, map: Map<String, String>): String? {
-
-        var element: Element? = doc
-        var result: String? = null
-
-        map.entries.sortedBy { entry -> sort(entry.key) }.forEach { entry ->
-
-            when(entry.key) {
-                "selectFirst" -> element = doc.selectFirst(entry.value)
-                "attr" -> result = element?.attr(entry.value)
-                "text" -> result = element?.text()
-                "delete1" -> result = result?.replace(entry.value, "")
-                "delete2" -> result = result?.replace(entry.value, "")
-                "prefix" -> result = if(result == null) null else entry.value + result
-            }
-
-            if(element == null) return@forEach
-        }
-
-        return result
-    }
-
-    private fun sort(key: String): Int {
-        return when(key) {
-            "selectFirst" -> 1
-            "attr" -> 2
-            "text" -> 3
-            "delete1" -> 4
-            "delete2" -> 5
-            "prefix" -> 6
-            else -> 7
-        }
-    }
-
-    private fun getTag(doc: Element, map: Map<String, String>): List<String> {
+    private fun getTags(doc: Element, nodes: List<List<MetadataNode>>): List<String> {
 
         val tags = mutableListOf<String>()
 
-        map.entries.forEach { entry ->
-            tags.addAll(doc.select(entry.value).map { it.text() })
+        for (node in nodes) {
+            val commands = ParseCommands(node.map { it.toCommand() })
+
+            val data = getDataFrom(doc, commands)
+
+            if(data != null) tags.addAll(data)
         }
 
         return tags

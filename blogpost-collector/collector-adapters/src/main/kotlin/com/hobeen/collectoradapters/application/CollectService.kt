@@ -50,11 +50,7 @@ class CollectService(
             )
 
             val collectCommand = CollectCommand(
-                url = target.url,
-                source = target.source,
-                crawlerProps = target.adapter.crawler.properties,
-                extractorProps = target.adapter.extractor.properties,
-                publisherProps = target.adapter.publisher.properties,
+                target = target,
             )
 
             val result = engine.run(

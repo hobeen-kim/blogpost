@@ -1,7 +1,7 @@
 package com.hobeen.collectoradapters.common.extractor.sitemap
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.hobeen.collectorcommon.domain.ExtractorProps
 import com.hobeen.collectorcommon.domain.Message
 import com.hobeen.collectorcommon.utils.getOnlyUrlPath
 import com.hobeen.collectorengine.port.Extractor
@@ -14,9 +14,9 @@ class SitemapExtractor: Extractor {
     private val xmlMapper = XmlMapper().findAndRegisterModules()
     private val illegalXmlCharsRegex = Regex("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]")
 
-    override fun extract(crawlingResult: CrawlingResult, source: String, props: JsonNode): List<Message> {
+    override fun extract(crawlingResult: CrawlingResult, source: String, props: ExtractorProps): List<Message> {
 
-        val urlFilter = props["url-filter"]?.asText()
+        val urlFilter = props.properties["url-filter"]?.asText()
 
         return crawlingResult.htmls.flatMap { html ->
             val sanitizedBody = illegalXmlCharsRegex.replace(html, "")

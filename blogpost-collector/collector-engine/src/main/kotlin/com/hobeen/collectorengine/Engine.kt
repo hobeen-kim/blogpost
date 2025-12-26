@@ -22,22 +22,26 @@ class Engine(
 
         try {
             //크롤링
-            val crawlingResult = crawler.crawling(command.url, command.crawlerProps)
+            val crawlingResult = crawler.crawling(command.target.url, command.target.adapter.crawler)
 
             //추출
-            val messages = extractor.extract(crawlingResult, command.source, command.extractorProps)
+            val messages = extractor.extract(crawlingResult, command.target.source, command.target.adapter.extractor)
 
             if(messages.isEmpty()) throw IllegalArgumentException("message is empty")
 
             //pub
             publisher.publish(messages)
 
-            log.info("complete generate message from ${command.source} ${messages.size}")
+            log.info("complete generate message from ${command.target.source} ${messages.size}")
 
-            return CollectResult.of(source = command.source, messages.size)
+            return CollectResult.of(source = command.target.source, messages.size)
         } catch(e: Exception) {
-            alarm?.errorAlarm(command, e)
-            return CollectResult.of(command.source, e)
+            if(alarm != null) {
+                alarm.errorAlarm(command, e)
+            } else {
+                e.printStackTrace()
+            }
+            return CollectResult.of(command.target.source, e)
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.hobeen.collectoradapters.source.nhn.extractor
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.hobeen.collectorcommon.domain.ExtractorProps
 import com.hobeen.collectorcommon.domain.Message
 import com.hobeen.collectorengine.port.Extractor
 import com.hobeen.collectorengine.port.dto.CrawlingResult
@@ -15,7 +15,7 @@ class NhnExtractor(
     override fun extract(
         crawlingResult: CrawlingResult,
         source: String,
-        props: JsonNode,
+        props: ExtractorProps,
     ): List<Message> {
 
         return crawlingResult.htmls.flatMap { json ->

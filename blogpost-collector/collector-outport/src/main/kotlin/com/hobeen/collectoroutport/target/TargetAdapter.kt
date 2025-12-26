@@ -9,6 +9,9 @@ import com.hobeen.collectorcommon.domain.PublisherProps
 import com.hobeen.collectorcommon.domain.Target
 import com.hobeen.collectorcommon.port.out.GetTargetPort
 import com.hobeen.collectorcommon.port.out.SaveResultPort
+import com.hobeen.collectoroutport.target.persistence.CollectResultEntity
+import com.hobeen.collectoroutport.target.persistence.CollectResultRepository
+import com.hobeen.collectoroutport.target.persistence.TargetRepository
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.support.CronExpression
 import org.springframework.stereotype.Component
@@ -21,7 +24,6 @@ import java.time.LocalDateTime
 class TargetAdapter(
     private val targetRepository: TargetRepository,
     private val collectResultRepository: CollectResultRepository,
-    private val objectMapper: ObjectMapper,
 ): GetTargetPort, SaveResultPort {
 
     override fun getTargets(criteria: LocalDateTime): List<Target> {
@@ -41,9 +43,19 @@ class TargetAdapter(
                 url = it.url,
                 source = it.source,
                 adapter = AdapterProps(
-                    crawler = objectMapper.treeToValue(it.crawler, CrawlerProps::class.java),
-                    extractor = objectMapper.treeToValue(it.extractor, ExtractorProps::class.java),
-                    publisher = objectMapper.treeToValue(it.publisher, PublisherProps::class.java),
+                    crawler = CrawlerProps(
+                        type = it.crawler,
+                        properties = it.crawlerProps
+                    ),
+                    extractor = ExtractorProps(
+                        type = it.extractor,
+                        properties = it.extractorProps,
+                        metadata = it.getMetadataNodes()
+                    ),
+                    publisher = PublisherProps(
+                        type = it.publisher,
+                        properties = it.publisherProps
+                    )
                 ),
             )
         }
@@ -56,9 +68,19 @@ class TargetAdapter(
             url = entity.url,
             source = entity.source,
             adapter = AdapterProps(
-                crawler = objectMapper.treeToValue(entity.crawler, CrawlerProps::class.java),
-                extractor = objectMapper.treeToValue(entity.extractor, ExtractorProps::class.java),
-                publisher = objectMapper.treeToValue(entity.publisher, PublisherProps::class.java),
+                crawler = CrawlerProps(
+                    type = entity.crawler,
+                    properties = entity.crawlerProps
+                ),
+                extractor = ExtractorProps(
+                    type = entity.extractor,
+                    properties = entity.extractorProps,
+                    metadata = entity.getMetadataNodes()
+                ),
+                publisher = PublisherProps(
+                    type = entity.publisher,
+                    properties = entity.publisherProps
+                )
             ),
         )
     }

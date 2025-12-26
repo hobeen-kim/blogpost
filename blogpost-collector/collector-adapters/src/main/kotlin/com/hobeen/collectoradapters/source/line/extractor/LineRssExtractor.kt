@@ -2,6 +2,7 @@ package com.hobeen.collectoradapters.source.line.extractor
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.hobeen.collectoradapters.common.extractor.rss.RssExtractor
+import com.hobeen.collectorcommon.domain.ExtractorProps
 import com.hobeen.collectorcommon.domain.Message
 import com.hobeen.collectorengine.port.dto.CrawlingResult
 import org.springframework.stereotype.Component
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component
 @Component
 class LineRssExtractor: RssExtractor() {
 
-    override fun extract(crawlingResult: CrawlingResult, source: String, props: JsonNode): List<Message> {
+    override fun extract(crawlingResult: CrawlingResult, source: String, props: ExtractorProps): List<Message> {
         val results = super.extract(crawlingResult, source, props)
 
         results.forEach {

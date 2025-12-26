@@ -1,6 +1,7 @@
 package com.hobeen.collectoradapters.application.port.`in`.dto
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.hobeen.collectorcommon.domain.MetadataNodes
 
 data class TargetValidateCommand (
     val url: String,
@@ -22,6 +23,7 @@ data class CrawlerProps(
 data class ExtractorProps(
     val type: String = "rssExtractor",
     val properties: JsonNode,
+    val node: MetadataNodes,
 )
 
 data class PublisherProps(

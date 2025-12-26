@@ -1,4 +1,4 @@
-package com.hobeen.collectoroutport.target
+package com.hobeen.collectoroutport.target.persistence
 
 import com.hobeen.collectorcommon.domain.CollectStatus
 import jakarta.persistence.Entity
