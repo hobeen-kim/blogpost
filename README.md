@@ -1,53 +1,39 @@
-# TODO
+# 용어
+- 포스트 : 수집 대상의 블로그 글
+- 메타데이터 : 블로그의 썸네일, 태그, 제목 등과 같은 추가적인 데이터
 
-- [x] dlq 처리기 추가
-- [ ] metadatagenetor 에서 enrichedMessage 에 content 추가 (활용은 알아서) -> readTime 추가
-- [x] 수집을 수동으로 다시 처리하도록 하는 플로우 추가 -> inserter 에서 처리
-- [ ] 프론트엔드 추가
-- [ ] socket connection 이 끊기는 문제 해결
-- [x] 에러 시 알람 보내기 추가 (slack)
-- [ ] 하루마다 새로운 post 알림보내주기
-- [x] postgres 에러 해결
-  - [x] `url: jdbc:postgresql://<HOST>:5432/<DB>?prepareThreshold=0`
-  - [x] inserter
-  - [x] apiserver
-- [ ] dqlprocessor 에 enriched-post-dlq 처리 추가
-  - HttpStatusException -> 재시도
-  - InSufficientMetadataException -> db 에 저장하고 관리자가 처리
-- [x] collector 서버 에러처리 
-- [x] api 서버에 `X-Forwarded-For` 헤더를 붙이고, cloudfront 에서의 접근만 허용
+# 아키텍처
 
+![img.png](files/img.png)
 
+## collector
+- rss 또는 sitemap 에서 수집 대상 url 을 수집
+- rss, sitemap 이 없다면 글 목록 html 을 다운로드 받아서 수집
+  - 이때 절대 포스트 세부 페이지를 다운로드 받지 않음. 왜냐하면 해당 요청이 많아지면 대상 서버에 부하가 될 수 있기 때문
+- 추가적인 메타데이터를 수집할 수 있다면 함께 수집
 
+## deduplicator
+- 수집된 url 인지 확인
+- 수집된 url 은 redis 에 넣어서 관리
+- redis 는 메인 DB 를 읽어서 주기적인 자동 또는 수동 리프레시
 
+## buffer
+- deduplicated-post 를 읽어서 최대 2.5/s 의 속도로 읽음
+- deduplicated-post 의 파티션을 8개, key 는 source.
+- 8개의 파티션을 round-robin 으로 순회하면서 읽고 buffered-post 로 pub
+- 블로그 서버에 부하를 안주기 위한 컴포넌트
 
+# metadatagenerator
+- rss 피드, sitemap 등에서 수집되지 않는 메타데이터를 추가함
+- 주로 url 로 html 을 다운로드 받아서 파싱해서 사용
+- 추가 기능
+  - content 를 벡터화하여 태그 추출
 
+# inserter
+- 생성된 enriched-post 를 DB 로 insert
 
-## 프론트 todo
+# apiserver
+- post 를 보여주는 API 서비스
 
-- [ ] 검색 결과도 무한스크롤로
-- [ ] 태그 검색 및 source 검색
-- [ ] 기본 이미지 설정
-- [ ] source 별 이름 설정 및 이미지 설정
-
-# custom repository 사용방법
-
-1. build.gradle.kts 에 아래 추가
-```aiexclude
-repositories {
-    mavenCentral()
-    maven {
-        url = uri("https://maven.pkg.github.com/hobeen-kim/blogpost-collector")
-        credentials {
-            username = (findProperty("gpr.user") as String?) ?: System.getenv("GITHUB_ACTOR")
-            password = (findProperty("gpr.key") as String?) ?: System.getenv("GITHUB_TOKEN")
-        }
-    }
-}
-```
-
-2. ~/.gradle/gradle.properties 에 추가
-```aiexclude
-gpr.user=sksjsksh32@gmail.com
-gpr.key=PAT_KEY
-```
+# dlqprocessor
+- 각 모듈에서 처리되지 못한 message(dlq)를 처리하는 모듈
