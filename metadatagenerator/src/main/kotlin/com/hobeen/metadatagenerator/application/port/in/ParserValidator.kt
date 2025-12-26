@@ -7,4 +7,6 @@ import com.hobeen.metadatagenerator.domain.MetadataNodes
 interface ParserValidator {
 
     fun validate(url: String, parserName: String, props: JsonNode, metadata: MetadataNodes): HtmlResponse
+
+    fun validate(url: String, source: String): HtmlResponse
 }

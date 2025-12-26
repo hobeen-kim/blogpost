@@ -1,9 +1,11 @@
 package com.hobeen.metadatagenerator.adapter.`in`.web
 
 import com.hobeen.metadatagenerator.adapter.`in`.web.dto.ParserValidateRequest
+import com.hobeen.metadatagenerator.adapter.`in`.web.dto.SourceValidateRequest
 import com.hobeen.metadatagenerator.application.port.`in`.ParserValidator
 import com.hobeen.metadatagenerator.application.port.`in`.dto.HtmlResponse
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -20,5 +22,12 @@ class ParserManagementController(
         @RequestBody request: ParserValidateRequest,
     ): ResponseEntity<HtmlResponse> {
         return ResponseEntity.ok(parserValidator.validate(request.url, request.parser, request.props, request.metadata))
+    }
+
+    @PostMapping("/validate/{source}")
+    fun validateProps(
+        @RequestBody request: SourceValidateRequest,
+    ): ResponseEntity<HtmlResponse> {
+        return ResponseEntity.ok(parserValidator.validate(request.url, request.source))
     }
 }
