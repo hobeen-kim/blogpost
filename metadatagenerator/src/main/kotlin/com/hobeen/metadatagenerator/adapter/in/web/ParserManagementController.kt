@@ -27,7 +27,8 @@ class ParserManagementController(
     @PostMapping("/validate/{source}")
     fun validateProps(
         @RequestBody request: SourceValidateRequest,
+        @PathVariable source: String,
     ): ResponseEntity<HtmlResponse> {
-        return ResponseEntity.ok(parserValidator.validate(request.url, request.source))
+        return ResponseEntity.ok(parserValidator.validate(request.url, source))
     }
 }
