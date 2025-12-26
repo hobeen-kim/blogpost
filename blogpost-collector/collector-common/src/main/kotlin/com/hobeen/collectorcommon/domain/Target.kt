@@ -40,7 +40,19 @@ data class MetadataNodes(
     val thumbnail: List<MetadataNode>,
     val pubDate: List<MetadataNode>,
     val tags: List<List<MetadataNode>>,
-)
+) {
+    companion object {
+        val EMPTY = MetadataNodes(
+            list = MetadataNode(0, Command.SELECT, "empty"),
+            title = listOf(),
+            url = listOf(),
+            description = listOf(),
+            thumbnail = listOf(),
+            pubDate = listOf(),
+            tags = listOf(),
+        )
+    }
+}
 
 data class MetadataNode(
     val order: Int,

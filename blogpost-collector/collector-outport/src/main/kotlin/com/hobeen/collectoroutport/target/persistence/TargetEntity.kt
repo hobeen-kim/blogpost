@@ -37,6 +37,8 @@ data class TargetEntity (
 ) {
     fun getMetadataNodes(): MetadataNodes {
 
+        if(nodes.isEmpty()) return MetadataNodes.EMPTY
+
         return MetadataNodes(
             list = nodes.first { it.metadataName == MetadataName.LIST }.toMetadataNode(),
             title = nodes.filter { it.metadataName == MetadataName.TITLE }.map { node -> node.toMetadataNode() },
