@@ -1,4 +1,4 @@
-package blogpostcommon.util
+package com.hobeen.blogpostcommon.util
 
 import com.hobeen.blogpostcommon.util.Command
 import com.hobeen.blogpostcommon.util.ParseCommand

@@ -4,8 +4,6 @@ import com.hobeen.blogpostcommon.alarm.AlarmDto
 import com.hobeen.blogpostcommon.alarm.AlarmService
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.stereotype.Component
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest

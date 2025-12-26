@@ -10,6 +10,7 @@ import java.util.Locale
 
 private val seoulZone = ZoneId.of("Asia/Seoul")
 private val engFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy", Locale.ENGLISH)
+private val korFormatter = DateTimeFormatter.ofPattern("M월 d, yyyy", Locale.KOREAN)
 
 fun localDateParse(dateStr: String?): LocalDateTime? {
 
@@ -26,6 +27,9 @@ fun localDateParse(dateStr: String?): LocalDateTime? {
 
     //2025년 03월 17일
     check4DateTime(dateStr)?.let { return it }
+
+    //12월 9, 2025
+    check5DateTime(dateStr)?.let { return it }
 
     //localdatetime
     if(dateStr.length <= 19) {
@@ -84,4 +88,12 @@ private fun check4DateTime(dateStr: String): LocalDateTime? {
     val day = dateSnippets[2].substring(0, dateSnippets[2].length - 1).toInt()
 
     return LocalDateTime.of(year, month, day, 0, 0, 0)
+}
+
+private fun check5DateTime(dateStr: String): LocalDateTime? {
+    return try {
+        LocalDate.parse(dateStr, korFormatter).atStartOfDay()
+    } catch (e: DateTimeParseException) {
+        null
+    }
 }
