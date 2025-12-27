@@ -173,6 +173,23 @@ const PostCard: React.FC<PostCardProps> = ({
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
+  const handleCommentAdded = () => {
+    setCommented(true);
+    setCommentNumber(prev => prev + 1);
+  };
+
+  const handleCommentDeleted = () => {
+    // 댓글 삭제 시 내가 쓴 댓글이 더 이상 없을 수도 있지만, 
+    // 현재 API로는 확인이 어려우므로 단순히 숫자만 줄임
+    // 만약 정확히 하려면 댓글 목록을 다시 조회하거나 해야 함
+    // 여기서는 일단 숫자만 줄이는 것으로 처리
+    setCommentNumber(prev => Math.max(0, prev - 1));
+    // 댓글이 0개가 되면 commented도 false로 변경
+    if (commentNumber <= 1) {
+      setCommented(false);
+    }
+  };
+
   return (
     <>
       <Card 
@@ -349,6 +366,8 @@ const PostCard: React.FC<PostCardProps> = ({
         postId={postId} 
         isOpen={isCommentOpen} 
         onClose={() => setIsCommentOpen(false)} 
+        onCommentAdded={handleCommentAdded}
+        onCommentDeleted={handleCommentDeleted}
       />
     </>
   );

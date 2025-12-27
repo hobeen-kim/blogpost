@@ -25,9 +25,11 @@ interface CommentDialogProps {
   postId: string;
   isOpen: boolean;
   onClose: () => void;
+  onCommentAdded?: () => void;
+  onCommentDeleted?: () => void;
 }
 
-const CommentDialog: React.FC<CommentDialogProps> = ({ postId, isOpen, onClose }) => {
+const CommentDialog: React.FC<CommentDialogProps> = ({ postId, isOpen, onClose, onCommentAdded, onCommentDeleted }) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [comments, setComments] = useState<Comment[]>([]);
@@ -128,6 +130,7 @@ const CommentDialog: React.FC<CommentDialogProps> = ({ postId, isOpen, onClose }
       setCursorTime(undefined);
       setError(false);
       loadComments(true);
+      onCommentAdded?.();
       toast({
         title: "성공",
         description: "댓글이 작성되었습니다."
@@ -149,6 +152,7 @@ const CommentDialog: React.FC<CommentDialogProps> = ({ postId, isOpen, onClose }
     try {
       await deleteComment(commentId);
       setComments(prev => prev.filter(c => c.commentId !== commentId));
+      onCommentDeleted?.();
       toast({
         title: "삭제됨",
         description: "댓글이 삭제되었습니다."
@@ -307,6 +311,12 @@ const CommentDialog: React.FC<CommentDialogProps> = ({ postId, isOpen, onClose }
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="댓글을 입력하세요..."
                 className="min-h-[40px] max-h-[100px] resize-none"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit();
+                  }
+                }}
               />
               <Button 
                 onClick={handleSubmit} 
