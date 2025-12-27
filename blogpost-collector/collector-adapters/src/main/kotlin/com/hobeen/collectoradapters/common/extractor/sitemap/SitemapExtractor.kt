@@ -17,6 +17,7 @@ class SitemapExtractor: Extractor {
     override fun extract(crawlingResult: CrawlingResult, source: String, props: ExtractorProps): List<Message> {
 
         val urlFilter = props.properties["url-filter"]?.asText()
+        val urlQueryRemain = props.properties["url-query"]?.asBoolean() == true
 
         return crawlingResult.htmls.flatMap { html ->
             val sanitizedBody = illegalXmlCharsRegex.replace(html, "")
@@ -27,7 +28,7 @@ class SitemapExtractor: Extractor {
                 Message(
                     title = "",
                     source = source,
-                    url = getOnlyUrlPath(item.loc),
+                    url = if(urlQueryRemain) item.loc.trim() else getOnlyUrlPath(item.loc).trim(),
                     pubDate = null, //lastmod 가 있지만, 최근 수정일일뿐, 발행일이 아님
                     tags = listOf(),
                     description = "",

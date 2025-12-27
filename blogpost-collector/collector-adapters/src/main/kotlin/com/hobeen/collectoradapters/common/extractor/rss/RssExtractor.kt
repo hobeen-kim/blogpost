@@ -19,6 +19,7 @@ class RssExtractor: Extractor {
     override fun extract(crawlingResult: CrawlingResult, source: String, props: ExtractorProps): List<Message> {
 
         val urlFilter = props.properties["url-filter"]?.asText()
+        val urlQueryRemain = props.properties["url-query"]?.asBoolean() == true
 
         return crawlingResult.htmls.flatMap { html ->
             val sanitizedBody = illegalXmlCharsRegex.replace(html, "")
@@ -29,10 +30,10 @@ class RssExtractor: Extractor {
                 Message(
                     title = refineTitle(item.title),
                     source = source,
-                    url = getOnlyUrlPath(item.link),
+                    url = if(urlQueryRemain) item.link.trim() else getOnlyUrlPath(item.link).trim(),
                     pubDate = item.pubDate,
                     tags = item.categories ?: listOf(),
-                    description = item.description,
+                    description = item.description?.trim(),
                     thumbnail = null,
                 )
             }?.filter { urlFilter(urlFilter, it.url) } ?: listOf()
