@@ -73,19 +73,6 @@ const PostGrid: React.FC = () => {
     };
   }, [loading, hasMore, page, loadPosts]);
 
-  const handlePostLike = (postId: string) => {
-    setPosts(prev => prev.map(post => 
-      post.id === postId 
-        ? { ...post, likes: post.likes + 1 }
-        : post
-    ));
-  };
-
-  const handlePostComment = (postId: string) => {
-    // Handle comment action - could open comment dialog or navigate to post detail
-    console.log('댓글 작성:', postId);
-  };
-
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-6">
       {/* Posts Grid */}
@@ -101,11 +88,12 @@ const PostGrid: React.FC = () => {
               readTime={post.readTime}
               tags={post.tags}
               thumbnail={post.thumbnail}
-              likes={post.likes}
               comments={post.comments}
               url={post.url}
-              isBookmarked={post.bookmarked}
+              bookmarked={post.bookmarked}
               bookmarkCount={post.bookmarkCount}
+              liked={post.liked}
+              likeCount={post.likeCount}
               // onLike={() => handlePostLike(post.id)}
               // onComment={() => handlePostComment(post.id)}
             />

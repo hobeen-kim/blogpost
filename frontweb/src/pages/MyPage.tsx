@@ -9,7 +9,8 @@ import { getBookmarks, getLikes } from '@/lib/api';
 import PostCard from '@/components/PostCard';
 import PostBookmarkCard from '@/components/PostBookmarkCard';
 import { Post } from '@/types/post';
-import { PostBookmark, SliceBookmarkResponse } from '@/types/bookmark';
+import {PostBookmark, PostLike, SliceBookmarkResponse, SliceLikeResponse} from '@/types/bookmarkLike.ts';
+import PostLikeCard from "@/components/PostLikeCard.tsx";
 
 const UserProfile = () => {
   const { user, signOut } = useAuth();
@@ -71,7 +72,7 @@ const Bookmarks = () => {
       setHasNext(response.sliceInfo.hasNext);
       
       if (newBookmarks.length > 0) {
-        setCursorTime(newBookmarks[newBookmarks.length - 1].bookmarkTime);
+        setCursorTime(newBookmarks[newBookmarks.length - 1].bookmarkedTime);
       }
     } catch (error) {
       console.error('Failed to load bookmarks:', error);
@@ -150,69 +151,100 @@ const Bookmarks = () => {
 };
 
 const Likes = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [likes, setLikes] = useState<PostLike[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [hasNext, setHasNext] = useState(true);
+  const [cursorTime, setCursorTime] = useState<string | undefined>(undefined);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadingRef = useRef<HTMLDivElement>(null);
+
+  const loadLikes = useCallback(async () => {
+    if (loading || !hasNext) return;
+
+    setLoading(true);
+    try {
+      const response: SliceLikeResponse = await getLikes(cursorTime);
+      const newLikes = response.data;
+
+      setLikes(prev => [...prev, ...newLikes]);
+      setHasNext(response.sliceInfo.hasNext);
+
+      if (newLikes.length > 0) {
+        setCursorTime(newLikes[newLikes.length - 1].likedTime);
+      }
+    } catch (error) {
+      console.error('Failed to load bookmarks:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, hasNext, cursorTime]);
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const response = await getLikes();
-        setPosts(response.data || []);
-      } catch (err) {
-        setError('데이터를 불러오는 중 오류가 발생했습니다.');
-        console.error(err);
-      } finally {
-        setLoading(false);
+    loadLikes();
+  }, []); // Initial load
+
+  useEffect(() => {
+    if (loading || !hasNext) return;
+
+    observerRef.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            loadLikes();
+          }
+        },
+        { threshold: 0.1 }
+    );
+
+    if (loadingRef.current) {
+      observerRef.current.observe(loadingRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
       }
     };
+  }, [loading, hasNext, loadLikes]);
 
-    loadData();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-12 text-red-500">
-        {error}
-      </div>
-    );
-  }
+  const handleLikeChange = (postId: string, isLiked: boolean) => {
+    if (!isLiked) {
+      setLikes(prev => prev.filter(b => b.postId !== postId));
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">좋아요 목록</h2>
-      {posts.length === 0 ? (
-        <p className="text-muted-foreground">좋아요한 게시글이 없습니다.</p>
-      ) : (
-        <div className="grid grid-cols-1 gap-6">
-          {posts.map((post) => (
-            <PostCard
-              key={post.id}
-              id={post.id}
-              title={post.title}
-              description={post.description}
-              author={post.source}
-              pubDate={post.pubDate}
-              readTime={post.readTime}
-              tags={post.tags}
-              thumbnail={post.thumbnail}
-              likes={post.likes}
-              comments={post.comments}
-              url={post.url}
-              isBookmarked={post.bookmarked}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold">좋아요 목록</h2>
+        {likes.length === 0 && !loading ? (
+            <p className="text-muted-foreground">저장된 좋아요가 없습니다.</p>
+        ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {likes.map((bookmark) => (
+                  <PostLikeCard
+                      key={bookmark.postId}
+                      postId={bookmark.postId}
+                      title={bookmark.title}
+                      description={bookmark.description}
+                      author={bookmark.source}
+                      pubDate={bookmark.pubDate}
+                      tags={bookmark.tags}
+                      thumbnail={bookmark.thumbnail}
+                      liked={true}
+                      url={bookmark.url}
+                      onLikeChange={(liked) => handleLikeChange(bookmark.postId, liked)}
+                  />
+              ))}
+            </div>
+        )}
+
+        {loading && (
+            <div className="flex justify-center items-center py-4">
+              <Loader2 className="h-6 w-6 animate-spin text-green-600" />
+            </div>
+        )}
+
+        {hasNext && !loading && <div ref={loadingRef} className="h-4" />}
+      </div>
   );
 };
 

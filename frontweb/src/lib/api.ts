@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 
-const DOMAIN = 'http://localhost:8080';
+const DOMAIN = 'https://blogtag-api.hobeenkim.com'
 
 interface FetchOptions extends RequestInit {
   headers?: Record<string, string>;
@@ -47,8 +47,23 @@ export const removeBookmark = async (postId: string) => {
   });
 };
 
-export const getLikes = async () => {
-  return fetchWithAuth('/likes/me');
+export const getLikes = async (cursorTime?: string) => {
+  const url = cursorTime
+      ? `/likes/me?cursorTime=${cursorTime}`
+      : '/likes/me';
+  return fetchWithAuth(url);
+};
+
+export const like = async (postId: string) => {
+  return fetchWithAuth(`/likes/${postId}`, {
+    method: 'POST',
+  });
+};
+
+export const removeLike = async (postId: string) => {
+  return fetchWithAuth(`/likes/${postId}`, {
+    method: 'DELETE',
+  });
 };
 
 export const getPosts = async (page: number) => {

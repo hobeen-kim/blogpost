@@ -30,6 +30,7 @@ export interface Post {
   thumbnail?: string;
   bookmarked: boolean;
   bookmarkCount: number;
-  likes: number;
+  liked: boolean;
+  likeCount: number;
   comments: number;
 }

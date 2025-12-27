@@ -3,6 +3,11 @@ export interface SliceBookmarkResponse {
   data: PostBookmark[];
 }
 
+export interface SliceLikeResponse {
+  sliceInfo: SliceInfo;
+  data: PostLike[];
+}
+
 export interface SliceInfo {
   size: number;
   hasNext: boolean;
@@ -17,6 +22,17 @@ export interface PostBookmark {
   pubDate: string;
   tags: string[];
   thumbnail?: string;
-  bookmarked: boolean;
   bookmarkedTime: string;
+}
+
+export interface PostLike {
+  postId: string;
+  title: string;
+  description: string;
+  url: string;
+  source: string;
+  pubDate: string;
+  tags: string[];
+  thumbnail?: string;
+  likedTime: string;
 }
