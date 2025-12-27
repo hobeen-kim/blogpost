@@ -11,3 +11,10 @@ spring:
     username: myuser
     password: mypassword
     driver-class-name: org.postgresql.Driver
+
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          jwk-set-uri: https://qxshcgkarlmnzbkiirgo.supabase.co/auth/v1/.well-known/jwks.json
+#          issuer-uri: https://qxshcgkarlmnzbkiirgo.supabase.co/auth/v1

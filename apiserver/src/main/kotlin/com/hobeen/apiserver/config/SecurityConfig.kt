@@ -2,7 +2,9 @@ package com.hobeen.apiserver.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.convert.converter.Converter
 import org.springframework.http.HttpMethod
+import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -13,6 +15,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.header.writers.StaticHeadersWriter
 import org.springframework.web.cors.CorsConfiguration
@@ -20,7 +23,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+class SecurityConfig(
+    private val jwtAuthConverter: Converter<Jwt, out AbstractAuthenticationToken>
+
+) {
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -32,6 +38,9 @@ class SecurityConfig {
             .headers(headersPolicy())
             .sessionManagement(sessionManagementPolicy())
             .authorizeHttpRequests(getAuthorizeRequests())
+            .oauth2ResourceServer { rs ->
+                rs.jwt { jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter) }
+            }
         return http.build()
     }
 

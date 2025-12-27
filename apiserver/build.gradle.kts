@@ -30,6 +30,8 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     //security
     implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+
     //db
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("org.postgresql:postgresql")
