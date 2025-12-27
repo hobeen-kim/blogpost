@@ -32,5 +32,6 @@ export interface Post {
   bookmarkCount: number;
   liked: boolean;
   likeCount: number;
-  comments: number;
+  commented: boolean;
+  commentCount: number;
 }

@@ -69,3 +69,30 @@ export const removeLike = async (postId: string) => {
 export const getPosts = async (page: number) => {
   return fetchWithAuth(`/posts?page=${page}`);
 };
+
+export const getComments = async (postId: string, cursorTime?: string) => {
+  const url = cursorTime
+    ? `/comments/posts/${postId}?cursorTime=${cursorTime}`
+    : `/comments/posts/${postId}`;
+  return fetchWithAuth(url);
+};
+
+export const createComment = async (postId: string, comment: string) => {
+  return fetchWithAuth(`/comments/posts/${postId}`, {
+    method: 'POST',
+    body: JSON.stringify({ comment }),
+  });
+};
+
+export const deleteComment = async (commentId: number) => {
+  return fetchWithAuth(`/comments/${commentId}`, {
+    method: 'DELETE',
+  });
+};
+
+export const updateComment = async (commentId: number, comment: string) => {
+  return fetchWithAuth(`/comments/${commentId}`, {
+    method: 'PUT',
+    body: JSON.stringify({ comment }),
+  });
+};

@@ -88,12 +88,13 @@ const PostGrid: React.FC = () => {
               readTime={post.readTime}
               tags={post.tags}
               thumbnail={post.thumbnail}
-              comments={post.comments}
               url={post.url}
               bookmarked={post.bookmarked}
               bookmarkCount={post.bookmarkCount}
               liked={post.liked}
               likeCount={post.likeCount}
+              commented={post.commented}
+              commentCount={post.commentCount}
               // onLike={() => handlePostLike(post.id)}
               // onComment={() => handlePostComment(post.id)}
             />
