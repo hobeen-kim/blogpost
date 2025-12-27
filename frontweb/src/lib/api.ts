@@ -1,0 +1,56 @@
+import { supabase } from '@/integrations/supabase/client';
+
+const DOMAIN = 'http://localhost:8080';
+
+interface FetchOptions extends RequestInit {
+  headers?: Record<string, string>;
+}
+
+const fetchWithAuth = async (url: string, options: FetchOptions = {}) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+
+  const headers = {
+    ...options.headers,
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+
+  const response = await fetch(`${DOMAIN}${url}`, {
+    ...options,
+    headers,
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Error: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+export const getBookmarks = async (cursorTime?: string) => {
+  const url = cursorTime 
+    ? `/bookmarks/me?cursorTime=${cursorTime}` 
+    : '/bookmarks/me';
+  return fetchWithAuth(url);
+};
+
+export const addBookmark = async (postId: string) => {
+  return fetchWithAuth(`/bookmarks/${postId}`, {
+    method: 'POST',
+  });
+};
+
+export const removeBookmark = async (postId: string) => {
+  return fetchWithAuth(`/bookmarks/${postId}`, {
+    method: 'DELETE',
+  });
+};
+
+export const getLikes = async () => {
+  return fetchWithAuth('/likes/me');
+};
+
+export const getPosts = async (page: number) => {
+  return fetchWithAuth(`/posts?page=${page}`);
+};

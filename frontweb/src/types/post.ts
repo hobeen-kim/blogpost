@@ -19,7 +19,7 @@ export interface PageInfo {
 }
 
 export interface Post {
-  id: string;
+  postId: string;
   title: string;
   description: string;
   url: string;
@@ -28,6 +28,8 @@ export interface Post {
   readTime: string;
   tags: string[];
   thumbnail?: string;
+  bookmarked: boolean;
+  bookmarkCount: number;
   likes: number;
   comments: number;
 }

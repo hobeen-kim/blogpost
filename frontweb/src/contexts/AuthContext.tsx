@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface User {
   id: string;
@@ -17,7 +18,8 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
-  logout: () => void;
+  signOut: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   error: string | null;
@@ -37,31 +39,49 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const isAuthenticated = !!user;
 
-  // Initialize auth state from localStorage
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const token = localStorage.getItem('authToken');
-        const userData = localStorage.getItem('userData');
+        const { data: { session } } = await supabase.auth.getSession();
         
-        if (token && userData) {
-          const parsedUser = JSON.parse(userData);
-          // Validate token with server in real implementation
+        if (session?.user) {
           setUser({
-            ...parsedUser,
-            createdAt: new Date(parsedUser.createdAt)
+            id: session.user.id,
+            email: session.user.email!,
+            name: session.user.user_metadata.full_name || session.user.user_metadata.name || session.user.email!.split('@')[0],
+            avatar: session.user.user_metadata.avatar_url,
+            role: 'user',
+            createdAt: new Date(session.user.created_at),
           });
         }
       } catch (error) {
         console.error('인증 초기화 오류:', error);
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userData');
       } finally {
         setIsLoading(false);
       }
     };
 
     initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email!,
+          name: session.user.user_metadata.full_name || session.user.user_metadata.name || session.user.email!.split('@')[0],
+          avatar: session.user.user_metadata.avatar_url,
+          role: 'user',
+          createdAt: new Date(session.user.created_at),
+        });
+      } else {
+        setUser(null);
+      }
+      setIsLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
@@ -69,42 +89,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      // Mock validation
-      if (email === 'admin@devtag.com' && password === 'password') {
-        const mockUser: User = {
-          id: '1',
-          email: email,
-          name: '관리자',
-          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
-          role: 'admin',
-          createdAt: new Date()
-        };
-
-        const mockToken = 'mock-jwt-token-' + Date.now();
-        
-        localStorage.setItem('authToken', mockToken);
-        localStorage.setItem('userData', JSON.stringify(mockUser));
-        setUser(mockUser);
-      } else if (email.includes('@') && password.length >= 6) {
-        const mockUser: User = {
-          id: '2',
-          email: email,
-          name: email.split('@')[0],
-          role: 'user',
-          createdAt: new Date()
-        };
-
-        const mockToken = 'mock-jwt-token-' + Date.now();
-        
-        localStorage.setItem('authToken', mockToken);
-        localStorage.setItem('userData', JSON.stringify(mockUser));
-        setUser(mockUser);
-      } else {
-        throw new Error('이메일 또는 비밀번호가 올바르지 않습니다.');
-      }
+      if (error) throw error;
     } catch (error) {
       setError(error instanceof Error ? error.message : '로그인에 실패했습니다.');
       throw error;
@@ -118,35 +108,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+          },
+        },
+      });
 
-      // Mock validation
-      if (!email.includes('@')) {
-        throw new Error('올바른 이메일 주소를 입력해주세요.');
-      }
-      
-      if (password.length < 6) {
-        throw new Error('비밀번호는 최소 6자 이상이어야 합니다.');
-      }
-
-      if (name.length < 2) {
-        throw new Error('이름은 최소 2자 이상이어야 합니다.');
-      }
-
-      const mockUser: User = {
-        id: Date.now().toString(),
-        email: email,
-        name: name,
-        role: 'user',
-        createdAt: new Date()
-      };
-
-      const mockToken = 'mock-jwt-token-' + Date.now();
-      
-      localStorage.setItem('authToken', mockToken);
-      localStorage.setItem('userData', JSON.stringify(mockUser));
-      setUser(mockUser);
+      if (error) throw error;
     } catch (error) {
       setError(error instanceof Error ? error.message : '회원가입에 실패했습니다.');
       throw error;
@@ -155,28 +127,48 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = (): void => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userData');
-    setUser(null);
+  const signOut = async (): Promise<void> => {
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      setError(null);
+    } catch (error) {
+      console.error('Logout error', error);
+    }
+  };
+
+  const signInWithGoogle = async (): Promise<void> => {
+    setIsLoading(true);
     setError(null);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        }
+      });
+      if (error) throw error;
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Google 로그인에 실패했습니다.');
+      throw error;
+    }
   };
 
   const updateProfile = async (data: Partial<User>): Promise<void> => {
-    if (!user) {
-      throw new Error('로그인이 필요합니다.');
-    }
-
+    if (!user) return;
     setIsLoading(true);
     setError(null);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const updates: any = {};
+      if (data.name) updates.full_name = data.name;
+      if (data.avatar) updates.avatar_url = data.avatar;
 
-      const updatedUser = { ...user, ...data };
-      localStorage.setItem('userData', JSON.stringify(updatedUser));
-      setUser(updatedUser);
+      const { error } = await supabase.auth.updateUser({
+        data: updates
+      });
+
+      if (error) throw error;
     } catch (error) {
       setError(error instanceof Error ? error.message : '프로필 업데이트에 실패했습니다.');
       throw error;
@@ -190,15 +182,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      if (!email.includes('@')) {
-        throw new Error('올바른 이메일 주소를 입력해주세요.');
-      }
-
-      // In real implementation, this would send a reset email
-      console.log('비밀번호 재설정 이메일이 발송되었습니다:', email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/reset-password',
+      });
+      if (error) throw error;
     } catch (error) {
       setError(error instanceof Error ? error.message : '비밀번호 재설정에 실패했습니다.');
       throw error;
@@ -217,7 +204,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated,
     login,
     register,
-    logout,
+    signOut,
+    signInWithGoogle,
     updateProfile,
     resetPassword,
     error,

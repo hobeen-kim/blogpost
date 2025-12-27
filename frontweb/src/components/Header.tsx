@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Sun, Moon, Menu, User, LogOut } from 'lucide-react';
+import { Search, Sun, Moon, Menu, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useAuth } from '@/contexts/AuthContext';
@@ -7,20 +7,17 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import SearchDialog from '@/components/SearchDialog';
+import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
-  const { user, signInWithGoogle, signOut } = useAuth();
+  const { user, signInWithGoogle } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const handleAuthAction = async () => {
-    if (user) {
-      await signOut();
-    } else {
-      await signInWithGoogle();
-    }
+  const handleLogin = async () => {
+    await signInWithGoogle();
   };
 
   const NavItems = () => (
@@ -54,29 +51,32 @@ const Header: React.FC = () => {
         )}
       </Button>
 
-      <Button
-        variant={user ? "ghost" : "default"}
-        size="sm"
-        onClick={handleAuthAction}
-        className={cn(
-          "flex items-center gap-2",
-          user 
-            ? "text-muted-foreground hover:text-foreground" 
-            : "bg-green-600 hover:bg-green-700 text-white"
-        )}
-      >
-        {user ? (
-          <>
-            <LogOut className="h-4 w-4" />
-            <span>로그아웃</span>
-          </>
-        ) : (
-          <>
-            <User className="h-4 w-4" />
-            <span>구글 로그인</span>
-          </>
-        )}
-      </Button>
+      {user ? (
+        <Link to="/mypage">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <img
+              src={user.avatar || ''}
+              alt={user.name || '사용자'}
+              className="w-6 h-6 rounded-full border border-border"
+            />
+            <span className="max-w-[100px] truncate">{user.name}</span>
+          </Button>
+        </Link>
+      ) : (
+        <Button
+          variant="default"
+          size="sm"
+          onClick={handleLogin}
+          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+        >
+          <User className="h-4 w-4" />
+          <span>구글 로그인</span>
+        </Button>
+      )}
     </>
   );
 
@@ -86,9 +86,11 @@ const Header: React.FC = () => {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between max-w-6xl">
           {/* Logo */}
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-green-600 dark:text-green-400">
-              devTag
-            </h1>
+            <Link to="/">
+              <h1 className="text-2xl font-bold text-green-600 dark:text-green-400">
+                devTag
+              </h1>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
@@ -111,12 +113,12 @@ const Header: React.FC = () => {
                   {user && (
                     <div className="flex items-center space-x-3 pb-4 border-b">
                       <img
-                        src={user.photoURL || ''}
-                        alt={user.displayName || '사용자'}
+                        src={user.avatar || ''}
+                        alt={user.name || '사용자'}
                         className="w-10 h-10 rounded-full"
                       />
                       <div>
-                        <p className="font-medium text-sm">{user.displayName}</p>
+                        <p className="font-medium text-sm">{user.name}</p>
                         <p className="text-xs text-muted-foreground">{user.email}</p>
                       </div>
                     </div>
@@ -127,20 +129,6 @@ const Header: React.FC = () => {
                 </div>
               </SheetContent>
             </Sheet>
-          )}
-
-          {/* User Avatar (Desktop) */}
-          {!isMobile && user && (
-            <div className="flex items-center space-x-3">
-              <img
-                src={user.photoURL || ''}
-                alt={user.displayName || '사용자'}
-                className="w-8 h-8 rounded-full border-2 border-green-200 dark:border-green-800"
-              />
-              <div className="hidden md:block">
-                <p className="text-sm font-medium">{user.displayName}</p>
-              </div>
-            </div>
           )}
         </div>
       </header>

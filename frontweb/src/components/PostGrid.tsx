@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PostCard from '@/components/PostCard';
 import { Loader2 } from 'lucide-react';
 import { Post, PagedResponse } from '@/types/post';
+import {getPosts} from "@/lib/api.ts";
 
 const PostGrid: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -10,12 +11,6 @@ const PostGrid: React.FC = () => {
   const [page, setPage] = useState(0);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadingRef = useRef<HTMLDivElement>(null);
-
-  // Mock data generator
-  const fetchPosts = async (pageNum: number): Promise<PagedResponse> => {
-    const response = await fetch(`https://blogtag-api.hobeenkim.com/posts?page=${pageNum}`);
-    return await response.json();
-  }
 
   // Load posts function
   const loadPosts = useCallback(async (pageNum: number) => {
@@ -26,7 +21,7 @@ const PostGrid: React.FC = () => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const response  = await fetchPosts(pageNum);
+    const response  = await getPosts(pageNum);
 
     const newPosts = response.data
     const pageInfo = response.pageInfo
@@ -96,8 +91,9 @@ const PostGrid: React.FC = () => {
       {/* Posts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {posts.map((post) => (
-          <div key={post.id} className="w-full">
+          <div key={post.postId} className="w-full">
             <PostCard
+              postId={post.postId}
               title={post.title}
               description={post.description}
               author={post.source}
@@ -108,6 +104,8 @@ const PostGrid: React.FC = () => {
               likes={post.likes}
               comments={post.comments}
               url={post.url}
+              isBookmarked={post.bookmarked}
+              bookmarkCount={post.bookmarkCount}
               // onLike={() => handlePostLike(post.id)}
               // onComment={() => handlePostComment(post.id)}
             />

@@ -6,8 +6,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Calendar, User, Heart, MessageCircle, Share2, Bookmark } from "lucide-react";
+import { addBookmark, removeBookmark } from '@/lib/api';
 
 interface PostCardProps {
+  postId: string;
   title: string;
   description: string;
   author: string;
@@ -23,6 +25,7 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({
+  postId,
   title = "React와 TypeScript로 모던 웹 개발하기",
   description = "React와 TypeScript를 활용하여 타입 안전성을 보장하면서도 효율적인 웹 애플리케이션을 개발하는 방법에 대해 알아보겠습니다. 최신 개발 트렌드와 베스트 프랙티스를 포함한 실무 중심의 가이드입니다.",
   author = "김개발자",
@@ -30,7 +33,7 @@ const PostCard: React.FC<PostCardProps> = ({
   readTime = "5분 읽기",
   tags = ["React", "TypeScript", "웹개발"],
   thumbnail = "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=400&fit=crop",
-  likes = 42,
+  bookmarkCount = 0,
   comments = 8,
   isBookmarked = false,
   className,
@@ -41,28 +44,9 @@ const PostCard: React.FC<PostCardProps> = ({
   const { toast } = useToast();
   const [liked, setLiked] = React.useState(false);
   const [bookmarked, setBookmarked] = React.useState(isBookmarked);
-  const [likeCount, setLikeCount] = React.useState(likes);
+  const [bookmarkNumber, setBookmarkNumber] = React.useState(bookmarkCount);
 
-  const handleLike = () => {
-    if (!user) {
-      toast({
-        title: "로그인이 필요합니다",
-        description: "좋아요를 누르려면 먼저 로그인해주세요.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setLiked(!liked);
-    setLikeCount(prev => liked ? prev - 1 : prev + 1);
-    
-    toast({
-      title: liked ? "좋아요 취소" : "좋아요!",
-      description: liked ? "좋아요를 취소했습니다." : "포스트에 좋아요를 눌렀습니다."
-    });
-  };
-
-  const handleBookmark = () => {
+  const handleBookmark = async () => {
     if (!user) {
       toast({
         title: "로그인이 필요합니다",
@@ -72,11 +56,31 @@ const PostCard: React.FC<PostCardProps> = ({
       return;
     }
 
-    setBookmarked(!bookmarked);
-    toast({
-      title: bookmarked ? "북마크 제거" : "북마크 추가",
-      description: bookmarked ? "북마크에서 제거했습니다." : "북마크에 추가했습니다."
-    });
+    try {
+      if (bookmarked) {
+        await removeBookmark(postId);
+        setBookmarked(false);
+        toast({
+          title: "북마크 제거",
+          description: "북마크에서 제거했습니다."
+        });
+      } else {
+        await addBookmark(postId);
+        setBookmarked(true);
+        toast({
+          title: "북마크 추가",
+          description: "북마크에 추가했습니다."
+        });
+      }
+
+      setBookmarkNumber(prev => bookmarked ? prev - 1 : prev + 1);
+    } catch (error) {
+      toast({
+        title: "오류 발생",
+        description: "북마크 처리 중 오류가 발생했습니다.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleShare = async () => {
@@ -216,13 +220,13 @@ const PostCard: React.FC<PostCardProps> = ({
         {/* 액션 버튼들 */}
         <div className="flex items-center justify-between pt-3 border-t border-gray-200/50 dark:border-gray-700/50">
           <div className="flex items-center gap-4">
+
             {/* 좋아요 버튼 */}
             <Button
               variant="ghost"
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
-                handleLike();
               }}
               className={cn(
                 "flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-200",
@@ -232,7 +236,27 @@ const PostCard: React.FC<PostCardProps> = ({
               )}
             >
               <Heart className={cn("h-4 w-4", liked && "fill-current")} />
-              <span className="text-sm font-medium">{likeCount}</span>
+              <span className="text-sm font-medium">{bookmarkCount}</span>
+            </Button>
+
+            {/* 북마크 버튼 */}
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleBookmark();
+
+                }}
+                className={cn(
+                    "flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-200",
+                    bookmarked
+                        ? "text-green-500 hover:text-green-600 hover:bg-red-50 dark:hover:bg-red-500/10"
+                        : "text-gray-500 hover:text-green-500 hover:bg-gray-100 dark:hover:bg-gray-700"
+                )}
+            >
+              <Bookmark className={cn("h-4 w-4", bookmarked && "fill-current")} />
+              <span className="text-sm font-medium">{bookmarkNumber}</span>
             </Button>
 
             {/* 댓글 버튼 */}
