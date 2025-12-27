@@ -78,6 +78,7 @@ class SecurityConfig(
 
     private fun getAuthorizeRequests(): (AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry) -> Unit = {
         it
+            .requestMatchers("/bookmarks/**").authenticated()
             .anyRequest().permitAll()
     }
 }

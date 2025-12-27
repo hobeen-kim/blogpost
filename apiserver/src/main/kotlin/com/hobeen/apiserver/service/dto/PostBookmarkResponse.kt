@@ -3,7 +3,7 @@ package com.hobeen.apiserver.service.dto
 import com.hobeen.apiserver.entity.Post
 import java.time.LocalDateTime
 
-data class PostResponse (
+data class PostBookmarkResponse (
     val postId: Long,
     val title: String,
     val source: String,
@@ -12,12 +12,11 @@ data class PostResponse (
     val description: String,
     val thumbnail: String,
     val tags: List<String>,
-    val bookmarked: Boolean,
-    val bookmarkCount: Long,
+    val bookmarkedTime: LocalDateTime,
 ) {
     companion object {
-        fun of(post: Post, bookmarked: Boolean, bookmarkCount: Long): PostResponse {
-            return PostResponse(
+        fun of(post: Post, bookmarkedTime: LocalDateTime): PostBookmarkResponse {
+            return PostBookmarkResponse(
                 postId = post.postId,
                 title = post.title,
                 source = post.source,
@@ -26,8 +25,7 @@ data class PostResponse (
                 description = post.description,
                 thumbnail = post.thumbnail,
                 tags = post.tags.map { it.tag.name },
-                bookmarked = bookmarked,
-                bookmarkCount = bookmarkCount,
+                bookmarkedTime = bookmarkedTime
             )
         }
     }
