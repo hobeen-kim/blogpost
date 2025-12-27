@@ -55,7 +55,7 @@ class SecurityConfig(
     fun headersPolicy(): Customizer<HeadersConfigurer<HttpSecurity>> {
         return Customizer { headers ->
             headers.cacheControl { it.disable() }
-            headers.addHeaderWriter(StaticHeadersWriter("Cache-Control", "max-age=3600"))
+//            headers.addHeaderWriter(StaticHeadersWriter("Cache-Control", "max-age=3600"))
         }
     }
 
