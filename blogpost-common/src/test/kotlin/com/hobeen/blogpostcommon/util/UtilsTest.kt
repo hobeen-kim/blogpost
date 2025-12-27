@@ -21,7 +21,21 @@ class UtilsTest {
         //then
         assertThat(date1_1).isEqualTo(LocalDateTime.of(2025, 12, 9, 0, 0, 0))
         assertThat(date1_2).isEqualTo(LocalDateTime.of(2025, 12, 19, 0, 0, 0))
+    }
 
+    @Test
+    @DisplayName("localdatetime 변환 2")
+    fun localDateParseTest2() {
+        //given
+        val date1_1Str = "Tue, 16 Dec 2025 15:19:27"
+        val date1_2Str = "Mon, 8 Dec 2025 15:01:27"
 
+        //when
+        val date1_1 = localDateParse(date1_1Str)
+        val date1_2 = localDateParse(date1_2Str)
+
+        //then
+        assertThat(date1_1).isEqualTo(LocalDateTime.of(2025, 12, 16, 15, 19, 27))
+        assertThat(date1_2).isEqualTo(LocalDateTime.of(2025, 12, 8, 15, 1, 27))
     }
 }

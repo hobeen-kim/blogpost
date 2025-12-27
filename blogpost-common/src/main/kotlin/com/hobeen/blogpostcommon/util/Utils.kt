@@ -1,5 +1,6 @@
 package com.hobeen.blogpostcommon.util
 
+import org.springframework.cglib.core.Local
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -11,6 +12,7 @@ import java.util.Locale
 private val seoulZone = ZoneId.of("Asia/Seoul")
 private val engFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy", Locale.ENGLISH)
 private val korFormatter = DateTimeFormatter.ofPattern("M월 d, yyyy", Locale.KOREAN)
+private val formatter6 = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss", Locale.ENGLISH)
 
 fun localDateParse(dateStr: String?): LocalDateTime? {
 
@@ -30,6 +32,9 @@ fun localDateParse(dateStr: String?): LocalDateTime? {
 
     //12월 9, 2025
     check5DateTime(dateStr)?.let { return it }
+
+    //Tue, 16 Dec 2025 15:19:27
+    check6DateTime(dateStr)?.let { return it }
 
     //localdatetime
     if(dateStr.length <= 19) {
@@ -93,6 +98,14 @@ private fun check4DateTime(dateStr: String): LocalDateTime? {
 private fun check5DateTime(dateStr: String): LocalDateTime? {
     return try {
         LocalDate.parse(dateStr, korFormatter).atStartOfDay()
+    } catch (e: DateTimeParseException) {
+        null
+    }
+}
+
+private fun check6DateTime(dateStr: String): LocalDateTime? {
+    return try {
+        LocalDateTime.parse(dateStr, formatter6)
     } catch (e: DateTimeParseException) {
         null
     }
