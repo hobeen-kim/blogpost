@@ -78,6 +78,8 @@ class SecurityConfig(
 
     private fun getAuthorizeRequests(): (AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry) -> Unit = {
         it
+            .requestMatchers(HttpMethod.GET, "/comments/**").permitAll()
+            .requestMatchers( "/comments/**").authenticated()
             .requestMatchers("/bookmarks/**").authenticated()
             .requestMatchers("/likes/**").authenticated()
             .anyRequest().permitAll()

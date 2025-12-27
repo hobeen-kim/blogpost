@@ -13,17 +13,18 @@ data class PostResponse (
     val thumbnail: String,
     val tags: List<String>,
     val bookmarked: Boolean,
-    val bookmarkCount: Long,
+    val bookmarkCount: Int,
     val liked: Boolean,
-    val likeCount: Long,
+    val likeCount: Int,
+    val commented: Boolean,
+    val commentCount: Int,
 ) {
     companion object {
         fun of(
             post: Post,
             bookmarked: Boolean,
-            bookmarkCount: Long,
             liked: Boolean,
-            likeCount: Long,
+            commented: Boolean,
         ): PostResponse {
             return PostResponse(
                 postId = post.postId,
@@ -35,9 +36,32 @@ data class PostResponse (
                 thumbnail = post.thumbnail,
                 tags = post.tags.map { it.tag.name },
                 bookmarked = bookmarked,
-                bookmarkCount = bookmarkCount,
+                bookmarkCount = post.bookmarks.size,
                 liked = liked,
-                likeCount = likeCount,
+                likeCount = post.likes.size,
+                commented = commented,
+                commentCount = post.comments.size
+            )
+        }
+
+        fun ofOnlyPost(
+            post: Post,
+        ): PostResponse {
+            return PostResponse(
+                postId = post.postId,
+                title = post.title,
+                source = post.source,
+                url = post.url,
+                pubDate = post.pubDate,
+                description = post.description,
+                thumbnail = post.thumbnail,
+                tags = post.tags.map { it.tag.name },
+                bookmarked = false,
+                bookmarkCount = 0,
+                liked = false,
+                likeCount = 0,
+                commented = false,
+                commentCount = 0,
             )
         }
     }

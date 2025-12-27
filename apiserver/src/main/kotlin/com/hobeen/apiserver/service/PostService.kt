@@ -1,6 +1,7 @@
 package com.hobeen.apiserver.service
 
 import com.hobeen.apiserver.repository.BookmarkRepository
+import com.hobeen.apiserver.repository.CommentRepository
 import com.hobeen.apiserver.repository.LikeRepository
 import com.hobeen.apiserver.repository.PostRepository
 import com.hobeen.apiserver.service.dto.PostResponse
@@ -15,6 +16,7 @@ class PostService(
     private val postRepository: PostRepository,
     private val bookmarkRepository: BookmarkRepository,
     private val likeRepository: LikeRepository,
+    private val commentRepository: CommentRepository,
 ) {
 
     fun getPosts(pageable: Pageable): Page<PostResponse> {
@@ -23,34 +25,29 @@ class PostService(
 
         val postIds = posts.content.map { it.postId }
 
-        val bookmarkCounts = bookmarkRepository.countsByPostIds(postIds)
-        val likeCounts = likeRepository.countsByPostIds(postIds)
-
         if(isLogin()) {
             val bookmarked = bookmarkRepository.existsByPostIds(authUserId(), postIds)
             val liked = likeRepository.existsByPostIds(authUserId(), postIds)
+            val commented = commentRepository.existsByPostIds(authUserId(), postIds)
 
             return posts.map {
                 PostResponse.of(
                     post = it,
                     bookmarked = bookmarked[it.postId] == true,
-                    bookmarkCount = bookmarkCounts[it.postId] ?: 0L,
                     liked = liked[it.postId] == true,
-                    likeCount = likeCounts[it.postId] ?: 0L
+                    commented = commented[it.postId] == true,
                 ) }
         } else {
             return posts.map { PostResponse.of(
                 post = it,
                 bookmarked = false,
-                bookmarkCount = bookmarkCounts[it.postId] ?: 0L,
                 liked = false,
-                likeCount = likeCounts[it.postId] ?: 0L
+                commented = false,
             ) }
         }
-
     }
 
     fun searchPosts(search: String, pageable: Pageable): List<PostResponse> {
-        return postRepository.findBySearch(search, pageable).map { PostResponse.of(it, false, 0, false, 0) }
+        return postRepository.findBySearch(search, pageable).map { PostResponse.ofOnlyPost(it) }
     }
 }

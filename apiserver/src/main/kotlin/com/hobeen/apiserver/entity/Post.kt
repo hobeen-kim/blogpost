@@ -16,5 +16,12 @@ class Post (
     val thumbnail: String,
 
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val tags: MutableList<PostTag>
+    val tags: MutableList<PostTag>,
+
+    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val bookmarks: MutableList<Bookmark>,
+    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val likes: MutableList<Like>,
+    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val comments: MutableList<Comment>,
 )
