@@ -1,54 +1,46 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PostCard from '@/components/PostCard';
 import PostHorizontalCard from '@/components/PostHorizontalCard';
-import { Loader2 } from 'lucide-react';
-import { Post, PagedResponse } from '@/types/post';
-import {getPosts} from "@/lib/api.ts";
+import { Loader2, LayoutGrid, List } from 'lucide-react';
+import { Post } from '@/types/post';
+import { getPosts } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const PostGrid: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadingRef = useRef<HTMLDivElement>(null);
 
-  // Load posts function
   const loadPosts = useCallback(async (pageNum: number) => {
     if (loading) return;
     
     setLoading(true);
     
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const response  = await getPosts(pageNum);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await getPosts(pageNum);
+      const newPosts = response.data;
+      const pageInfo = response.pageInfo;
 
-    const newPosts = response.data
-    const pageInfo = response.pageInfo
-
-    console.log(pageInfo)
-
-    if (pageNum === 0) {
-      setPosts(newPosts);
-    } else {
-      setPosts(prev => [...prev, ...newPosts]);
+      setPosts(prev => pageNum === 0 ? newPosts : [...prev, ...newPosts]);
+      setHasMore(pageInfo.hasNext);
+    } catch (error) {
+      console.error("Failed to load posts:", error);
+      // Optionally, handle the error in the UI
+    } finally {
+      setLoading(false);
     }
-    
-    // Simulate end of data after 5 pages
-    if (!pageInfo.hasNext) {
-      setHasMore(false);
-    }
-    
-    setLoading(false);
   }, [loading]);
 
-  // Initial load
   useEffect(() => {
     loadPosts(0);
   }, []);
 
-  // Intersection Observer for infinite scroll
   useEffect(() => {
     if (loading || !hasMore) return;
 
@@ -76,49 +68,48 @@ const PostGrid: React.FC = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-6">
+      {/* View Mode Toggle */}
+      <div className="hidden md:flex justify-end mb-4">
+        <div className="inline-flex items-center rounded-md bg-muted p-1">
+          <Button
+            variant={viewMode === 'grid' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('grid')}
+            className={cn("h-8 px-3", viewMode === 'grid' && "shadow-sm bg-background text-foreground")}
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={viewMode === 'list' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('list')}
+            className={cn("h-8 px-3", viewMode === 'list' && "shadow-sm bg-background text-foreground")}
+          >
+            <List className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
       {/* Posts Grid */}
-      <div className="grid grid-cols-1 gap-6">
+      <div className={cn(
+        "grid gap-6",
+        "grid-cols-1", // Mobile default
+        "md:grid-cols-1", // Desktop list view
+        viewMode === 'grid' && "md:grid-cols-2" // Desktop grid view
+      )}>
         {posts.map((post) => (
           <div key={post.postId} className="w-full">
-            {/* Mobile View */}
+            {/* Mobile View (always PostCard) */}
             <div className="block md:hidden">
-              <PostCard
-                postId={post.postId}
-                title={post.title}
-                description={post.description}
-                author={post.source}
-                pubDate={post.pubDate}
-                readTime={post.readTime}
-                tags={post.tags}
-                thumbnail={post.thumbnail}
-                url={post.url}
-                bookmarked={post.bookmarked}
-                bookmarkCount={post.bookmarkCount}
-                liked={post.liked}
-                likeCount={post.likeCount}
-                commented={post.commented}
-                commentCount={post.commentCount}
-              />
+              <PostCard {...post} />
             </div>
-            {/* Desktop View */}
+            {/* Desktop View (conditional) */}
             <div className="hidden md:block">
-              <PostHorizontalCard
-                postId={post.postId}
-                title={post.title}
-                description={post.description}
-                author={post.source}
-                pubDate={post.pubDate}
-                readTime={post.readTime}
-                tags={post.tags}
-                thumbnail={post.thumbnail}
-                url={post.url}
-                bookmarked={post.bookmarked}
-                bookmarkCount={post.bookmarkCount}
-                liked={post.liked}
-                likeCount={post.likeCount}
-                commented={post.commented}
-                commentCount={post.commentCount}
-              />
+              {viewMode === 'list' ? (
+                <PostHorizontalCard {...post} />
+              ) : (
+                <PostCard {...post} />
+              )}
             </div>
           </div>
         ))}
