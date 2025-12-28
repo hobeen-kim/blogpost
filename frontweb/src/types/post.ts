@@ -34,4 +34,5 @@ export interface Post {
   likeCount: number;
   commented: boolean;
   commentCount: number;
+  metadata: object;
 }

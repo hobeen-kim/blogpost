@@ -23,6 +23,7 @@ export interface PostBookmark {
   tags: string[];
   thumbnail?: string;
   bookmarkedTime: string;
+  metadata: object;
 }
 
 export interface PostLike {
@@ -35,4 +36,5 @@ export interface PostLike {
   tags: string[];
   thumbnail?: string;
   likedTime: string;
+  metadata: object;
 }

@@ -127,12 +127,13 @@ const Bookmarks = () => {
               postId={bookmark.postId}
               title={bookmark.title}
               description={bookmark.description}
-              author={bookmark.source}
+              source={bookmark.source}
               pubDate={bookmark.pubDate}
               tags={bookmark.tags}
               thumbnail={bookmark.thumbnail}
               isBookmarked={true}
               url={bookmark.url}
+              metadata={bookmark.metadata}
               onBookmarkChange={(isBookmarked) => handleBookmarkChange(bookmark.postId, isBookmarked)}
             />
           ))}
@@ -219,19 +220,20 @@ const Likes = () => {
             <p className="text-muted-foreground">저장된 좋아요가 없습니다.</p>
         ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {likes.map((bookmark) => (
+              {likes.map((like) => (
                   <PostLikeCard
-                      key={bookmark.postId}
-                      postId={bookmark.postId}
-                      title={bookmark.title}
-                      description={bookmark.description}
-                      author={bookmark.source}
-                      pubDate={bookmark.pubDate}
-                      tags={bookmark.tags}
-                      thumbnail={bookmark.thumbnail}
+                      key={like.postId}
+                      postId={like.postId}
+                      title={like.title}
+                      description={like.description}
+                      source={like.source}
+                      pubDate={like.pubDate}
+                      tags={like.tags}
+                      thumbnail={like.thumbnail}
                       liked={true}
-                      url={bookmark.url}
-                      onLikeChange={(liked) => handleLikeChange(bookmark.postId, liked)}
+                      url={like.url}
+                      metadata={like.metadata}
+                      onLikeChange={(liked) => handleLikeChange(like.postId, liked)}
                   />
               ))}
             </div>

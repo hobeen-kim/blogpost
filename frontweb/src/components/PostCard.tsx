@@ -26,6 +26,7 @@ interface PostCardProps {
   commentCount: number;
   className?: string;
   url: string;
+  metadata: object;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -44,7 +45,8 @@ const PostCard: React.FC<PostCardProps> = ({
   commented,
   commentCount,
   className,
-  url
+  url,
+  metadata,
 }) => {
   const { theme } = useTheme();
   const { user } = useAuth();
@@ -56,6 +58,7 @@ const PostCard: React.FC<PostCardProps> = ({
   const [isCommented, setCommented] = React.useState(commented);
   const [commentNumber, setCommentNumber] = React.useState(commentCount);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
 
   const handleBookmark = async () => {
     if (!user) {
@@ -241,8 +244,17 @@ const PostCard: React.FC<PostCardProps> = ({
             theme === 'dark' ? "text-gray-400" : "text-gray-600"
           )}>
             <div className="flex items-center gap-1">
-              <User className="h-4 w-4" />
-              <span>{source}</span>
+              {!logoError ? (
+                <img 
+                  src={`/logo/${source}.png`} 
+                  alt={source} 
+                  className="h-4 w-4 rounded-sm"
+                  onError={() => setLogoError(true)}
+                />
+              ) : (
+                <User className="h-4 w-4" />
+              )}
+              <span>{metadata['ko'] ?? source}</span>
             </div>
             <div className="flex items-center gap-1">
               <Calendar className="h-4 w-4" />

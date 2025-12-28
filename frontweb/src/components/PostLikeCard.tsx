@@ -1,18 +1,18 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import {Share2, Heart} from "lucide-react";
+import {Share2, Heart, User} from "lucide-react";
 import {like, removeLike} from '@/lib/api';
 
 interface PostLikeCardProps {
   postId: string;
   title: string;
   description: string;
-  author: string;
+  source: string;
   pubDate?: string;
   tags: string[];
   thumbnail?: string;
@@ -20,13 +20,14 @@ interface PostLikeCardProps {
   className?: string;
   url: string;
   onLikeChange?: (liked: boolean) => void;
+  metadata: object;
 }
 
 const PostLikeCard: React.FC<PostLikeCardProps> = ({
   postId,
   title,
   description,
-  author,
+  source,
   pubDate,
   tags,
   thumbnail,
@@ -34,11 +35,13 @@ const PostLikeCard: React.FC<PostLikeCardProps> = ({
   className,
   url,
   onLikeChange,
+  metadata,
 }) => {
   const { theme } = useTheme();
   const { user } = useAuth();
   const { toast } = useToast();
   const [isLiked, setLiked] = React.useState(liked);
+  const [logoError, setLogoError] = useState(false);
 
   const handleLike = async () => {
     if (!user) {
@@ -200,7 +203,17 @@ const PostLikeCard: React.FC<PostLikeCardProps> = ({
             "flex items-center gap-2 text-xs",
             theme === 'dark' ? "text-gray-500" : "text-gray-500"
           )}>
-            <span className="truncate max-w-[80px]">{author}</span>
+            {!logoError ? (
+                <img
+                    src={`/logo/${source}.png`}
+                    alt={source}
+                    className="h-3.5 w-3.5 rounded-sm"
+                    onError={() => setLogoError(true)}
+                />
+            ) : (
+                <User className="h-3.5 w-3.5" />
+            )}
+            <span className="truncate max-w-[80px]">{metadata['ko'] ?? source}</span>
             <span>•</span>
             <span>{getFormattedDate(pubDate)}</span>
           </div>

@@ -26,6 +26,7 @@ interface PostCardProps {
   commentCount: number;
   className?: string;
   url: string;
+  metadata: object;
 }
 
 const PostHorizontalCard: React.FC<PostCardProps> = ({
@@ -44,7 +45,8 @@ const PostHorizontalCard: React.FC<PostCardProps> = ({
   commented,
   commentCount,
   className,
-  url
+  url,
+  metadata,
 }) => {
   const { theme } = useTheme();
   const { user } = useAuth();
@@ -56,6 +58,7 @@ const PostHorizontalCard: React.FC<PostCardProps> = ({
   const [isCommented, setCommented] = React.useState(commented);
   const [commentNumber, setCommentNumber] = React.useState(commentCount);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
 
   const handleBookmark = async () => {
     if (!user) {
@@ -227,8 +230,17 @@ const PostHorizontalCard: React.FC<PostCardProps> = ({
                 theme === 'dark' ? "text-gray-400" : "text-gray-600"
               )}>
                 <div className="flex items-center gap-1">
-                  <User className="h-3.5 w-3.5" />
-                  <span>{source}</span>
+                  {!logoError ? (
+                    <img 
+                      src={`/logo/${source}.png`} 
+                      alt={source} 
+                      className="h-3.5 w-3.5 rounded-sm"
+                      onError={() => setLogoError(true)}
+                    />
+                  ) : (
+                    <User className="h-3.5 w-3.5" />
+                  )}
+                  <span>{metadata['ko'] ?? source}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Calendar className="h-3.5 w-3.5" />

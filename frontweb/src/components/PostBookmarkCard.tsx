@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -12,7 +12,7 @@ interface PostBookmarkCardProps {
   postId: string;
   title: string;
   description: string;
-  author: string;
+  source: string;
   pubDate?: string;
   tags: string[];
   thumbnail?: string;
@@ -20,25 +20,28 @@ interface PostBookmarkCardProps {
   className?: string;
   url: string;
   onBookmarkChange?: (isBookmarked: boolean) => void;
+  metadata: object,
 }
 
 const PostBookmarkCard: React.FC<PostBookmarkCardProps> = ({
   postId,
   title,
   description,
-  author,
+  source,
   pubDate,
   tags,
   thumbnail,
   isBookmarked = false,
   className,
   url,
-  onBookmarkChange
+  onBookmarkChange,
+  metadata,
 }) => {
   const { theme } = useTheme();
   const { user } = useAuth();
   const { toast } = useToast();
   const [bookmarked, setBookmarked] = React.useState(isBookmarked);
+  const [logoError, setLogoError] = useState(false);
 
   const handleBookmark = async () => {
     if (!user) {
@@ -201,7 +204,17 @@ const PostBookmarkCard: React.FC<PostBookmarkCardProps> = ({
             "flex items-center gap-2 text-xs",
             theme === 'dark' ? "text-gray-500" : "text-gray-500"
           )}>
-            <span className="truncate max-w-[80px]">{author}</span>
+            {!logoError ? (
+                <img
+                    src={`/logo/${source}.png`}
+                    alt={source}
+                    className="h-3.5 w-3.5 rounded-sm"
+                    onError={() => setLogoError(true)}
+                />
+            ) : (
+                <User className="h-3.5 w-3.5" />
+            )}
+            <span className="truncate max-w-[80px]">{metadata['ko'] ?? source}</span>
             <span>•</span>
             <span>{getFormattedDate(pubDate)}</span>
           </div>
