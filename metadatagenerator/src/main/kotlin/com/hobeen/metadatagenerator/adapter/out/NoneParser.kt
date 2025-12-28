@@ -24,6 +24,7 @@ class NoneParser: ParseHtmlMetadataPort {
             thumbnail = getDefault(parserProps.props, "thumbnail-default"),
             tags = listOf(),
             description = getDefault(parserProps.props, "description-default") ?: "",
+            content = ""
         )
     }
 

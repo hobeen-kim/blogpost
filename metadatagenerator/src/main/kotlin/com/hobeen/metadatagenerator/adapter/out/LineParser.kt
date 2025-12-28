@@ -33,6 +33,7 @@ class LineParser: ParseHtmlMetadataPort {
             thumbnail = thumbnail,
             tags = listOf(), //tag 없음
             description = description,
+            content = doc.select("div.content").text()
         )
     }
 }

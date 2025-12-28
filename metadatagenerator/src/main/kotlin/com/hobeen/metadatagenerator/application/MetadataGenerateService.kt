@@ -20,8 +20,6 @@ class MetadataGenerateService(
 
     override fun generate(message: RawMessage): EnrichedMessage {
 
-        if(message.hasAllValues()) return message.toEnrichedMessage()
-        
         //metadata parse
         val parserProp = getParsePropPort.getParseProp(message.source)
 
@@ -36,6 +34,7 @@ class MetadataGenerateService(
             tags = message.tags.ifEmpty { html.tags },
             description = if(message.description.isNullOrBlank()) html.description else message.description,
             thumbnail = getThumbnailOrThrow(message, html),
+            content = html.content
         )
     }
 

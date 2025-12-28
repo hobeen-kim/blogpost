@@ -8,4 +8,5 @@ data class Html (
     val thumbnail: String?,
     val tags: List<String>,
     val description: String,
+    val content: String,
 )

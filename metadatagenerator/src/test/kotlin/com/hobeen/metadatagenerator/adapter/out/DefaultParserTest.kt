@@ -47,6 +47,11 @@ class DefaultParserTest {
             MetadataNode(order = 2, command = Command.DELETE, value = "#"),
         )
 
+        val content = listOf(
+            MetadataNode(order = 1, command = Command.SELECT_FIRST, value = "div.post_des"),
+            MetadataNode(order = 2, command = Command.TEXT, value = ""),
+        )
+
         val parserProps = ParseProps(
             source = "banksalad",
             parser = "default",
@@ -56,7 +61,8 @@ class DefaultParserTest {
                 description = description,
                 thumbnail = thumbnail,
                 pubDate = pubDate,
-                tags = listOf(tag1)
+                tags = listOf(tag1),
+                content = content
             )
         )
 
@@ -70,6 +76,7 @@ class DefaultParserTest {
         assertThat(test1.thumbnail).isNotBlank
         assertThat(test1.tags).containsExactlyInAnyOrder("뱅크샐러드", "뱅크러드Pitstop", "조직문화", "뱅크샐러드문화")
         assertThat(test1.description).isEqualTo("우리는 때때로 잠시 멈춰 지난 여정을 돌아보고, 앞으로 나아갈 방향을 정리하는 시간을 가지기 마련입니다. 뱅크샐러드도 분기마다 지난 시간을 회고하고 새로운 시작을 준비하는 의미 있는 순간을 함께 하고 있는데요. 우리는 이 행사를 *핏스탑(Pit Stop…")
+        println(test1.content)
 
         assertThat(test2.title).isEqualTo("PyCon KR 2019 뱅크샐러드 돌아보기")
         assertThat(test2.pubDate).isEqualTo(LocalDateTime.of(2019, 8, 26, 0, 0, 0))
@@ -286,7 +293,8 @@ class DefaultParserTest {
             description = description,
             thumbnail = thumbnail,
             pubDate = pubDate,
-            tags = listOf(tag1, tag2)
+            tags = listOf(tag1, tag2),
+            content = listOf()
         )
     )
 
@@ -369,66 +377,72 @@ class DefaultParserTest {
 //        assertThat(test2.description).isNotBlank
 //    }
 //
-//    @Test
-//    @DisplayName("toss parser test")
-//    fun parseToss() {
-//        //given
-//        val titleMap = mapOf(
-//            "title" to TextNode(""),
-//        )
-//
-//        val descriptionMap = mapOf(
-//            "selectFirst" to TextNode("head meta[property=og:description]"),
-//            "attr" to TextNode("content")
-//        )
-//
-//        val pubDate = mapOf(
-//            "selectFirst" to TextNode("div.esnk6d50"),
-//            "text" to TextNode(""),
-//        )
-//
-//        val thumbnail = mapOf(
-//            "selectFirst" to TextNode("head meta[property=og:image]"),
-//            "attr" to TextNode("content"),
-//        )
-//
-//        val tag = mapOf(
-//            "tag1" to TextNode("a.p-chip"),
-//            "text" to TextNode(""),
-//        )
-//
-//        val propsMap = mapOf(
-//            "title" to ObjectNode(jsonNodeFactory, titleMap),
-//            "description" to ObjectNode(jsonNodeFactory, descriptionMap),
-//            "pubDate" to ObjectNode(jsonNodeFactory, pubDate),
-//            "thumbnail" to ObjectNode(jsonNodeFactory, thumbnail),
-//            "tag" to ObjectNode(jsonNodeFactory, tag),
-//        )
-//        val propNode = ObjectNode(jsonNodeFactory, propsMap)
-//
-//        val parserProps = ParseProps(
-//            source = "toss",
-//            parser = "default",
-//            props = propNode,
-//        )
-//
-//        //when
-//        val test1 = defaultParser.parse("https://toss.tech/article/commonjs-esm-exports-field", parserProps)
-//        val test2 = defaultParser.parse("https://toss.tech/article/27402", parserProps)
-//
-//        //then
-//        assertThat(test1.title).isEqualTo("CommonJS와 ESM에 모두 대응하는 라이브러리 개발하기: exports field")
-//        assertThat(test1.pubDate).isEqualTo(LocalDateTime.of(2022, 10, 4, 0, 0, 0))
-//        assertThat(test1.thumbnail).isNotBlank
-//        assertThat(test1.tags).containsExactlyInAnyOrder("Node.js", "Frontend")
-//        assertThat(test1.description).isEqualTo("Node.js에는 두 가지 Module System이 존재합니다. 토스 프론트엔드 챕터에서 운영하는 100개가 넘는 라이브러리들은 그것에 어떻게 대응하고 있을까요?")
-//
-//        assertThat(test2.title).isEqualTo("잃어버린 개발자의 시간을 찾아서: 매일 하루를 아끼는 DevOps 이야기")
-//        assertThat(test2.pubDate).isEqualTo(LocalDateTime.of(2021, 6, 8, 0, 0, 0))
-//        assertThat(test2.thumbnail).isNotBlank
-//        assertThat(test2.tags).containsExactlyInAnyOrder("Frontend", "DevOps", "SLASH22")
-//        assertThat(test2.description).isEqualTo("서비스가 지속적으로 최고의 사용자 경험을 제공하기 위해서는 개발자 경험(DX)이 뒷받침되어야 합니다. 토스에서 SSR을 도입하면서 겪었던 개발자 경험의 다양한 어려움과 이를 수호하기 위한 해결법을 공유합니다.")
-//    }
+    @Test
+    @DisplayName("toss parser test")
+    fun parseToss() {
+        //given
+        val title = listOf(
+            MetadataNode(order = 1, command = Command.TITLE, value = ""),
+        )
+
+        val description = listOf(
+            MetadataNode(order = 1, command = Command.SELECT_FIRST, value = "head meta[property=og:description]"),
+            MetadataNode(order = 2, command = Command.ATTR, value = "content"),
+        )
+
+        val pubDate = listOf(
+            MetadataNode(order = 1, command = Command.SELECT_FIRST, value = "div.esnk6d50"),
+            MetadataNode(order = 2, command = Command.TEXT, value = ""),
+        )
+
+        val thumbnail = listOf(
+            MetadataNode(order = 1, command = Command.SELECT_FIRST, value = "head meta[property=og:image]"),
+            MetadataNode(order = 2, command = Command.ATTR, value = "content"),
+        )
+
+        val tag1 = listOf(
+            MetadataNode(order = 1, command = Command.SELECT, value = "a.p-chip"),
+            MetadataNode(order = 2, command = Command.TEXT, value = ""),
+            MetadataNode(order = 2, command = Command.DELETE, value = "#"),
+        )
+
+        val content = listOf(
+            MetadataNode(order = 1, command = Command.SELECT_FIRST, value = "div.css-1vn47db"),
+            MetadataNode(order = 2, command = Command.TEXT, value = ""),
+        )
+
+        val parserProps = ParseProps(
+        source = "toss",
+        parser = "default",
+        props = ObjectNode(jsonNodeFactory),
+        metadata = MetadataNodes(
+            title = title,
+            description = description,
+            thumbnail = thumbnail,
+            pubDate = pubDate,
+            tags = listOf(tag1),
+            content = content
+        )
+    )
+
+        //when
+        val test1 = defaultParser.parse("https://toss.tech/article/commonjs-esm-exports-field", parserProps)
+        val test2 = defaultParser.parse("https://toss.tech/article/27402", parserProps)
+
+        //then
+        assertThat(test1.title).isEqualTo("CommonJS와 ESM에 모두 대응하는 라이브러리 개발하기: exports field")
+        assertThat(test1.pubDate).isEqualTo(LocalDateTime.of(2022, 10, 4, 0, 0, 0))
+        assertThat(test1.thumbnail).isNotBlank
+        assertThat(test1.tags).containsExactlyInAnyOrder("Node.js", "Frontend")
+        assertThat(test1.description).isEqualTo("Node.js에는 두 가지 Module System이 존재합니다. 토스 프론트엔드 챕터에서 운영하는 100개가 넘는 라이브러리들은 그것에 어떻게 대응하고 있을까요?")
+        println(test1.content)
+
+        assertThat(test2.title).isEqualTo("잃어버린 개발자의 시간을 찾아서: 매일 하루를 아끼는 DevOps 이야기")
+        assertThat(test2.pubDate).isEqualTo(LocalDateTime.of(2021, 6, 8, 0, 0, 0))
+        assertThat(test2.thumbnail).isNotBlank
+        assertThat(test2.tags).containsExactlyInAnyOrder("Frontend", "DevOps", "SLASH22")
+        assertThat(test2.description).isEqualTo("서비스가 지속적으로 최고의 사용자 경험을 제공하기 위해서는 개발자 경험(DX)이 뒷받침되어야 합니다. 토스에서 SSR을 도입하면서 겪었던 개발자 경험의 다양한 어려움과 이를 수호하기 위한 해결법을 공유합니다.")
+    }
 //
 //    @Test
 //    @DisplayName("aws parser test")

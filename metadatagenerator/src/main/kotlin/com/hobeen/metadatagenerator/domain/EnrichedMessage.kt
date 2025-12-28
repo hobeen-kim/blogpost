@@ -10,4 +10,5 @@ class EnrichedMessage (
     val tags: List<String>,
     val description: String,
     val thumbnail: String,
+    val content: String,
 )

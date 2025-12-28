@@ -17,6 +17,7 @@ data class MetadataNodes(
     val thumbnail: List<MetadataNode>,
     val pubDate: List<MetadataNode>,
     val tags: List<List<MetadataNode>>,
+    val content: List<MetadataNode>,
 )
 
 data class MetadataNode(

@@ -36,12 +36,15 @@ class MediumParser: ParseHtmlMetadataPort {
 
         val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content")
 
+        val content = doc.select("p.pw-post-body-paragraph").text()
+
         return Html(
             title = refineTitle(title),
             pubDate = pubDate,
             thumbnail = thumbnail,
             tags = listOf(), //medium 은 tag 읽기 어려움, rss 에서 읽어야 함
             description = description,
+            content = content
         )
     }
 }

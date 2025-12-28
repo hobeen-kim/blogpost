@@ -38,7 +38,8 @@ class ParsePropsEntity (
                 tags = listOf(
                     nodes.filter { it.metadataName == MetadataName.TAG1 }.map { node -> node.toMetadataNode() },
                     nodes.filter { it.metadataName == MetadataName.TAG2 }.map { node -> node.toMetadataNode() },
-                )
+                ),
+                content = nodes.filter { it.metadataName == MetadataName.CONTENT }.map { node -> node.toMetadataNode() },
             )
         )
     }

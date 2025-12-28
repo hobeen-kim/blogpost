@@ -33,6 +33,7 @@ class DefaultParser: ParseHtmlMetadataPort {
         val pubDateStr = getProperty(doc, parserProps.metadata.pubDate)
         val pubDate = localDateParse(pubDateStr)
         val tags = getTags(doc, parserProps.metadata.tags)
+        val content = getProperty(doc, parserProps.metadata.content)
 
         return Html(
             title = refineTitle(title),
@@ -40,6 +41,7 @@ class DefaultParser: ParseHtmlMetadataPort {
             thumbnail = thumbnail,
             tags = tags,
             description = description,
+            content = content ?: extractMainText(doc)
         )
     }
 
@@ -76,5 +78,26 @@ class DefaultParser: ParseHtmlMetadataPort {
         if(pubStr == "now") return LocalDateTime.now()
 
         return localDateParse(pubStr)
+    }
+
+    fun extractMainText(doc: Document): String {
+        // 스크립트/스타일 제거(텍스트 노이즈 감소)
+        doc.select("script, style, nav, footer, header, aside").remove()
+
+        val candidates = doc.select("article, main, section, div")
+
+        val best = candidates.maxByOrNull { el ->
+            val text = el.text().trim()
+            if (text.length < 200) return@maxByOrNull -1 // 너무 짧으면 제외
+
+            val linkTextLen = el.select("a").text().length
+            val linkRatio = if (text.isNotEmpty()) linkTextLen.toDouble() / text.length else 1.0
+            val pCount = el.select("p").size
+
+            // 점수: 텍스트 길이 + 문단 수 - 링크 비율 페널티
+            (text.length + pCount * 200 - (linkRatio * 2000)).toInt()
+        } ?: doc.body()
+
+        return best.text().replace(Regex("\\s+"), " ").trim()
     }
 }

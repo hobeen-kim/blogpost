@@ -18,21 +18,4 @@ data class RawMessage (
                 && !description.isNullOrBlank()
                 && !thumbnail.isNullOrBlank()
     }
-
-    fun toEnrichedMessage(): EnrichedMessage {
-
-        require(hasAllValues()) { throw IllegalArgumentException("cannot convert to enrichMessage") }
-
-        return EnrichedMessage(
-            title = title!!,
-            source = source,
-            url = url,
-            pubDate = pubDate!!,
-            tags = ArrayList<String>().apply {
-                addAll(tags)
-            },
-            description = description!!,
-            thumbnail = thumbnail!!,
-        )
-    }
 }

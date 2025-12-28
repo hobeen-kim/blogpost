@@ -32,5 +32,5 @@ class ParsePropsMetadataNode (
 }
 
 enum class MetadataName {
-    TITLE, DESCRIPTION, THUMBNAIL, PUB_DATE, TAG1, TAG2,
+    TITLE, DESCRIPTION, THUMBNAIL, PUB_DATE, TAG1, TAG2, CONTENT
 }
