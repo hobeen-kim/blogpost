@@ -10,6 +10,7 @@ data class EnrichedMessage (
     val tags: List<String>,
     val description: String,
     val thumbnail: String,
+    val content: String,
 ): Message {
 
     override fun key(): String {
@@ -20,7 +21,7 @@ data class EnrichedMessage (
         return title.isNotBlank() &&
                 source.isNotBlank() &&
                 url.isNotBlank() &&
-                thumbnail.isNotBlank()
-
+                thumbnail.isNotBlank() &&
+                content.isNotBlank()
     }
 }

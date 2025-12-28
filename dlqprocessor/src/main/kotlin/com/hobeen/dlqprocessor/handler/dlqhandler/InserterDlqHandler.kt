@@ -41,6 +41,7 @@ class InserterDlqHandler(
             tags = message.data.tags,
             description = message.data.description.replace("\\", "").replace("/", ""),
             thumbnail = message.data.thumbnail,
+            content = message.data.content,
         )
 
         //다시 insert 하도록 저장
