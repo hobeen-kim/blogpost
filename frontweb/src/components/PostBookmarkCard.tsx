@@ -160,23 +160,6 @@ const PostBookmarkCard: React.FC<PostBookmarkCardProps> = ({
       </div>
 
       <CardHeader className="p-4 pb-2 space-y-2">
-        {/* 태그들 */}
-        <div className="flex flex-wrap gap-1.5">
-          {tags.slice(0, 3).map((tag, index) => (
-            <span
-              key={index}
-              className={cn(
-                "px-1.5 py-0.5 text-[10px] font-medium rounded-full transition-colors",
-                theme === 'dark'
-                  ? "bg-green-500/20 text-green-400"
-                  : "bg-green-100 text-green-700"
-              )}
-            >
-              #{tag}
-            </span>
-          ))}
-        </div>
-
         {/* 제목 */}
         <h3 className={cn(
           "text-base font-bold line-clamp-2 group-hover:text-green-600 transition-colors duration-200 leading-tight",
@@ -194,6 +177,23 @@ const PostBookmarkCard: React.FC<PostBookmarkCardProps> = ({
         )}>
           {description}
         </p>
+
+        {/* 태그들 */}
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {tags.slice(0, 3).map((tag, index) => (
+            <span
+              key={index}
+              className={cn(
+                "px-1.5 py-0.5 text-[10px] font-medium rounded-full transition-colors",
+                theme === 'dark'
+                  ? "bg-green-500/20 text-green-400"
+                  : "bg-green-100 text-green-700"
+              )}
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
 
         {/* 하단 정보 */}
         <div className="flex items-center justify-between pt-3 border-t border-gray-200/50 dark:border-gray-700/50 mt-auto">

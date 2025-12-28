@@ -9,9 +9,9 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="flex gap-8">
           {/* Left Ad Space */}
-          <div className="hidden xl:block w-64 flex-shrink-0">
-            <AdSpace position="left" />
-          </div>
+          {/*<div className="hidden xl:block w-32 flex-shrink-0">*/}
+          {/*  <AdSpace position="left" />*/}
+          {/*</div>*/}
           
           {/* Main Content */}
           <div className="flex-1">
@@ -19,9 +19,9 @@ const Index = () => {
           </div>
           
           {/* Right Ad Space */}
-          <div className="hidden xl:block w-64 flex-shrink-0">
-            <AdSpace position="right" />
-          </div>
+          {/*<div className="hidden xl:block w-64 flex-shrink-0">*/}
+          {/*  <AdSpace position="right" />*/}
+          {/*</div>*/}
         </div>
       </main>
     </div>

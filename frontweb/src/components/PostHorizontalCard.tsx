@@ -28,7 +28,7 @@ interface PostCardProps {
   url: string;
 }
 
-const PostCard: React.FC<PostCardProps> = ({
+const PostHorizontalCard: React.FC<PostCardProps> = ({
   postId,
   title,
   description,
@@ -155,7 +155,8 @@ const PostCard: React.FC<PostCardProps> = ({
     }
   };
 
-  function getFormattedDate(date: string)  {
+  function getFormattedDate(date?: string)  {
+    if (!date) return '';
     const d = new Date(date);
 
     const y = d.getFullYear();
@@ -191,171 +192,156 @@ const PostCard: React.FC<PostCardProps> = ({
         onClick={handleCardClick}
         className={cn(
         "group cursor-pointer transition-all duration-300 hover:shadow-lg border-0 shadow-sm",
-        "w-full max-w-sm md:max-w-lg lg:max-w-2xl mx-auto",
+        "w-full mx-auto",
+        "flex flex-row",
         theme === 'dark' 
           ? "bg-gray-800/50 hover:bg-gray-800/70 border-gray-700/50" 
           : "bg-white hover:bg-gray-50/80 border-gray-200/50",
         className
       )}>
         {/* 포스트 이미지 */}
-        <div className="relative overflow-hidden rounded-t-lg">
+        <div className="relative overflow-hidden shrink-0 w-72 min-h-[12rem] rounded-l-lg">
           <img
             src={thumbnail || '/placeholder.svg'}
             alt={title}
             onError={handleImageError}
-            className="w-full h-48 md:h-56 lg:h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          
-          {/* 북마크 버튼 */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleBookmark();
-            }}
-            className={cn(
-              "absolute top-3 right-3 p-2 rounded-full backdrop-blur-sm transition-all duration-200",
-              isBookmarked
-                ? "bg-green-500/90 text-white hover:bg-green-600/90"
-                : "bg-white/80 text-gray-700 hover:bg-white/90"
-            )}
-          >
-            <Bookmark className={cn("h-4 w-4", isBookmarked && "fill-current")} />
-          </Button>
         </div>
 
-        <CardHeader className="pb-3">
-          {/* 제목 */}
-          <h3 className={cn(
-            "text-lg md:text-xl font-bold group-hover:text-green-600 transition-colors duration-200",
-            theme === 'dark' ? "text-white" : "text-gray-900"
-          )}>
-            {title}
-          </h3>
+        <div className="flex flex-col flex-1 min-w-0">
+          <CardHeader className="pb-2 pt-4 px-4">
+            <div className="space-y-1 flex-1 min-w-0">
+              {/* 제목 */}
+              <h3 className={cn(
+                "text-lg font-bold group-hover:text-green-600 transition-colors duration-200",
+                theme === 'dark' ? "text-white" : "text-gray-900"
+              )}>
+                {title}
+              </h3>
 
-          {/* 작성자 및 날짜 정보 */}
-          <div className={cn(
-            "flex items-center gap-4 text-sm",
-            theme === 'dark' ? "text-gray-400" : "text-gray-600"
-          )}>
-            <div className="flex items-center gap-1">
-              <User className="h-4 w-4" />
-              <span>{author}</span>
+              {/* 작성자 및 날짜 정보 */}
+              <div className={cn(
+                "flex items-center gap-3 text-xs",
+                theme === 'dark' ? "text-gray-400" : "text-gray-600"
+              )}>
+                <div className="flex items-center gap-1">
+                  <User className="h-3.5 w-3.5" />
+                  <span>{author}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-3.5 w-3.5" />
+                  <span>{getFormattedDate(pubDate)}</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <Calendar className="h-4 w-4" />
-              <span>{getFormattedDate(pubDate)}</span>
-            </div>
-          </div>
-        </CardHeader>
+          </CardHeader>
 
-        <CardContent className="pt-0">
-          {/* 포스트 요약 */}
-          <p className={cn(
-            "text-sm md:text-base line-clamp-3 mb-4 leading-relaxed",
-            theme === 'dark' ? "text-gray-300" : "text-gray-700"
-          )}>
-            {description}
-          </p>
+          <CardContent className="pt-0 px-4 pb-4 flex-1 flex flex-col">
+            {/* 포스트 요약 */}
+            <p className={cn(
+              "text-sm line-clamp-2 mb-3 leading-relaxed",
+              theme === 'dark' ? "text-gray-300" : "text-gray-700"
+            )}>
+              {description}
+            </p>
 
-          {/* 태그들 */}
-          {tags && tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
-              {tags.map((tag, index) => (
-                <span
-                  key={index}
+            {/* 태그들 */}
+            {tags && tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className={cn(
+                      "px-2 py-0.5 text-xs font-medium rounded-full transition-colors",
+                      theme === 'dark'
+                        ? "bg-green-500/20 text-green-400"
+                        : "bg-green-100 text-green-700"
+                    )}
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* 액션 버튼들 */}
+            <div className="flex items-center justify-between pt-3 border-t border-gray-200/50 dark:border-gray-700/50 mt-auto">
+              <div className="flex items-center gap-4">
+                {/* 좋아요 버튼 */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLike()
+                  }}
                   className={cn(
-                    "px-2 py-1 text-xs font-medium rounded-full transition-colors",
-                    theme === 'dark'
-                      ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
-                      : "bg-green-100 text-green-700 hover:bg-green-200"
+                    "flex items-center gap-1.5 px-2 py-1 h-8 rounded-full transition-all duration-200",
+                    isLiked
+                      ? "text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
+                      : "text-gray-500 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700"
                   )}
                 >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          )}
+                  <Heart className={cn("h-4 w-4", isLiked && "fill-current")} />
+                  <span className="text-sm font-medium">{likeNumber}</span>
+                </Button>
 
-          {/* 액션 버튼들 */}
-          <div className="flex items-center justify-between pt-3 border-t border-gray-200/50 dark:border-gray-700/50">
-            <div className="flex items-center gap-4">
-
-              {/* 좋아요 버튼 */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleLike()
-                }}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-200",
-                  isLiked
-                    ? "text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
-                    : "text-gray-500 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700"
-                )}
-              >
-                <Heart className={cn("h-4 w-4", isLiked && "fill-current")} />
-                <span className="text-sm font-medium">{likeNumber}</span>
-              </Button>
-
-              {/* 북마크 버튼 */}
-              <Button
+                {/* 북마크 버튼 */}
+                <Button
                   variant="ghost"
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleBookmark();
-
                   }}
                   className={cn(
-                      "flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-200",
-                      isBookmarked
-                          ? "text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10"
-                          : "text-gray-500 hover:text-green-500 hover:bg-green-100 dark:hover:bg-gray-700"
+                    "flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-200",
+                    isBookmarked
+                      ? "text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10"
+                      : "text-gray-500 hover:text-green-500 hover:bg-green-100 dark:hover:bg-gray-700"
                   )}
-              >
-                <Bookmark className={cn("h-4 w-4", isBookmarked && "fill-current")} />
-                <span className="text-sm font-medium">{bookmarkNumber}</span>
-              </Button>
+                >
+                  <Bookmark className={cn("h-4 w-4", isBookmarked && "fill-current")} />
+                  <span className="text-sm font-medium">{bookmarkNumber}</span>
+                </Button>
 
-              {/* 댓글 버튼 */}
+                {/* 댓글 버튼 */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsCommentOpen(true);
+                  }}
+                  className={cn("flex items-center gap-1.5 px-2 py-1 h-8 rounded-full duration-200",
+                      isCommented
+                        ? "text-blue-500 hover:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
+                          : "text-gray-500 hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
+                  )}
+                >
+                  <MessageCircle className={cn("h-4 w-4", isCommented && "fill-current")}/>
+                  <span className="text-sm font-medium">{commentNumber}</span>
+                </Button>
+              </div>
+
+              {/* 공유 버튼 */}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsCommentOpen(true);
+                  handleShare();
                 }}
-                className={cn("flex items-center gap-2 px-3 py-2 rounded-full duration-200",
-                    isCommented
-                      ? "text-blue-500 hover:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
-                        : "text-gray-500 hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
-                )}
+                className="flex items-center gap-1.5 px-2 py-1 h-8 rounded-full text-gray-500 hover:text-green-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
               >
-                <MessageCircle className={cn("h-4 w-4", isCommented && "fill-current")}/>
-                <span className="text-sm font-medium">{commentNumber}</span>
+                <Share2 className="h-4 w-4" />
+                <span className="text-sm font-medium">공유</span>
               </Button>
             </div>
-
-            {/* 공유 버튼 */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleShare();
-              }}
-              className="flex items-center gap-2 px-3 py-2 rounded-full text-gray-500 hover:text-green-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
-            >
-              <Share2 className="h-4 w-4" />
-              <span className="text-sm font-medium">공유</span>
-            </Button>
-          </div>
-        </CardContent>
+          </CardContent>
+        </div>
       </Card>
 
       <CommentDialog 
@@ -369,4 +355,4 @@ const PostCard: React.FC<PostCardProps> = ({
   );
 };
 
-export default PostCard;
+export default PostHorizontalCard;

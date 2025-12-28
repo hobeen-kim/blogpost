@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PostCard from '@/components/PostCard';
+import PostHorizontalCard from '@/components/PostHorizontalCard';
 import { Loader2 } from 'lucide-react';
 import { Post, PagedResponse } from '@/types/post';
 import {getPosts} from "@/lib/api.ts";
@@ -76,28 +77,49 @@ const PostGrid: React.FC = () => {
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-6">
       {/* Posts Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {posts.map((post) => (
           <div key={post.postId} className="w-full">
-            <PostCard
-              postId={post.postId}
-              title={post.title}
-              description={post.description}
-              author={post.source}
-              pubDate={post.pubDate}
-              readTime={post.readTime}
-              tags={post.tags}
-              thumbnail={post.thumbnail}
-              url={post.url}
-              bookmarked={post.bookmarked}
-              bookmarkCount={post.bookmarkCount}
-              liked={post.liked}
-              likeCount={post.likeCount}
-              commented={post.commented}
-              commentCount={post.commentCount}
-              // onLike={() => handlePostLike(post.id)}
-              // onComment={() => handlePostComment(post.id)}
-            />
+            {/* Mobile View */}
+            <div className="block md:hidden">
+              <PostCard
+                postId={post.postId}
+                title={post.title}
+                description={post.description}
+                author={post.source}
+                pubDate={post.pubDate}
+                readTime={post.readTime}
+                tags={post.tags}
+                thumbnail={post.thumbnail}
+                url={post.url}
+                bookmarked={post.bookmarked}
+                bookmarkCount={post.bookmarkCount}
+                liked={post.liked}
+                likeCount={post.likeCount}
+                commented={post.commented}
+                commentCount={post.commentCount}
+              />
+            </div>
+            {/* Desktop View */}
+            <div className="hidden md:block">
+              <PostHorizontalCard
+                postId={post.postId}
+                title={post.title}
+                description={post.description}
+                author={post.source}
+                pubDate={post.pubDate}
+                readTime={post.readTime}
+                tags={post.tags}
+                thumbnail={post.thumbnail}
+                url={post.url}
+                bookmarked={post.bookmarked}
+                bookmarkCount={post.bookmarkCount}
+                liked={post.liked}
+                likeCount={post.likeCount}
+                commented={post.commented}
+                commentCount={post.commentCount}
+              />
+            </div>
           </div>
         ))}
       </div>
