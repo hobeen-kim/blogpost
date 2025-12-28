@@ -17,7 +17,7 @@ class BookmarkService(
     private val bookmarkRepository: BookmarkRepository,
     private val postRepository: PostRepository,
 
-    private val sourceService: SourceService,
+    private val metadataService: MetadataService,
 ) {
 
     fun bookmark(postId: Long, userId: String) {
@@ -47,7 +47,7 @@ class BookmarkService(
             data = bookmarks.data.map {
 
                 val bookmark = bookmarkMap[it.post.postId] ?: throw IllegalArgumentException("bookmark map error")
-                val metadata = sourceService.getMetadata(it.post.source)
+                val metadata = metadataService.getMetadata(it.post.source)
 
                 PostBookmarkResponse.of(it.post, metadata, bookmark.createdAt)
             },

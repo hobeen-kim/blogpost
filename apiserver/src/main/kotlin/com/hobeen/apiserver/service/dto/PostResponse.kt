@@ -1,8 +1,6 @@
 package com.hobeen.apiserver.service.dto
 
 import com.hobeen.apiserver.entity.Post
-import com.hobeen.apiserver.entity.SourceMetadata
-import com.hobeen.apiserver.service.SourceService
 import java.time.LocalDateTime
 
 data class PostResponse (

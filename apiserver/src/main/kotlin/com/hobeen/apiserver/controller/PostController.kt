@@ -2,6 +2,7 @@ package com.hobeen.apiserver.controller
 
 import com.hobeen.apiserver.service.PostService
 import com.hobeen.apiserver.service.dto.PostResponse
+import com.hobeen.apiserver.service.dto.SourceResponse
 import com.hobeen.apiserver.util.response.ApiResponse
 import com.hobeen.apiserver.util.response.PagedApiResponse
 import org.springframework.data.domain.PageRequest
@@ -22,17 +23,18 @@ class PostController (
     @GetMapping
     fun getPosts(
         @PageableDefault(size = 20, sort = ["pubDate"], direction = Sort.Direction.DESC) pageable: Pageable,
+        @RequestParam(value = "q", required = false) query: String?,
+        @RequestParam(value = "blog", required = false) sources: List<String>?,
     ): PagedApiResponse<PostResponse> {
-        return PagedApiResponse.of(postService.getPosts(pageable))
+        return PagedApiResponse.of(postService.getPosts(
+            search = query,
+            sources = sources,
+            pageable = pageable
+        ))
     }
 
-    @GetMapping("search")
-    fun getSearchPosts(
-        @RequestParam(value = "q") query: String,
-    ): ApiResponse<List<PostResponse>> {
-
-        val pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "pubDate")
-
-        return ApiResponse.of(postService.searchPosts(query, pageable))
+    @GetMapping("/sources")
+    fun getSourceInfo(): ApiResponse<List<SourceResponse>> {
+        return ApiResponse.of(postService.getSources())
     }
 }

@@ -1,13 +1,9 @@
 package com.hobeen.apiserver.service
 
-import com.hobeen.apiserver.entity.Bookmark
-import com.hobeen.apiserver.entity.BookmarkId
 import com.hobeen.apiserver.entity.Like
 import com.hobeen.apiserver.entity.LikeId
-import com.hobeen.apiserver.repository.BookmarkRepository
 import com.hobeen.apiserver.repository.LikeRepository
 import com.hobeen.apiserver.repository.PostRepository
-import com.hobeen.apiserver.service.dto.PostBookmarkResponse
 import com.hobeen.apiserver.service.dto.PostLikeResponse
 import com.hobeen.apiserver.service.dto.SliceResponse
 import com.hobeen.apiserver.util.exception.PostNotFoundException
@@ -21,7 +17,7 @@ class LikeService(
     private val likeRepository: LikeRepository,
     private val postRepository: PostRepository,
 
-    private val sourceService: SourceService,
+    private val metadataService: MetadataService,
 ) {
 
     fun like(postId: Long, userId: String) {
@@ -51,7 +47,7 @@ class LikeService(
             data = likes.data.map {
 
                 val like = likeMap[it.post.postId] ?: throw IllegalArgumentException("bookmark map error")
-                val metadata =  sourceService.getMetadata(it.post.source)
+                val metadata = metadataService.getMetadata(it.post.source)
 
                 PostLikeResponse.of(it.post, metadata, like.createdAt)
             },
