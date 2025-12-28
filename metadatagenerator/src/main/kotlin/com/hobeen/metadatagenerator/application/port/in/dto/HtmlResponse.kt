@@ -9,6 +9,7 @@ data class HtmlResponse (
     val thumbnail: String?,
     val tags: List<String>,
     val description: String,
+    val content: String,
 ) {
     companion object {
         fun of(html: Html): HtmlResponse {
@@ -18,6 +19,7 @@ data class HtmlResponse (
                 thumbnail = html.thumbnail,
                 tags = html.tags,
                 description = html.description,
+                content = html.content
             )
         }
     }
