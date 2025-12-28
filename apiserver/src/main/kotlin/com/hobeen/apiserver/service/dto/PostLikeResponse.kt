@@ -7,6 +7,7 @@ data class PostLikeResponse (
     val postId: Long,
     val title: String,
     val source: String,
+    val metadata: SourceMetadataCache,
     val url: String,
     val pubDate: LocalDateTime,
     val description: String,
@@ -15,11 +16,16 @@ data class PostLikeResponse (
     val likedTime: LocalDateTime,
 ) {
     companion object {
-        fun of(post: Post, likedTime: LocalDateTime): PostLikeResponse {
+        fun of(
+            post: Post,
+            metadata: SourceMetadataCache,
+            likedTime: LocalDateTime
+        ): PostLikeResponse {
             return PostLikeResponse(
                 postId = post.postId,
                 title = post.title,
                 source = post.source,
+                metadata = metadata,
                 url = post.url,
                 pubDate = post.pubDate,
                 description = post.description,

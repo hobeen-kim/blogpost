@@ -17,6 +17,8 @@ class PostService(
     private val bookmarkRepository: BookmarkRepository,
     private val likeRepository: LikeRepository,
     private val commentRepository: CommentRepository,
+
+    private val sourceService: SourceService,
 ) {
 
     fun getPosts(pageable: Pageable): Page<PostResponse> {
@@ -33,6 +35,7 @@ class PostService(
             return posts.map {
                 PostResponse.of(
                     post = it,
+                    metadata = sourceService.getMetadata(it.source),
                     bookmarked = bookmarked[it.postId] == true,
                     liked = liked[it.postId] == true,
                     commented = commented[it.postId] == true,
@@ -40,6 +43,7 @@ class PostService(
         } else {
             return posts.map { PostResponse.of(
                 post = it,
+                metadata = sourceService.getMetadata(it.source),
                 bookmarked = false,
                 liked = false,
                 commented = false,
@@ -48,6 +52,6 @@ class PostService(
     }
 
     fun searchPosts(search: String, pageable: Pageable): List<PostResponse> {
-        return postRepository.findBySearch(search, pageable).map { PostResponse.ofOnlyPost(it) }
+        return postRepository.findBySearch(search, pageable).map { PostResponse.ofOnlyPost(it, metadata = sourceService.getMetadata(it.source)) }
     }
 }

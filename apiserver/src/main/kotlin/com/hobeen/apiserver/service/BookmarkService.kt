@@ -16,13 +16,15 @@ import java.time.LocalDateTime
 class BookmarkService(
     private val bookmarkRepository: BookmarkRepository,
     private val postRepository: PostRepository,
+
+    private val sourceService: SourceService,
 ) {
 
     fun bookmark(postId: Long, userId: String) {
 
         val post = postRepository.findById(postId).orElseThrow { PostNotFoundException(postId) }
 
-        val bookmark = bookmarkRepository.save(
+        bookmarkRepository.save(
             Bookmark.create(userId, post)
         )
     }
@@ -45,8 +47,9 @@ class BookmarkService(
             data = bookmarks.data.map {
 
                 val bookmark = bookmarkMap[it.post.postId] ?: throw IllegalArgumentException("bookmark map error")
+                val metadata = sourceService.getMetadata(it.post.source)
 
-                PostBookmarkResponse.of(it.post, bookmark.createdAt)
+                PostBookmarkResponse.of(it.post, metadata, bookmark.createdAt)
             },
             size = bookmarks.data.size,
             hasNext = bookmarks.hasNext,

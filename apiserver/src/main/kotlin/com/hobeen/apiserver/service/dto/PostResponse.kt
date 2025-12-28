@@ -1,12 +1,15 @@
 package com.hobeen.apiserver.service.dto
 
 import com.hobeen.apiserver.entity.Post
+import com.hobeen.apiserver.entity.SourceMetadata
+import com.hobeen.apiserver.service.SourceService
 import java.time.LocalDateTime
 
 data class PostResponse (
     val postId: Long,
     val title: String,
     val source: String,
+    val metadata: SourceMetadataCache,
     val url: String,
     val pubDate: LocalDateTime,
     val description: String,
@@ -22,6 +25,7 @@ data class PostResponse (
     companion object {
         fun of(
             post: Post,
+            metadata: SourceMetadataCache,
             bookmarked: Boolean,
             liked: Boolean,
             commented: Boolean,
@@ -30,6 +34,7 @@ data class PostResponse (
                 postId = post.postId,
                 title = post.title,
                 source = post.source,
+                metadata = metadata,
                 url = post.url,
                 pubDate = post.pubDate,
                 description = post.description,
@@ -46,11 +51,13 @@ data class PostResponse (
 
         fun ofOnlyPost(
             post: Post,
+            metadata: SourceMetadataCache,
         ): PostResponse {
             return PostResponse(
                 postId = post.postId,
                 title = post.title,
                 source = post.source,
+                metadata = metadata,
                 url = post.url,
                 pubDate = post.pubDate,
                 description = post.description,

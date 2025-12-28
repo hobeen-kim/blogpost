@@ -20,6 +20,8 @@ import java.time.LocalDateTime
 class LikeService(
     private val likeRepository: LikeRepository,
     private val postRepository: PostRepository,
+
+    private val sourceService: SourceService,
 ) {
 
     fun like(postId: Long, userId: String) {
@@ -49,8 +51,9 @@ class LikeService(
             data = likes.data.map {
 
                 val like = likeMap[it.post.postId] ?: throw IllegalArgumentException("bookmark map error")
+                val metadata =  sourceService.getMetadata(it.post.source)
 
-                PostLikeResponse.of(it.post, like.createdAt)
+                PostLikeResponse.of(it.post, metadata, like.createdAt)
             },
             size = likes.data.size,
             hasNext = likes.hasNext,
