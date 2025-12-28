@@ -9,9 +9,10 @@ import { cn } from "@/lib/utils";
 
 interface PostGridProps {
   searchQuery: string;
+  blogQuery?: string;
 }
 
-const PostGrid: React.FC<PostGridProps> = ({ searchQuery }) => {
+const PostGrid: React.FC<PostGridProps> = ({ searchQuery, blogQuery }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -20,14 +21,14 @@ const PostGrid: React.FC<PostGridProps> = ({ searchQuery }) => {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadingRef = useRef<HTMLDivElement>(null);
 
-  const loadPosts = useCallback(async (pageNum: number, query: string) => {
+  const loadPosts = useCallback(async (pageNum: number, query: string, blog?: string) => {
     if (loading) return;
     
     setLoading(true);
     
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      const response = await getPosts(pageNum, query);
+      const response = await getPosts(pageNum, query, blog);
       const newPosts = response.data;
       const pageInfo = response.pageInfo;
 
@@ -44,8 +45,8 @@ const PostGrid: React.FC<PostGridProps> = ({ searchQuery }) => {
     setPosts([]);
     setPage(0);
     setHasMore(true);
-    loadPosts(0, searchQuery);
-  }, [searchQuery]);
+    loadPosts(0, searchQuery, blogQuery);
+  }, [searchQuery, blogQuery]);
 
   useEffect(() => {
     if (loading || !hasMore) return;
@@ -55,7 +56,7 @@ const PostGrid: React.FC<PostGridProps> = ({ searchQuery }) => {
         if (entries[0].isIntersecting) {
           const nextPage = page + 1;
           setPage(nextPage);
-          loadPosts(nextPage, searchQuery);
+          loadPosts(nextPage, searchQuery, blogQuery);
         }
       },
       { threshold: 0.1 }
@@ -70,7 +71,7 @@ const PostGrid: React.FC<PostGridProps> = ({ searchQuery }) => {
         observerRef.current.disconnect();
       }
     };
-  }, [loading, hasMore, page, loadPosts, searchQuery]);
+  }, [loading, hasMore, page, loadPosts, searchQuery, blogQuery]);
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-6">

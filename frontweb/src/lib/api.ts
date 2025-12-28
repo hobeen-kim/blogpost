@@ -29,6 +29,24 @@ const fetchWithAuth = async (url: string, options: FetchOptions = {}) => {
   return response.json();
 };
 
+const fetchWithoutAuth = async (url: string, options: FetchOptions = {}) => {
+  const headers = {
+    ...options.headers,
+    'Content-Type': 'application/json',
+  };
+
+  const response = await fetch(`${DOMAIN}${url}`, {
+    ...options,
+    headers,
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Error: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
 export const getBookmarks = async (cursorTime?: string) => {
   const url = cursorTime 
     ? `/bookmarks/me?cursorTime=${cursorTime}` 
@@ -67,9 +85,10 @@ export const removeLike = async (postId: string) => {
   });
 };
 
-export const getPosts = async (page: number, q?: string) => {
+export const getPosts = async (page: number, q?: string, blog?: string) => {
   const query = q ? `&q=${encodeURIComponent(q)}` : '';
-  return fetchWithAuth(`/posts?page=${page}${query}`);
+  const blogQuery = blog ? `&blog=${encodeURIComponent(blog)}` : '';
+  return fetchWithAuth(`/posts?page=${page}${query}${blogQuery}`);
 };
 
 export const getComments = async (postId: string, cursorTime?: string) => {
@@ -98,3 +117,7 @@ export const updateComment = async (commentId: number, comment: string) => {
     body: JSON.stringify({ comment }),
   });
 };
+
+export const getSources = async () => {
+  return fetchWithoutAuth(`/posts/sources`)
+}
