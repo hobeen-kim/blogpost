@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 
-const DOMAIN = 'http://localhost:8080'
+const DOMAIN = 'https://blogtag-api.hobeenkim.com'
 
 interface FetchOptions extends RequestInit {
   headers?: Record<string, string>;

@@ -13,7 +13,7 @@ interface PostCardProps {
   postId: string;
   title: string;
   description: string;
-  author: string;
+  source: string;
   pubDate?: string;
   readTime?: string;
   tags: string[];
@@ -32,7 +32,7 @@ const PostCard: React.FC<PostCardProps> = ({
   postId,
   title,
   description,
-  author,
+  source,
   pubDate,
   readTime,
   tags,
@@ -242,7 +242,7 @@ const PostCard: React.FC<PostCardProps> = ({
           )}>
             <div className="flex items-center gap-1">
               <User className="h-4 w-4" />
-              <span>{author}</span>
+              <span>{source}</span>
             </div>
             <div className="flex items-center gap-1">
               <Calendar className="h-4 w-4" />
