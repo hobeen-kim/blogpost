@@ -4,7 +4,7 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     //custom package
-    api("com.hobeen:blogpost-common:1.2.3")
+    api("com.hobeen:blogpost-common:1.2.5")
 
     //dataformat
     api("com.fasterxml.jackson.core:jackson-databind:2.19.2")
