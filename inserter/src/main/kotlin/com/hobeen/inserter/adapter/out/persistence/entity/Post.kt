@@ -15,6 +15,7 @@ class Post (
     var pubDate: LocalDateTime,
     var description: String,
     var thumbnail: String,
+    val content: String,
 
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
     val postTags: MutableList<PostTag>
@@ -29,6 +30,7 @@ class Post (
                 description = message.description,
                 thumbnail = message.thumbnail,
                 postTags = mutableListOf(),
+                content = message.content
             )
        }
     }

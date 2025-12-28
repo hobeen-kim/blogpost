@@ -28,6 +28,7 @@ class PostController(
             tags = request.tags,
             description = request.description,
             thumbnail = request.thumbnail,
+            content = "",
         ))
 
         return ResponseEntity.ok("Post created successfully")
@@ -45,6 +46,7 @@ class PostController(
             tags = request.tags,
             description = request.description,
             thumbnail = request.thumbnail,
+            content = "",
         ))
 
         return ResponseEntity.ok("Post updated successfully")
