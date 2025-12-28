@@ -27,17 +27,17 @@ class DefaultParser: ParseHtmlMetadataPort {
     override fun parse(url: String, parserProps: ParseProps): Html {
         val doc = Jsoup.connect(url).get()
 
-        val title = getProperty(doc, parserProps.metadata.title) ?: ""
-        val description = getProperty(doc, parserProps.metadata.description) ?: ""
-        val thumbnail = getProperty(doc, parserProps.metadata.thumbnail)
+        val title = getProperty(doc, parserProps.metadata.title) ?: getDefault(parserProps.props, "title-default") ?: ""
+        val description = getProperty(doc, parserProps.metadata.description) ?: getDefault(parserProps.props, "description-default") ?: ""
+        val thumbnail = getProperty(doc, parserProps.metadata.thumbnail) ?: getDefault(parserProps.props, "thumbnail-default")
         val pubDateStr = getProperty(doc, parserProps.metadata.pubDate)
-        val pubDate = localDateParse(pubDateStr)
+        val pubDate = localDateParse(pubDateStr) ?: getPubDefault(parserProps.props)
         val tags = getTags(doc, parserProps.metadata.tags)
         val content = getProperty(doc, parserProps.metadata.content)
 
         return Html(
             title = refineTitle(title),
-            pubDate = pubDate ?: getPubDefault(parserProps.props),
+            pubDate = pubDate,
             thumbnail = thumbnail,
             tags = tags,
             description = description,
@@ -99,5 +99,12 @@ class DefaultParser: ParseHtmlMetadataPort {
         } ?: doc.body()
 
         return best.text().replace(Regex("\\s+"), " ").trim()
+    }
+
+    private fun getDefault(props: JsonNode, default: String): String? {
+        val defaultValue = props[default]?.asText()
+
+        return if(defaultValue.isNullOrBlank()) null
+        else defaultValue
     }
 }
