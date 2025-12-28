@@ -7,7 +7,11 @@ import { getPosts } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const PostGrid: React.FC = () => {
+interface PostGridProps {
+  searchQuery: string;
+}
+
+const PostGrid: React.FC<PostGridProps> = ({ searchQuery }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -16,14 +20,14 @@ const PostGrid: React.FC = () => {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadingRef = useRef<HTMLDivElement>(null);
 
-  const loadPosts = useCallback(async (pageNum: number) => {
+  const loadPosts = useCallback(async (pageNum: number, query: string) => {
     if (loading) return;
     
     setLoading(true);
     
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      const response = await getPosts(pageNum);
+      const response = await getPosts(pageNum, query);
       const newPosts = response.data;
       const pageInfo = response.pageInfo;
 
@@ -31,15 +35,17 @@ const PostGrid: React.FC = () => {
       setHasMore(pageInfo.hasNext);
     } catch (error) {
       console.error("Failed to load posts:", error);
-      // Optionally, handle the error in the UI
     } finally {
       setLoading(false);
     }
   }, [loading]);
 
   useEffect(() => {
-    loadPosts(0);
-  }, []);
+    setPosts([]);
+    setPage(0);
+    setHasMore(true);
+    loadPosts(0, searchQuery);
+  }, [searchQuery]);
 
   useEffect(() => {
     if (loading || !hasMore) return;
@@ -49,7 +55,7 @@ const PostGrid: React.FC = () => {
         if (entries[0].isIntersecting) {
           const nextPage = page + 1;
           setPage(nextPage);
-          loadPosts(nextPage);
+          loadPosts(nextPage, searchQuery);
         }
       },
       { threshold: 0.1 }
@@ -64,7 +70,7 @@ const PostGrid: React.FC = () => {
         observerRef.current.disconnect();
       }
     };
-  }, [loading, hasMore, page, loadPosts]);
+  }, [loading, hasMore, page, loadPosts, searchQuery]);
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-6">

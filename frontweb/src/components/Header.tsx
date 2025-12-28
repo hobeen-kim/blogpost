@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Search, Sun, Moon, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
-import SearchDialog from '@/components/SearchDialog';
 import { Link } from 'react-router-dom';
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -36,29 +36,27 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onSearch?: (query: string) => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   const { user, signInWithGoogle } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchInputValue, setSearchInputValue] = useState('');
 
   const handleLogin = async () => {
     await signInWithGoogle();
   };
 
+  const handleSearch = () => {
+    onSearch?.(searchInputValue);
+  };
+
   const NavItems = () => (
     <>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setIsSearchOpen(true)}
-        className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-      >
-        <Search className="h-4 w-4" />
-        <span>검색</span>
-      </Button>
-      
       <Button
         variant="ghost"
         size="sm"
@@ -68,12 +66,12 @@ const Header: React.FC = () => {
         {theme === 'dark' ? (
           <>
             <Sun className="h-4 w-4" />
-            <span>라이트 모드</span>
+            <span className="md:hidden">라이트 모드</span>
           </>
         ) : (
           <>
             <Moon className="h-4 w-4" />
-            <span>다크 모드</span>
+            <span className="md:hidden">다크 모드</span>
           </>
         )}
       </Button>
@@ -90,7 +88,7 @@ const Header: React.FC = () => {
               alt={user.name || '사용자'}
               className="w-6 h-6 rounded-full border border-border"
             />
-            <span className="max-w-[100px] truncate">{user.name}</span>
+            <span className="max-w-[100px] truncate md:hidden">{user.name}</span>
           </Button>
         </Link>
       ) : (
@@ -108,27 +106,41 @@ const Header: React.FC = () => {
   );
 
   return (
-    <>
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between max-w-6xl">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/">
-              <h1 className="text-2xl font-bold text-green-600 dark:text-green-400">
-                devTag
-              </h1>
-            </Link>
-          </div>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between max-w-6xl gap-4">
+        {/* Logo */}
+        <div className="flex items-center">
+          <Link to="/">
+            <h1 className="text-2xl font-bold text-green-600 dark:text-green-400">
+              devTag
+            </h1>
+          </Link>
+        </div>
 
+        {/* Search Bar (Desktop) */}
+        <div className="hidden md:flex flex-1 max-w-md items-center space-x-2">
+          <Input 
+            type="search" 
+            placeholder="검색어를 입력하세요..." 
+            className="h-9"
+            value={searchInputValue}
+            onChange={(e) => setSearchInputValue(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+          />
+          <Button type="submit" size="sm" className="h-9" onClick={handleSearch}>
+            <Search className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Right Navigation */}
+        <div className="flex items-center">
           {/* Desktop Navigation */}
-          {!isMobile && (
-            <nav className="flex items-center space-x-2">
-              <NavItems />
-            </nav>
-          )}
+          <nav className="hidden md:flex items-center space-x-1">
+            <NavItems />
+          </nav>
 
           {/* Mobile Menu */}
-          {isMobile && (
+          <div className="md:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="sm">
@@ -151,20 +163,36 @@ const Header: React.FC = () => {
                     </div>
                   )}
                   <div className="flex flex-col space-y-2">
+                    <div className="flex items-center space-x-2 p-2">
+                      <Input 
+                        type="search" 
+                        placeholder="검색..." 
+                        className="h-9"
+                        value={searchInputValue}
+                        onChange={(e) => setSearchInputValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleSearch();
+                            setIsMobileMenuOpen(false);
+                          }
+                        }}
+                      />
+                      <Button type="submit" size="icon" className="h-9 w-9" onClick={() => {
+                        handleSearch();
+                        setIsMobileMenuOpen(false);
+                      }}>
+                        <Search className="h-4 w-4" />
+                      </Button>
+                    </div>
                     <NavItems />
                   </div>
                 </div>
               </SheetContent>
             </Sheet>
-          )}
+          </div>
         </div>
-      </header>
-
-      <SearchDialog 
-        isOpen={isSearchOpen} 
-        onClose={() => setIsSearchOpen(false)} 
-      />
-    </>
+      </div>
+    </header>
   );
 };
 
