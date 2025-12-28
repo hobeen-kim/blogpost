@@ -74,9 +74,11 @@ private fun check3DateTime(dateStr: String): LocalDateTime? {
 
     if(dateSnippets.size != 3 && dateSnippets.size != 4) return null
 
-    val year = dateSnippets[0].toInt()
+    var year = dateSnippets[0].toInt()
     val month = dateSnippets[1].toInt()
     val day = dateSnippets[2].toInt()
+
+    if(year < 2000) year += 2000
 
     return LocalDateTime.of(year, month, day, 0, 0, 0)
 }
