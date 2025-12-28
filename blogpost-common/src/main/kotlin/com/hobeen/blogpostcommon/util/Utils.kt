@@ -13,6 +13,7 @@ private val seoulZone = ZoneId.of("Asia/Seoul")
 private val engFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy", Locale.ENGLISH)
 private val korFormatter = DateTimeFormatter.ofPattern("M월 d, yyyy", Locale.KOREAN)
 private val formatter6 = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss", Locale.ENGLISH)
+private val formatter7 = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH)
 
 fun localDateParse(dateStr: String?): LocalDateTime? {
 
@@ -35,6 +36,9 @@ fun localDateParse(dateStr: String?): LocalDateTime? {
 
     //Tue, 16 Dec 2025 15:19:27
     check6DateTime(dateStr)?.let { return it }
+
+    //December 10, 2025
+    check7DateTime(dateStr)?.let { return it }
 
     //localdatetime
     if(dateStr.length <= 19) {
@@ -109,6 +113,14 @@ private fun check6DateTime(dateStr: String): LocalDateTime? {
     return try {
         LocalDateTime.parse(dateStr, formatter6)
     } catch (e: DateTimeParseException) {
+        null
+    }
+}
+
+private fun check7DateTime(dateStr: String): LocalDateTime? {
+    return try {
+        LocalDate.parse(dateStr, formatter7).atStartOfDay()
+        } catch (e: DateTimeParseException) {
         null
     }
 }
