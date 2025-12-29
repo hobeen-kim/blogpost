@@ -1,6 +1,8 @@
 package com.hobeen.metadatagenerator.adapter.out.parsers
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.hobeen.blogpostcommon.util.ParseCommands
 import com.hobeen.blogpostcommon.util.getDataFrom
 import com.hobeen.blogpostcommon.util.localDateParse
@@ -29,7 +31,7 @@ class DefaultParser: ParseHtmlMetadataPort {
         val pubDateStr = getProperty(doc, parserProps.metadata.pubDate)
         val pubDate = localDateParse(pubDateStr) ?: getPubDefault(parserProps.props)
         val tags = getTags(doc, parserProps.metadata.tags)
-        val content = getProperty(doc, parserProps.metadata.content)
+        val content = getContent(doc, parserProps.metadata.content)
 
         return Html(
             title = refineTitle(title),
@@ -39,6 +41,10 @@ class DefaultParser: ParseHtmlMetadataPort {
             description = description,
             content = content ?: extractMainText(doc)
         )
+    }
+
+    protected fun getContent(doc: Document, node: List<MetadataNode>): String? {
+        return getProperty(doc, node)
     }
 
     private fun getProperty(doc: Document, node: List<MetadataNode>): String? {
