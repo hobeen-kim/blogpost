@@ -2,6 +2,7 @@ package com.hobeen.metadatagenerator.adapter.out
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.hobeen.metadatagenerator.adapter.out.parsers.MediumParser
 import com.hobeen.metadatagenerator.domain.MetadataNodes
 import com.hobeen.metadatagenerator.domain.ParseProps
 import org.assertj.core.api.Assertions.assertThat

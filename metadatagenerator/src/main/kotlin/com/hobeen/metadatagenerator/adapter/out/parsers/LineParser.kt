@@ -1,4 +1,4 @@
-package com.hobeen.metadatagenerator.adapter.out
+package com.hobeen.metadatagenerator.adapter.out.parsers
 
 import com.hobeen.blogpostcommon.util.localDateParse
 import com.hobeen.metadatagenerator.domain.Html

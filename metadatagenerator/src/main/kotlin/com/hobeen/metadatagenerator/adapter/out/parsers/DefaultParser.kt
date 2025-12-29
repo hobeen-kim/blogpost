@@ -1,10 +1,6 @@
-package com.hobeen.metadatagenerator.adapter.out
+package com.hobeen.metadatagenerator.adapter.out.parsers
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.hobeen.blogpostcommon.util.Command
-import com.hobeen.blogpostcommon.util.ParseCommand
 import com.hobeen.blogpostcommon.util.ParseCommands
 import com.hobeen.blogpostcommon.util.getDataFrom
 import com.hobeen.blogpostcommon.util.localDateParse

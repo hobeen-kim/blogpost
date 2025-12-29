@@ -1,4 +1,4 @@
-package com.hobeen.metadatagenerator.adapter.out
+package com.hobeen.metadatagenerator.adapter.out.parsers
 
 import com.hobeen.blogpostcommon.util.localDateParse
 import com.hobeen.metadatagenerator.application.port.out.ParseHtmlMetadataPort
@@ -36,7 +36,7 @@ class MediumParser: ParseHtmlMetadataPort {
 
         val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content")
 
-        val content = doc.select("p.pw-post-body-paragraph, h2").text()
+        val content = doc.select("section").text()
 
         return Html(
             title = refineTitle(title),

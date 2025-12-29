@@ -3,6 +3,7 @@ package com.hobeen.metadatagenerator.adapter.out
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.hobeen.blogpostcommon.util.Command
+import com.hobeen.metadatagenerator.adapter.out.parsers.DefaultParser
 import com.hobeen.metadatagenerator.domain.MetadataNode
 import com.hobeen.metadatagenerator.domain.MetadataNodes
 import com.hobeen.metadatagenerator.domain.ParseProps
