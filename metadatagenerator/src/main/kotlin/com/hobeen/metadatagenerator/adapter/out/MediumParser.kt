@@ -36,7 +36,7 @@ class MediumParser: ParseHtmlMetadataPort {
 
         val thumbnail = doc.selectFirst("head meta[property=og:image]")?.attr("content")
 
-        val content = doc.select("p.pw-post-body-paragraph").text()
+        val content = doc.select("p.pw-post-body-paragraph, h2").text()
 
         return Html(
             title = refineTitle(title),
