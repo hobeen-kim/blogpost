@@ -44,13 +44,17 @@ dependencies {
     //jsoup
     implementation("org.jsoup:jsoup:1.21.2")
 
+    //openai
+    implementation(platform("org.springframework.ai:spring-ai-bom:1.0.0"))
+    implementation("org.springframework.ai:spring-ai-starter-model-openai")
+
     //dataformat
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     //custom package
-    implementation("com.hobeen:blogpost-common:1.2.2")
+    implementation("com.hobeen:blogpost-common:1.2.7")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")

@@ -3,6 +3,7 @@ package com.hobeen.metadatagenerator.application
 import com.fasterxml.jackson.databind.JsonNode
 import com.hobeen.metadatagenerator.application.port.`in`.ParserValidator
 import com.hobeen.metadatagenerator.application.port.`in`.dto.HtmlResponse
+import com.hobeen.metadatagenerator.application.port.out.ContentAbstractPort
 import com.hobeen.metadatagenerator.application.port.out.GetParsePropPort
 import com.hobeen.metadatagenerator.application.port.out.MetadataParserSelector
 import com.hobeen.metadatagenerator.application.port.out.ParsePropCachePort
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component
 class ParserValidateService(
     private val metadataParserSelector: MetadataParserSelector,
     private val getParsePropPort: GetParsePropPort,
-    private val parsePropCachePort: ParsePropCachePort,
+    private val contentAbstractPort: ContentAbstractPort,
 ): ParserValidator {
     override fun validate(url: String, parserName: String, props: JsonNode, metadata: MetadataNodes): HtmlResponse {
 
@@ -28,7 +29,14 @@ class ParserValidateService(
         val parser = metadataParserSelector.getParser(parserProp.parser)
         val html = parser.parse(url, parserProp)
 
-        return HtmlResponse.of(html)
+        val abstractedContent = contentAbstractPort.abstract(
+            html.title,
+            html.description,
+            html.tags,
+            html.content,
+        )
+
+        return HtmlResponse.of(html, abstractedContent)
     }
 
     override fun validate(
@@ -40,6 +48,13 @@ class ParserValidateService(
         val parser = metadataParserSelector.getParser(parserProp.parser)
         val html = parser.parse(url, parserProp)
 
-        return HtmlResponse.of(html)
+        val abstractedContent = contentAbstractPort.abstract(
+            html.title,
+            html.description,
+            html.tags,
+            html.content,
+        )
+
+        return HtmlResponse.of(html, abstractedContent)
     }
 }
