@@ -203,7 +203,7 @@ const PostHorizontalCard: React.FC<PostCardProps> = ({
         className
       )}>
         {/* 포스트 이미지 */}
-        <div className="relative overflow-hidden shrink-0 w-72 min-h-[12rem] rounded-l-lg">
+        <div className="relative overflow-hidden shrink-0 w-[24rem] min-h-[12rem] rounded-l-lg">
           <img
             src={thumbnail || '/placeholder.svg'}
             alt={title}
