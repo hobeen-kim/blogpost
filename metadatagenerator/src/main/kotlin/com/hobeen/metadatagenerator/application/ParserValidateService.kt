@@ -5,6 +5,7 @@ import com.hobeen.metadatagenerator.application.port.`in`.ParserValidator
 import com.hobeen.metadatagenerator.application.port.`in`.dto.HtmlResponse
 import com.hobeen.metadatagenerator.application.port.out.GetParsePropPort
 import com.hobeen.metadatagenerator.application.port.out.MetadataParserSelector
+import com.hobeen.metadatagenerator.application.port.out.ParsePropCachePort
 import com.hobeen.metadatagenerator.domain.MetadataNodes
 import com.hobeen.metadatagenerator.domain.ParseProps
 import org.springframework.stereotype.Component
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component
 class ParserValidateService(
     private val metadataParserSelector: MetadataParserSelector,
     private val getParsePropPort: GetParsePropPort,
+    private val parsePropCachePort: ParsePropCachePort,
 ): ParserValidator {
     override fun validate(url: String, parserName: String, props: JsonNode, metadata: MetadataNodes): HtmlResponse {
 
@@ -34,7 +36,7 @@ class ParserValidateService(
         source: String
     ): HtmlResponse {
 
-        val parserProp = getParsePropPort.getParseProp(source)
+        val parserProp = getParsePropPort.getParsePropFromPrimaryDb(source)
         val parser = metadataParserSelector.getParser(parserProp.parser)
         val html = parser.parse(url, parserProp)
 

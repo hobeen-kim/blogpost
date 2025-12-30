@@ -20,4 +20,8 @@ class RedisRepository(
     fun save(parseProps: ParseProps) {
         redisTemplate.opsForValue().set(KEY + parseProps.source, parseProps, Duration.of(10, ChronoUnit.MINUTES))
     }
+
+    fun delete(source: String) {
+        redisTemplate.delete(KEY + source)
+    }
 }

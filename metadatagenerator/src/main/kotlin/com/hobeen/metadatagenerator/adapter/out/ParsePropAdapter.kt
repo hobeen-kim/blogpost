@@ -3,6 +3,7 @@ package com.hobeen.metadatagenerator.adapter.out
 import com.hobeen.metadatagenerator.adapter.out.persistence.ParsePropsRepository
 import com.hobeen.metadatagenerator.adapter.out.redis.RedisRepository
 import com.hobeen.metadatagenerator.application.port.out.GetParsePropPort
+import com.hobeen.metadatagenerator.application.port.out.ParsePropCachePort
 import com.hobeen.metadatagenerator.domain.ParseProps
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -12,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 class ParsePropAdapter (
     private val parsePropsRepository: ParsePropsRepository,
     private val redisRepository: RedisRepository,
-): GetParsePropPort {
+): GetParsePropPort, ParsePropCachePort {
 
     override fun getParseProp(source: String): ParseProps {
         val cached = redisRepository.get(source)
@@ -27,5 +28,15 @@ class ParsePropAdapter (
         }
 
         return cached
+    }
+
+    override fun getParsePropFromPrimaryDb(source: String): ParseProps {
+        val entity = parsePropsRepository.getParsePropsBySource(source) ?: throw IllegalArgumentException("Source $source not found")
+
+        return entity.toParserProps()
+    }
+
+    override fun deleteCache(source: String) {
+        redisRepository.delete(source)
     }
 }
