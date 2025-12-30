@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.hobeen.collectorcommon.domain.ExtractorProps
 import com.hobeen.collectorcommon.domain.Message
+import com.hobeen.collectorcommon.utils.getOnlyUrlPath
 import com.hobeen.collectorcommon.utils.refineTitle
 import com.hobeen.collectorengine.port.Extractor
 import com.hobeen.collectorengine.port.dto.CrawlingResult
@@ -18,6 +19,8 @@ class RssV1Extractor: Extractor {
     override fun extract(crawlingResult: CrawlingResult, source: String, props: ExtractorProps): List<Message> {
 
         val urlFilter = props.properties["url-filter"]?.asText()
+        val urlQueryRemain = props.properties["url-query"]?.asBoolean() == true
+        val urlPrefix = props.properties["url-prefix"]?.asText() ?: ""
 
         return crawlingResult.htmls.flatMap { html ->
             val sanitizedBody = illegalXmlCharsRegex.replace(html, "")
@@ -28,7 +31,7 @@ class RssV1Extractor: Extractor {
                 Message(
                     title = refineTitle(entry.title),
                     source = source,
-                    url = entry.link.href,
+                    url = urlPrefix + if(urlQueryRemain) entry.link.href.trim() else getOnlyUrlPath(entry.link.href).trim(),
                     pubDate = entry.published,
                     tags = listOf(),
                     description = null,

@@ -20,6 +20,7 @@ class RssExtractor: Extractor {
 
         val urlFilter = props.properties["url-filter"]?.asText()
         val urlQueryRemain = props.properties["url-query"]?.asBoolean() == true
+        val urlPrefix = props.properties["url-prefix"]?.asText() ?: ""
 
         return crawlingResult.htmls.flatMap { html ->
             val sanitizedBody = illegalXmlCharsRegex.replace(html, "")
@@ -30,7 +31,7 @@ class RssExtractor: Extractor {
                 Message(
                     title = refineTitle(item.title),
                     source = source,
-                    url = if(urlQueryRemain) item.link.trim() else getOnlyUrlPath(item.link).trim(),
+                    url = urlPrefix + if(urlQueryRemain) item.link.trim() else getOnlyUrlPath(item.link).trim(),
                     pubDate = item.pubDate,
                     tags = item.categories ?: listOf(),
                     description = item.description?.trim(),
