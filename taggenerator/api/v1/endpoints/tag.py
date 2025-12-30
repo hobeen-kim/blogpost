@@ -11,13 +11,12 @@ class TagDict(BaseModel):
 class TagList(BaseModel):
     tags: List[str]
 
-class Content(BaseModel):
+class Post(BaseModel):
+    title: str
+    tags: List[str]
     content: str
+    abstracted_content: str
     top_k: int = 20
-
-class TagRecommendation(BaseModel):
-    tag: str
-    distance: float
 
 @router.post("/embed", response_model=dict)
 async def embed_tags(tag_dict: TagDict):
@@ -35,10 +34,10 @@ async def delete_tags(tag_list: TagList):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/extract", response_model=List[TagRecommendation])
-async def extract_tags(content: Content):
+@router.post("/extract")
+async def extract_tags(post: Post):
     try:
-        recommendations = tag_service.extract_tags_from_content(content.content, content.top_k)
-        return [{"tag": tag, "distance": dist} for tag, dist in recommendations]
+        recommendations = tag_service.extract_tags(post.content, post.tags, post.content, post.abstracted_content)
+        return recommendations
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -2,31 +2,55 @@ import chromadb
 from typing import List, Tuple
 
 class TagRepository:
-    def __init__(self, path: str = "~/chroma_store", collection_name: str = "tags"):
+    def __init__(self, path: str = "~/chroma_store"):
         self.client = chromadb.PersistentClient(path=path)
-        self.collection = self.client.get_or_create_collection(
-            name=collection_name,
+        self.level2collection = self.client.get_or_create_collection(
+            name="level2",
+            metadata={"hnsw:space": "cosine"}
+        )
+        self.level3collection = self.client.get_or_create_collection(
+            name="level3",
             metadata={"hnsw:space": "cosine"}
         )
 
-    def upsert_tags(self, docs: dict[str, str], embeddings: List[List[float]]):
+    def upsert_tags(self, docs: dict[str, str], embeddings: List[List[float]], level: str):
 
         ids = list(docs.keys())
         docs = list(docs.values())
 
-        self.collection.upsert(
-            ids=ids,
-            documents=docs,
-            embeddings=embeddings,
-        )
+        if level == "level2":
+            self.level2collection.upsert(
+                ids=ids,
+                documents=docs,
+                embeddings=embeddings,
+            )
 
-    def delete_tags(self, ids: List[str]):
+        elif level == "level3":
+            self.level3collection.upsert(
+                ids=ids,
+                documents=docs,
+                embeddings=embeddings,
+            )
 
-        self.collection.delete(ids=ids)
+    def delete_tags(self, ids: List[str], level: str):
+        if level == "level2":
+            self.level2collection.delete(ids=ids)
 
-    def query_tags(self, query_embeddings: List[List[float]], top_k: int = 20) -> List[Tuple[str, float]]:
-        res = self.collection.query(
-            query_embeddings=query_embeddings,
+        elif level == "level3":
+            self.level3collection.delete(ids=ids)
+
+    def query_tags(self, query_embedding: List[float], level: str, top_k: int = 20) -> List[Tuple[str, float]]:
+
+        collection = None
+
+        if level == "level2":
+            collection = self.level2collection
+
+        elif level == "level3":
+            collection = self.level3collection
+
+        res = collection.query(
+            query_embeddings=query_embedding,
             n_results=top_k,
             include=["documents", "distances"]
         )
