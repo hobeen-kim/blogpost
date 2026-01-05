@@ -8,6 +8,22 @@ import kotlin.test.Test
 class UtilsTest {
 
     @Test
+    @DisplayName("localdatetime 변환 3")
+    fun localDateParseTest3() {
+        //given
+        val date1_1Str = "2025. 5.22"
+        val date1_2Str = "2025.10.1"
+
+        //when
+        val date1_1 = localDateParse(date1_1Str)
+        val date1_2 = localDateParse(date1_2Str)
+
+        //then
+        assertThat(date1_1).isEqualTo(LocalDateTime.of(2025, 5, 22, 0, 0, 0))
+        assertThat(date1_2).isEqualTo(LocalDateTime.of(2025, 10, 1, 0, 0, 0))
+    }
+
+    @Test
     @DisplayName("localdatetime 변환")
     fun localDateParseTest() {
         //given
