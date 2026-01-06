@@ -17,7 +17,12 @@
 - [x] collector 서버 에러처리 
 - [x] api 서버에 `X-Forwarded-For` 헤더를 붙이고, cloudfront 에서의 접근만 허용
 
+## API
 
+### 검색 기능
+
+- [ ] 블로그 (source) 검색
+- [ ] 태그 검색
 
 
 
