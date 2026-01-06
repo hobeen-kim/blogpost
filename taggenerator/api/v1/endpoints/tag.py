@@ -7,6 +7,7 @@ router = APIRouter()
 
 class TagDict(BaseModel):
     tags: dict[str, str]
+    level: str
 
 class TagList(BaseModel):
     tags: List[str]
@@ -21,7 +22,7 @@ class Post(BaseModel):
 @router.post("/embed", response_model=dict)
 async def embed_tags(tag_dict: TagDict):
     try:
-        tag_service.embed_and_store_tags(tag_dict.tags)
+        tag_service.embed_and_store_tags(tag_dict.tags, tag_dict.level)
         return {"message": "Tags embedded and stored successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

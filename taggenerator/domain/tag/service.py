@@ -11,12 +11,12 @@ class TagService:
         self.tag_scorer = tag_scorer
         self.chatModel = chat_model
 
-    def embed_and_store_tags(self, tag_docs: dict[str, str]):
+    def embed_and_store_tags(self, tag_docs: dict[str, str], level: str):
 
         docs = list(tag_docs.values())
 
         embeddings = self.model.encode(docs, is_query=False)
-        self.repository.upsert_tags(tag_docs, embeddings)
+        self.repository.upsert_tags(tag_docs, embeddings, level)
 
     def delete_stored_tags(self, tags: List[str]):
         self.repository.delete_tags(tags)
@@ -27,16 +27,35 @@ class TagService:
 
         query_embedding = self.model.encode([query], is_query=True)
 
-        topLevel1 = ["Backend", "Frontend", "DevOps", "AI/ML", "Product/Design", "Culture", "Data", "Mobile", "Cloud/Infra", "Security", "Etc"]
-        topLevel2 = self.repository.query_tags(query_embedding, "level2", 50)
-        topLevel3 = self.repository.query_tags(query_embedding, "level3", 80)
+        top_level1 = ["Backen", "Frontend", "DevOps", "AI/ML", "Product/Design", "Culture", "Data", "Mobile", "Cloud/Infra", "Security", "Etc"]
+        top_level2 = self.repository.query_tags(query_embedding, "level2", 50)
+        # top_level3 = self.repository.query_tags(query_embedding, "level3", 80)
 
-        topLevel2ByScore = tag_scorer.getTopScore(title, tags, content, abstracted_content, topLevel2, 10)
-        topLevel3ByScore = tag_scorer.getTopScore(title, tags, content, abstracted_content, topLevel3, 20)
+        top_level2_by_score = tag_scorer.getTopScore(title, tags, content, abstracted_content, top_level2, 20)
+        # top_level3_by_score = tag_scorer.getTopScore(title, tags, content, abstracted_content, top_level3, 30)
 
-        topLevel1Result = chat_model.query(title, content, topLevel1, 1, "level1")
+        top_level3_by_score = ["change-data-capture", "dual-write", "dlt", "dlq", "outbox-pattern", "sagas", "idempotency",
+                      "exactly-once", "at-least-once", "at-most-once", "circuit-breaker", "retry", "backoff",
+                      "rate-limiting", "bulkhead", "timeout", "message-ordering", "consumer-lag", "data-consistency",
+                      "eventual-consistency", "environment-management", "release-management"]
 
-        return {"topLevel1" : topLevel1Result}
+        level2_dict = {}
+
+        for tag in top_level2_by_score:
+            level2_dict[tag[0].split("|")[0].strip()] = tag[0]
+
+        result = chat_model.query(title, content, top_level1, level2_dict.keys(), top_level3_by_score)
+        return {
+                "level1": result["level1"],
+                "level2": {
+                    "selected": [level2_dict[tag] for tag in result["level2"]["selected"]],
+                    "new": result["level2"]["new"]
+                },
+                "level3": {
+                    "selected": result["level3"]["selected"],
+                    "new": result["level3"]["new"]
+                },
+        }
 
 
 
