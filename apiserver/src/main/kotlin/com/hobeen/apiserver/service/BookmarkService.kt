@@ -120,7 +120,6 @@ class BookmarkService(
         )
     }
 
-    @Transactional(readOnly = true)
     fun getBookmarkGroups(userId: String): List<BookmarkGroupResponse> {
 
         val bookmarkGroups = bookmarkGroupRepository.findByUserId(userId)
@@ -135,7 +134,6 @@ class BookmarkService(
         return bookmarkGroups.map { BookmarkGroupResponse.of(it) }.sorted()
     }
 
-    @Transactional(readOnly = true)
     fun getBookmarkGroupsWithPostInfo(userId: String, postId: Long): List<BookmarkGroupWithPostResponse> {
 
         val bookmarkGroups = bookmarkGroupRepository.findByUserId(userId)
