@@ -2,6 +2,7 @@ package com.hobeen.apiserver.repository
 
 import com.hobeen.apiserver.entity.Bookmark
 import com.hobeen.apiserver.entity.QBookmark.bookmark
+import com.hobeen.apiserver.entity.QBookmarkGroup.bookmarkGroup
 import com.hobeen.apiserver.repository.dto.SliceDataDto
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
@@ -19,8 +20,9 @@ class BookmarkRepositoryImpl(
     ): SliceDataDto<Bookmark> {
         val rows = queryFactory
             .selectFrom(bookmark)
+            .join(bookmark.bookmarkGroup, bookmarkGroup)
             .where(
-                bookmark.id.userId.eq(userId)
+                bookmarkGroup.userId.eq(userId)
                     .and(bookmark.createdAt.lt(cursorCreatedAt))
             )
             .orderBy(bookmark.createdAt.desc())
@@ -40,13 +42,14 @@ class BookmarkRepositoryImpl(
         val results = queryFactory
             .select(bookmark.id.postId)
             .from(bookmark)
+            .join(bookmark.bookmarkGroup, bookmarkGroup)
             .where(
-                bookmark.id.userId.eq(userId)
+                bookmarkGroup.userId.eq(userId)
                     .and(bookmark.id.postId.`in`(postIds))
             )
             .fetch()
 
-        return postIds.associate { it to results.contains(it) }
+        return postIds.associateWith { results.contains(it) }
 
     }
 
@@ -62,7 +65,7 @@ class BookmarkRepositoryImpl(
 
         val maps = results.associate { it.get(bookmark.id.postId) to it.get(bookmark.count()) }
 
-        return postIds.associate { it to (maps[it] ?: 0L) }
+        return postIds.associateWith { (maps[it] ?: 0L) }
     }
 
 }
