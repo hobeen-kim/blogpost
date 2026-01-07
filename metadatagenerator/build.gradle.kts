@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.hobeen"
-version = "0.2.0"
+version = "1.0.1"
 description = "metadatagenerator"
 
 java {
@@ -54,7 +54,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     //custom package
-    implementation("com.hobeen:blogpost-common:1.2.8")
+    implementation("com.hobeen:blogpost-common:1.2.9")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
