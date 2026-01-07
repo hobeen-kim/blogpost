@@ -14,6 +14,8 @@ private val engFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy", Locale.EN
 private val korFormatter = DateTimeFormatter.ofPattern("M월 d, yyyy", Locale.KOREAN)
 private val formatter6 = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss", Locale.ENGLISH)
 private val formatter7 = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH)
+private val formatter8 = DateTimeFormatter.ofPattern("d MMMM uuuu", Locale.ENGLISH)
+
 
 fun localDateParse(dateStr: String?): LocalDateTime? {
 
@@ -39,6 +41,9 @@ fun localDateParse(dateStr: String?): LocalDateTime? {
 
     //December 10, 2025
     check7DateTime(dateStr)?.let { return it }
+
+    //10 February 2025
+    check8DateTime(dateStr)?.let { return it }
 
     //localdatetime
     if(dateStr.length <= 19) {
@@ -121,6 +126,14 @@ private fun check7DateTime(dateStr: String): LocalDateTime? {
     return try {
         LocalDate.parse(dateStr, formatter7).atStartOfDay()
         } catch (e: DateTimeParseException) {
+        null
+    }
+}
+
+private fun check8DateTime(dateStr: String): LocalDateTime? {
+    return try {
+        LocalDate.parse(dateStr, formatter8).atStartOfDay()
+    } catch (e: DateTimeParseException) {
         null
     }
 }
