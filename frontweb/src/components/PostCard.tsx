@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { Calendar, User, Heart, MessageCircle, Share2, Bookmark } from "lucide-react";
-import { addBookmark, like, removeBookmark, removeLike } from '@/lib/api';
+import { Calendar, User, Heart, MessageCircle, Share2, Bookmark, Plus, Folder } from "lucide-react";
+import { like, removeLike, getBookmarkGroupsWithPost, addBookmarkToGroup, createBookmarkGroup, removeBookmarkFromGroup } from '@/lib/api';
 import CommentDialog from '@/components/CommentDialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 interface PostCardProps {
   postId: string;
@@ -27,6 +37,15 @@ interface PostCardProps {
   className?: string;
   url: string;
   metadata: object;
+}
+
+interface BookmarkGroupWithPost extends BookmarkGroup {
+  hasPost: boolean;
+}
+
+interface BookmarkGroup {
+  bookmarkGroupId: number;
+  name: string;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -60,7 +79,28 @@ const PostCard: React.FC<PostCardProps> = ({
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
 
-  const handleBookmark = async () => {
+  // Bookmark Group State
+  const [isBookmarkDialogOpen, setIsBookmarkDialogOpen] = useState(false);
+  const [bookmarkGroups, setBookmarkGroups] = useState<BookmarkGroupWithPost[]>([]);
+  const [initialSelectedGroups, setInitialSelectedGroups] = useState<number[]>([]);
+  const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
+  const [newGroupName, setNewGroupName] = useState('');
+  const [isCreatingGroup, setIsCreatingGroup] = useState(false);
+
+  const loadBookmarkGroups = async () => {
+    try {
+      const response = await getBookmarkGroupsWithPost(postId);
+      const groupsWithPost: BookmarkGroupWithPost[] = response.data;
+      setBookmarkGroups(groupsWithPost);
+      const initiallySelected = groupsWithPost.filter(g => g.hasPost).map(g => g.bookmarkGroupId);
+      setSelectedGroups(initiallySelected);
+      setInitialSelectedGroups(initiallySelected);
+    } catch (error) {
+      console.error('Failed to load bookmark groups:', error);
+    }
+  };
+
+  const handleBookmarkClick = async () => {
     if (!user) {
       toast({
         title: "로그인이 필요합니다",
@@ -69,32 +109,63 @@ const PostCard: React.FC<PostCardProps> = ({
       });
       return;
     }
+    await loadBookmarkGroups();
+    setIsBookmarkDialogOpen(true);
+  };
 
+  const handleSaveBookmarks = async () => {
     try {
-      if (isBookmarked) {
-        await removeBookmark(postId);
-        setBookmarked(false);
-        toast({
-          title: "북마크 제거",
-          description: "북마크에서 제거했습니다."
-        });
-      } else {
-        await addBookmark(postId);
+      const toAdd = selectedGroups.filter(id => !initialSelectedGroups.includes(id));
+      const toRemove = initialSelectedGroups.filter(id => !selectedGroups.includes(id));
+
+      await Promise.all([
+        ...toAdd.map(groupId => addBookmarkToGroup(groupId, postId)),
+        ...toRemove.map(groupId => removeBookmarkFromGroup(groupId, postId))
+      ]);
+
+      if (selectedGroups.length > 0 && !isBookmarked) {
         setBookmarked(true);
-        toast({
-          title: "북마크 추가",
-          description: "북마크에 추가했습니다."
-        });
+        setBookmarkNumber(prev => prev + 1);
+      } else if (selectedGroups.length === 0 && isBookmarked) {
+        setBookmarked(false);
+        setBookmarkNumber(prev => Math.max(0, prev - 1));
       }
 
-      setBookmarkNumber(prev => isBookmarked ? prev - 1 : prev + 1);
+      toast({ title: "북마크 저장", description: "북마크 그룹이 업데이트되었습니다." });
+      setIsBookmarkDialogOpen(false);
     } catch (error) {
+      console.error(error);
       toast({
         title: "오류 발생",
-        description: "북마크 처리 중 오류가 발생했습니다.",
+        description: "북마크 저장 중 오류가 발생했습니다.",
         variant: "destructive"
       });
     }
+  };
+
+  const handleCreateGroup = async () => {
+    if (!newGroupName.trim()) return;
+
+    try {
+      await createBookmarkGroup(newGroupName);
+      await loadBookmarkGroups();
+      setNewGroupName('');
+      setIsCreatingGroup(false);
+    } catch (error) {
+      toast({
+        title: "그룹 생성 실패",
+        description: "북마크 그룹 생성 중 오류가 발생했습니다.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const toggleGroupSelection = (groupId: number) => {
+    setSelectedGroups(prev =>
+      prev.includes(groupId)
+        ? prev.filter(id => id !== groupId)
+        : [...prev, groupId]
+    );
   };
 
   const handleLike = async () => {
@@ -190,13 +261,13 @@ const PostCard: React.FC<PostCardProps> = ({
 
   return (
     <>
-      <Card 
+      <Card
         onClick={handleCardClick}
         className={cn(
         "group cursor-pointer transition-all duration-300 hover:shadow-lg border-0 shadow-sm",
         "w-full max-w-sm md:max-w-lg lg:max-w-2xl mx-auto",
-        theme === 'dark' 
-          ? "bg-gray-800/50 hover:bg-gray-800/70 border-gray-700/50" 
+        theme === 'dark'
+          ? "bg-gray-800/50 hover:bg-gray-800/70 border-gray-700/50"
           : "bg-white hover:bg-gray-50/80 border-gray-200/50",
         className
       )}>
@@ -209,14 +280,14 @@ const PostCard: React.FC<PostCardProps> = ({
             className="w-full h-48 md:h-56 lg:h-64 object-cover transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          
+
           {/* 북마크 버튼 */}
           <Button
             variant="ghost"
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
-              handleBookmark();
+              handleBookmarkClick();
             }}
             className={cn(
               "absolute top-3 right-3 p-2 rounded-full backdrop-blur-sm transition-all duration-200",
@@ -245,9 +316,9 @@ const PostCard: React.FC<PostCardProps> = ({
           )}>
             <div className="flex items-center gap-1">
               {!logoError ? (
-                <img 
-                  src={`/logo/${source}.png`} 
-                  alt={source} 
+                <img
+                  src={`/logo/${source}.png`}
+                  alt={source}
                   className="h-4 w-4 rounded-sm"
                   onError={() => setLogoError(true)}
                 />
@@ -320,7 +391,7 @@ const PostCard: React.FC<PostCardProps> = ({
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleBookmark();
+                    handleBookmarkClick();
 
                   }}
                   className={cn(
@@ -370,13 +441,71 @@ const PostCard: React.FC<PostCardProps> = ({
         </CardContent>
       </Card>
 
-      <CommentDialog 
-        postId={postId} 
-        isOpen={isCommentOpen} 
-        onClose={() => setIsCommentOpen(false)} 
+      <CommentDialog
+        postId={postId}
+        isOpen={isCommentOpen}
+        onClose={() => setIsCommentOpen(false)}
         onCommentAdded={handleCommentAdded}
         onCommentDeleted={handleCommentDeleted}
       />
+
+      {/* Bookmark Group Dialog */}
+      <Dialog open={isBookmarkDialogOpen} onOpenChange={setIsBookmarkDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>북마크 그룹 선택</DialogTitle>
+          </DialogHeader>
+
+          <div className="py-4 space-y-4">
+            <div className="max-h-[200px] overflow-y-auto space-y-2">
+              {bookmarkGroups.map((group) => (
+                <div key={group.bookmarkGroupId} className="flex items-center space-x-2 p-2 hover:bg-muted rounded-md">
+                  <Checkbox
+                    id={`group-${group.bookmarkGroupId}`}
+                    checked={selectedGroups.includes(group.bookmarkGroupId)}
+                    onCheckedChange={() => toggleGroupSelection(group.bookmarkGroupId)}
+                  />
+                  <Label
+                    htmlFor={`group-${group.bookmarkGroupId}`}
+                    className="flex-1 cursor-pointer flex items-center gap-2"
+                  >
+                    <Folder className="h-4 w-4 text-muted-foreground" />
+                    {group.name}
+                  </Label>
+                </div>
+              ))}
+            </div>
+
+            {isCreatingGroup ? (
+              <div className="flex items-center gap-2 pt-2 border-t">
+                <Input
+                  placeholder="새 그룹 이름"
+                  value={newGroupName}
+                  onChange={(e) => setNewGroupName(e.target.value)}
+                  className="h-8"
+                />
+                <Button size="sm" onClick={handleCreateGroup}>추가</Button>
+                <Button size="sm" variant="ghost" onClick={() => setIsCreatingGroup(false)}>취소</Button>
+              </div>
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start text-muted-foreground"
+                onClick={() => setIsCreatingGroup(true)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                새 그룹 만들기
+              </Button>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsBookmarkDialogOpen(false)}>취소</Button>
+            <Button onClick={handleSaveBookmarks}>저장</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
