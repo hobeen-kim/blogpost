@@ -19,7 +19,7 @@ data class ParseCommand(
 }
 
 enum class Command{
-    TITLE, SELECT, SELECT_FIRST, ATTR, TEXT, TRIM, DELETE, PREFIX, SUFFIX;
+    TITLE, SELECT, SELECT_FIRST, ATTR, TEXT, OWN_TEXT, TRIM, DELETE, DELETE_BEFORE, DELETE_AFTER, PREFIX, SUFFIX;
 }
 
 private sealed interface Selection {
@@ -46,6 +46,11 @@ private sealed interface Selection {
         is Many -> els?.map { it.text() }
     }
 
+    fun ownText(): List<String?>? = when (this) {
+        is One -> listOf(el?.ownText())
+        is Many -> els?.map { it.ownText() }
+    }
+
     fun title(): String? = (this as? One)?.el?.let { it as? Document }?.title()
 }
 
@@ -63,9 +68,12 @@ fun getDataFrom(root: Element, parseCommands: ParseCommands?): List<String>? {
 
             Command.ATTR -> results = selection.attr(cmd.value)
             Command.TEXT -> results = selection.text()
+            Command.OWN_TEXT -> results = selection.ownText()
 
             Command.TRIM -> results = results?.mapNotNull { it?.trim() }
             Command.DELETE -> results = results?.mapNotNull { it?.replace(cmd.value, "") }
+            Command.DELETE_BEFORE -> results = results?.mapNotNull { it?.replaceBefore(cmd.value, "") }
+            Command.DELETE_AFTER -> results = results?.mapNotNull { it?.replaceAfter(cmd.value, "") }
             Command.PREFIX -> results = results?.mapNotNull { result -> result.takeIf { !it.isNullOrBlank() }?.let { cmd.value + it }}
             Command.SUFFIX -> results = results?.mapNotNull { result -> result.takeIf { !it.isNullOrBlank() }?.let { it + cmd.value }}
         }
