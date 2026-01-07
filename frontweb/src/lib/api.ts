@@ -47,18 +47,76 @@ const fetchWithoutAuth = async (url: string, options: FetchOptions = {}) => {
   return response.json();
 };
 
-export const getBookmarks = async (cursorTime?: string) => {
-  const url = cursorTime 
-    ? `/bookmarks/me?cursorTime=${cursorTime}` 
-    : '/bookmarks/me';
-  return fetchWithAuth(url);
+export const getBookmarks = async (cursorTime?: string, groupId?: number) => {
+
+  if(groupId) {
+    const url = cursorTime
+        ? `/bookmarks/groups/${groupId}/me?cursorTime=${cursorTime}`
+        : `/bookmarks/groups/${groupId}/me`;
+    return fetchWithAuth(url);
+  } else {
+    const url = cursorTime
+        ? `/bookmarks/me?cursorTime=${cursorTime}`
+        : '/bookmarks/me';
+    return fetchWithAuth(url);
+  }
+
+
 };
+
+// export const getBookmarks = async (cursorTime?: string) => {
+//   const url = cursorTime
+//       ? `/bookmarks/me?cursorTime=${cursorTime}`
+//       : '/bookmarks/me';
+//   return fetchWithAuth(url);
+// };
 
 export const addBookmark = async (postId: string) => {
   return fetchWithAuth(`/bookmarks/${postId}`, {
     method: 'POST',
   });
 };
+
+export const addBookmarkToGroup = async (groupId: number, postId: string) => {
+  return fetchWithAuth(`/bookmarks/groups/${groupId}/posts/${postId}`, {
+    method: 'POST',
+  });
+};
+
+export const removeBookmarkFromGroup = async (groupId: number, postId: string) => {
+  return fetchWithAuth(`/bookmarks/groups/${groupId}/posts/${postId}`, {
+    method: 'DELETE',
+  });
+};
+
+export const getBookmarkGroups = async () => {
+  return fetchWithAuth('/bookmarks/groups/me');
+};
+
+export const getBookmarkGroupsWithPost = async (postId: string) => {
+  return fetchWithAuth('/bookmarks/groups/posts/me?postId=' + postId);
+};
+
+export const createBookmarkGroup = async (name: string) => {
+  return fetchWithAuth('/bookmarks/groups', {
+    method: 'POST',
+    body: JSON.stringify({name}),
+  })
+}
+
+export const updateBookmarkGroup = async (bookmarkGroupId: number, name: string) => {
+  return fetchWithAuth(`/bookmarks/groups/${bookmarkGroupId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({name}),
+  })
+}
+
+export const deleteBookmarkGroup = async (bookmarkGroupId: number) => {
+  return fetchWithAuth(`/bookmarks/groups/${bookmarkGroupId}`, {
+    method: 'DELETE',
+  })
+}
+
 
 export const removeBookmark = async (postId: string) => {
   return fetchWithAuth(`/bookmarks/${postId}`, {

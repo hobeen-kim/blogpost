@@ -16,6 +16,6 @@ class BookmarkId (
     @Column(name = "post_id")
     val postId: Long,
 
-    @Column(name = "user_id")
-    val userId: String,
+    @Column(name = "bookmark_group_id")
+    val bookmarkGroupId: Long?,
 ): Serializable

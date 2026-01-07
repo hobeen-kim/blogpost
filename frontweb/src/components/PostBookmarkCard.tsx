@@ -5,8 +5,25 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { Calendar, User, Share2, Bookmark } from "lucide-react";
-import { addBookmark, removeBookmark } from '@/lib/api';
+import {User, Share2, Bookmark, Folder} from "lucide-react";
+import {
+  addBookmarkToGroup,
+  getBookmarkGroupsWithPost,
+  removeBookmarkFromGroup
+} from '@/lib/api';
+import {useSearchParams} from "react-router-dom";
+import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
+import {Checkbox} from "@/components/ui/checkbox.tsx";
+import {Label} from "@/components/ui/label.tsx";
+
+interface BookmarkGroupWithPost extends BookmarkGroup {
+  hasPost: boolean;
+}
+
+interface BookmarkGroup {
+  bookmarkGroupId: number;
+  name: string;
+}
 
 interface PostBookmarkCardProps {
   postId: string;
@@ -42,8 +59,27 @@ const PostBookmarkCard: React.FC<PostBookmarkCardProps> = ({
   const { toast } = useToast();
   const [bookmarked, setBookmarked] = React.useState(isBookmarked);
   const [logoError, setLogoError] = useState(false);
+  const [searchParams] = useSearchParams();
+  const groupId = searchParams.get("groupId")
+  const [isBookmarkDialogOpen, setIsBookmarkDialogOpen] = useState(false);
+  const [bookmarkGroups, setBookmarkGroups] = useState<BookmarkGroupWithPost[]>([]);
+  const [initialSelectedGroups, setInitialSelectedGroups] = useState<number[]>([]);
+  const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
 
-  const handleBookmark = async () => {
+  const loadBookmarkGroups = async () => {
+    try {
+      const response = await getBookmarkGroupsWithPost(postId);
+      const groupsWithPost: BookmarkGroupWithPost[] = response.data;
+      setBookmarkGroups(groupsWithPost);
+      const initiallySelected = groupsWithPost.filter(g => g.hasPost).map(g => g.bookmarkGroupId);
+      setSelectedGroups(initiallySelected);
+      setInitialSelectedGroups(initiallySelected);
+    } catch (error) {
+      console.error('Failed to load bookmark groups:', error);
+    }
+  };
+
+  const handleBookmarkClick = async () => {
     if (!user) {
       toast({
         title: "로그인이 필요합니다",
@@ -52,32 +88,8 @@ const PostBookmarkCard: React.FC<PostBookmarkCardProps> = ({
       });
       return;
     }
-
-    try {
-      if (bookmarked) {
-        await removeBookmark(postId);
-        setBookmarked(false);
-        toast({
-          title: "북마크 제거",
-          description: "북마크에서 제거했습니다."
-        });
-        onBookmarkChange?.(false);
-      } else {
-        await addBookmark(postId);
-        setBookmarked(true);
-        toast({
-          title: "북마크 추가",
-          description: "북마크에 추가했습니다."
-        });
-        onBookmarkChange?.(true);
-      }
-    } catch (error) {
-      toast({
-        title: "오류 발생",
-        description: "북마크 처리 중 오류가 발생했습니다.",
-        variant: "destructive"
-      });
-    }
+    await loadBookmarkGroups();
+    setIsBookmarkDialogOpen(true);
   };
 
   const handleShare = async () => {
@@ -123,13 +135,48 @@ const PostBookmarkCard: React.FC<PostBookmarkCardProps> = ({
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
+  const toggleGroupSelection = (groupId: number) => {
+    setSelectedGroups(prev =>
+        prev.includes(groupId)
+            ? prev.filter(id => id !== groupId)
+            : [...prev, groupId]
+    );
+  };
+
+  const handleSaveBookmarks = async () => {
+    try {
+      const toAdd = selectedGroups.filter(id => !initialSelectedGroups.includes(id));
+      const toRemove = initialSelectedGroups.filter(id => !selectedGroups.includes(id));
+
+      await Promise.all([
+        ...toAdd.map(groupId => addBookmarkToGroup(groupId, postId)),
+        ...toRemove.map(groupId => removeBookmarkFromGroup(groupId, postId))
+      ]);
+
+      if(groupId && toRemove.includes(Number(groupId))) {
+        onBookmarkChange?.(false);
+      }
+
+      toast({ title: "북마크 저장", description: "북마크 그룹이 업데이트되었습니다." });
+      setIsBookmarkDialogOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "오류 발생",
+        description: "북마크 저장 중 오류가 발생했습니다.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
-    <Card 
+    <>
+    <Card
       onClick={handleCardClick}
       className={cn(
       "group cursor-pointer transition-all duration-300 hover:shadow-lg border-0 shadow-sm flex flex-col h-full",
-      theme === 'dark' 
-        ? "bg-gray-800/50 hover:bg-gray-800/70 border-gray-700/50" 
+      theme === 'dark'
+        ? "bg-gray-800/50 hover:bg-gray-800/70 border-gray-700/50"
         : "bg-white hover:bg-gray-50/80 border-gray-200/50",
       className
     )}>
@@ -142,14 +189,14 @@ const PostBookmarkCard: React.FC<PostBookmarkCardProps> = ({
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        
+
         {/* 북마크 버튼 */}
         <Button
           variant="ghost"
           size="sm"
           onClick={(e) => {
             e.stopPropagation();
-            handleBookmark();
+            handleBookmarkClick();
           }}
           className={cn(
             "absolute top-2 right-2 p-1.5 h-8 w-8 rounded-full backdrop-blur-sm transition-all duration-200",
@@ -234,6 +281,41 @@ const PostBookmarkCard: React.FC<PostBookmarkCardProps> = ({
         </div>
       </CardContent>
     </Card>
+  {/* Bookmark Group Dialog */}
+  <Dialog open={isBookmarkDialogOpen} onOpenChange={setIsBookmarkDialogOpen}>
+    <DialogContent className="sm:max-w-md">
+      <DialogHeader>
+        <DialogTitle>북마크 그룹 선택</DialogTitle>
+      </DialogHeader>
+
+      <div className="py-4 space-y-4">
+        <div className="max-h-[200px] overflow-y-auto space-y-2">
+          {bookmarkGroups.map((group) => (
+              <div key={group.bookmarkGroupId} className="flex items-center space-x-2 p-2 hover:bg-muted rounded-md">
+                <Checkbox
+                    id={`group-${group.bookmarkGroupId}`}
+                    checked={selectedGroups.includes(group.bookmarkGroupId)}
+                    onCheckedChange={() => toggleGroupSelection(group.bookmarkGroupId)}
+                />
+                <Label
+                    htmlFor={`group-${group.bookmarkGroupId}`}
+                    className="flex-1 cursor-pointer flex items-center gap-2"
+                >
+                  <Folder className="h-4 w-4 text-muted-foreground" />
+                  {group.name}
+                </Label>
+              </div>
+          ))}
+        </div>
+      </div>
+
+      <DialogFooter>
+        <Button variant="outline" onClick={() => setIsBookmarkDialogOpen(false)}>취소</Button>
+        <Button onClick={handleSaveBookmarks}>저장</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+  </>
   );
 };
 

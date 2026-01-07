@@ -9,7 +9,14 @@ interface BookmarkRepositoryCustom {
     fun findAllByLastCreatedTime(
         userId: String,
         cursorCreatedAt: LocalDateTime,
-        limit: Int
+        limit: Int,
+    ): SliceDataDto<Bookmark>
+
+    fun findAllByLastCreatedTime(
+        userId: String,
+        cursorCreatedAt: LocalDateTime,
+        limit: Int,
+        bookmarkGroupId: Long
     ): SliceDataDto<Bookmark>
 
     fun existsByPostIds(
