@@ -116,4 +116,18 @@ class GetDataFromTest {
         assertThat(tags).containsExactlyInAnyOrder("dev", "service engineering", "eda", "iot streaming", "kafka")
 
     }
+
+    @Test
+    fun replaceBeforeAndAfter() {
+        //given
+        val testStr = "abcdefg"
+
+        //when
+        val replacedBefore = testStr.replaceBefore("d", "")
+        val replacedAfter = testStr.replaceAfter("d", "")
+
+        //then
+        assertThat(replacedBefore).isEqualTo("defg")
+        assertThat(replacedAfter).isEqualTo("abcd")
+    }
 }
