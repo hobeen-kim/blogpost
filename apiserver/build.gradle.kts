@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.hobeen"
-version = "0.0.1"
+version = "1.0.0"
 description = "apiserver"
 
 java {
@@ -25,6 +25,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     //web
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     //dataformat
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")

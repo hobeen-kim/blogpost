@@ -5,22 +5,25 @@ import com.hobeen.apiserver.entity.Post
 import com.hobeen.apiserver.service.BookmarkService
 import java.time.LocalDateTime
 
-data class BookmarkGroupResponse (
+data class BookmarkGroupWithPostResponse (
     val bookmarkGroupId: Long,
     val name: String,
-): Comparable<BookmarkGroupResponse> {
+    val hasPost: Boolean,
+): Comparable<BookmarkGroupWithPostResponse> {
     companion object {
         fun of(
             group: BookmarkGroup,
-        ): BookmarkGroupResponse {
-            return BookmarkGroupResponse(
+            hasPost: Boolean,
+        ): BookmarkGroupWithPostResponse {
+            return BookmarkGroupWithPostResponse(
                 bookmarkGroupId = group.bookmarkGroupId!!,
                 name = group.name,
+                hasPost = hasPost,
             )
         }
     }
 
-    override fun compareTo(other: BookmarkGroupResponse): Int {
+    override fun compareTo(other: BookmarkGroupWithPostResponse): Int {
 
         if(name == BookmarkService.DEFAULT_GROUP_NAME) return -1
         else if(other.name == BookmarkService.DEFAULT_GROUP_NAME) return 1

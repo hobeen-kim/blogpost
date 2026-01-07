@@ -2,7 +2,7 @@ package com.hobeen.apiserver.controller.dto
 
 import jakarta.validation.constraints.NotBlank
 
-data class BookmarkGroupCreateApiRequest (
+data class BookmarkGroupUpdateApiRequest (
     @field:NotBlank
     val name: String,
 )

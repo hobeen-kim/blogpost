@@ -1,6 +1,6 @@
 package com.hobeen.apiserver.util.exception
 
 abstract class BusinessException(
-    message: String,
-    code: Int
+    override val message: String,
+    val code: Int
 ): RuntimeException(message)
