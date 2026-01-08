@@ -30,7 +30,7 @@ class MetadataGenerateService(
         val source = message.source
         val url = message.url
         val pubDate = getPubDateOrThrow(message, html)
-        val tags = message.tags.ifEmpty { html.tags }
+        val tags = (message.tags + html.tags).distinct()
         val description = if(message.description.isNullOrBlank()) html.description else message.description
         val thumbnail = getThumbnailOrThrow(message, html)
         val content = html.content
