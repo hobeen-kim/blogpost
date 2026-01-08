@@ -45,6 +45,9 @@ fun localDateParse(dateStr: String?): LocalDateTime? {
     //10 February 2025
     check8DateTime(dateStr)?.let { return it }
 
+    //2025/02/10
+    check9DateTime(dateStr)?.let { return it }
+
     //localdatetime
     if(dateStr.length <= 19) {
         return LocalDateTime.parse(dateStr)
@@ -136,4 +139,16 @@ private fun check8DateTime(dateStr: String): LocalDateTime? {
     } catch (e: DateTimeParseException) {
         null
     }
+}
+
+private fun check9DateTime(dateStr: String): LocalDateTime? {
+    val dateSnippets = dateStr.trim().split("/")
+
+    if(dateSnippets.size != 3) return null
+
+    val year = dateSnippets[0].toInt()
+    val month = dateSnippets[1].toInt()
+    val day = dateSnippets[2].toInt()
+
+    return LocalDateTime.of(year, month, day, 0, 0, 0)
 }
