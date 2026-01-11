@@ -5,6 +5,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.Locale
@@ -15,6 +16,7 @@ private val korFormatter = DateTimeFormatter.ofPattern("M월 d, yyyy", Locale.KO
 private val formatter6 = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss", Locale.ENGLISH)
 private val formatter7 = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH)
 private val formatter8 = DateTimeFormatter.ofPattern("d MMMM uuuu", Locale.ENGLISH)
+private val formatter10 = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
 
 
 fun localDateParse(dateStr: String?): LocalDateTime? {
@@ -47,6 +49,9 @@ fun localDateParse(dateStr: String?): LocalDateTime? {
 
     //2025/02/10
     check9DateTime(dateStr)?.let { return it }
+
+    //Sat, 10 Jan 2026 15:01:03 GMT
+    check10DateTime(dateStr)?.let { return it }
 
     //localdatetime
     if(dateStr.length <= 19) {
@@ -151,4 +156,14 @@ private fun check9DateTime(dateStr: String): LocalDateTime? {
     val day = dateSnippets[2].toInt()
 
     return LocalDateTime.of(year, month, day, 0, 0, 0)
+}
+
+private fun check10DateTime(dateStr: String): LocalDateTime? {
+    return try {
+        ZonedDateTime.parse(dateStr, formatter10)
+            .toOffsetDateTime().atZoneSameInstant(seoulZone)
+            .toLocalDateTime()
+    } catch (e: DateTimeParseException) {
+        null
+    }
 }
