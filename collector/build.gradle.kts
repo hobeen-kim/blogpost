@@ -52,7 +52,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     //common
-    implementation("com.hobeen:blogpost-common:1.3.1")
+    implementation("com.hobeen:blogpost-common:1.3.2")
 
     //test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
