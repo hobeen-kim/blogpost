@@ -20,7 +20,7 @@ class CollectController (
     ): ResponseEntity<CollectResult> {
 
         val result = try {
-             collectUseCase.collect(targetName)
+             collectUseCase.collectByName(targetName)
         } catch (e: Exception) {
             CollectResult.of(targetName, e)
         }

@@ -9,6 +9,7 @@ import com.hobeen.collector.application.port.out.GetTargetPort
 import com.hobeen.collector.application.port.out.SaveResultPort
 import com.hobeen.collector.domain.CollectResult
 import com.hobeen.collector.domain.CollectStatus
+import com.hobeen.collector.domain.Engine
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -31,11 +32,26 @@ class CollectService(
         targets.forEach { target ->
             val result = collect(target)
             saveResultPort.save(result)
+
+            if(result.status == CollectStatus.FAIL) {
+                alarm.errorAlarm(target.source, result.exception ?: Exception("unknown error"))
+            }
         }
     }
 
-    override fun collect(target: Target): CollectResult {
 
+    override fun collectByName(targetName: String): CollectResult {
+        val target = getTargetPort.getTarget(targetName) ?: return CollectResult(
+            source = targetName,
+            count = 0,
+            status = CollectStatus.FAIL,
+            message = "not found targetName : $targetName"
+        )
+
+        return collect(target)
+    }
+
+    private fun collect(target: Target): CollectResult {
         try {
             val crawler = adapterSelector.crawler(target.adapter.crawler.type)
             val extractor = adapterSelector.extractor(target.adapter.extractor.type)
@@ -45,7 +61,6 @@ class CollectService(
                 crawler = crawler,
                 extractor = extractor,
                 publisher = publisher,
-                alarm = alarm,
             )
 
             val collectCommand = CollectCommand(
@@ -59,20 +74,7 @@ class CollectService(
             return result
 
         } catch (e: Exception) {
-            val failResult = CollectResult.of(target.source, e)
-
-            return failResult
+            return CollectResult.of(target.source, e)
         }
-    }
-
-    override fun collect(targetName: String): CollectResult {
-        val target = getTargetPort.getTarget(targetName) ?: return CollectResult(
-            source = targetName,
-            count = 0,
-            status = CollectStatus.FAIL,
-            message = "not found targetName : $targetName"
-        )
-
-        return collect(target)
     }
 }

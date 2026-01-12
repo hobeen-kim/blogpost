@@ -5,6 +5,7 @@ import com.hobeen.collector.adapter.out.publisher.mock.MemoryPublisher
 import com.hobeen.collector.application.port.`in`.TargetValidationUseCase
 import com.hobeen.collector.application.port.`in`.dto.CollectCommand
 import com.hobeen.collector.application.port.out.GetTargetPort
+import com.hobeen.collector.domain.Engine
 import org.springframework.stereotype.Component
 
 @Component

@@ -4,7 +4,8 @@ data class CollectResult (
     val source: String,
     val count: Int,
     val status: CollectStatus,
-    val message: String
+    val message: String,
+    val exception: Exception? = null
 ) {
     companion object {
 
@@ -13,7 +14,7 @@ data class CollectResult (
         }
 
         fun of(source: String, exception: Exception): CollectResult {
-            return CollectResult(source = source, count = 0, status = CollectStatus.FAIL, message = "${exception.javaClass.simpleName} ${exception.message ?: "unknown error"}")
+            return CollectResult(source = source, count = 0, status = CollectStatus.FAIL, message = "${exception.javaClass.simpleName} ${exception.message ?: "unknown error"}", exception = exception)
         }
     }
 }
