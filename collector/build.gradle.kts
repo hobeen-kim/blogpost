@@ -58,6 +58,14 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    testImplementation("io.kotest:kotest-framework-engine:5.9.1")
+    testImplementation("io.kotest:kotest-assertions-core:5.9.1")
+    testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
+    testImplementation("io.kotest:kotest-property:5.9.1")
+    testImplementation("io.kotest:kotest-runner-junit5:5.9.1") // JUnit 연동
+    testImplementation("io.mockk:mockk:1.13.12")
+    testImplementation("com.ninja-squad:springmockk:4.0.2") // Spring에서 MockK를 쉽게 사용할 수 있게 해주는 라이브러리
 }
 
 kotlin {
