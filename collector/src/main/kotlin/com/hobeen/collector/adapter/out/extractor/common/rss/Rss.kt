@@ -26,7 +26,7 @@ data class Item(
     val title: String,
     val link: String,
     @JsonDeserialize(using = RssDateDeserializer::class)
-    val pubDate: LocalDateTime,
+    val pubDate: LocalDateTime?,
     val description: String?,
     val author: String?,
     @JacksonXmlElementWrapper(useWrapping = false) //<category> 태그 여러개 처리

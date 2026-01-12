@@ -10,11 +10,11 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
-class RssDateDeserializer: JsonDeserializer<LocalDateTime>() {
+class RssDateDeserializer: JsonDeserializer<LocalDateTime?>() {
 
     private val zone = ZoneId.of("Asia/Seoul")
 
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext?): LocalDateTime {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext?): LocalDateTime? {
         val text = p.text.trim()
 
 
@@ -22,7 +22,7 @@ class RssDateDeserializer: JsonDeserializer<LocalDateTime>() {
             .withZoneSameInstant(zone)
             .toLocalDateTime()
         } catch (e: DateTimeParseException) {
-            localDateParse(dateStr = text) ?: throw IllegalArgumentException("cannot parse date at RssDateDeserializer : $text")
+            localDateParse(dateStr = text) ?: return null
         }
     }
 }
