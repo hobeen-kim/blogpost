@@ -1,0 +1,78 @@
+package com.hobeen.collector.application
+
+import com.hobeen.collector.adapter.out.AdapterSelector
+import com.hobeen.collector.application.port.`in`.CollectUseCase
+import com.hobeen.collector.application.port.`in`.dto.CollectCommand
+import com.hobeen.collector.application.port.`in`.dto.Target
+import com.hobeen.collector.application.port.out.Alarm
+import com.hobeen.collector.application.port.out.GetTargetPort
+import com.hobeen.collector.application.port.out.SaveResultPort
+import com.hobeen.collector.domain.CollectResult
+import com.hobeen.collector.domain.CollectStatus
+import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+
+@Service
+class CollectService(
+    private val getTargetPort: GetTargetPort,
+    private val saveResultPort: SaveResultPort,
+    private val adapterSelector: AdapterSelector,
+    private val alarm: Alarm,
+): CollectUseCase {
+
+    override fun collectAllByCron(criteria: LocalDateTime) {
+        val targets = try {
+            getTargetPort.getTargets(LocalDateTime.now())
+        } catch (e: Exception) {
+            alarm.errorAlarm("cannot get target", e)
+            return
+        }
+
+        targets.forEach { target ->
+            val result = collect(target)
+            saveResultPort.save(result)
+        }
+    }
+
+    override fun collect(target: Target): CollectResult {
+
+        try {
+            val crawler = adapterSelector.crawler(target.adapter.crawler.type)
+            val extractor = adapterSelector.extractor(target.adapter.extractor.type)
+            val publisher = adapterSelector.publisher(target.adapter.publisher.type)
+
+            val engine = Engine(
+                crawler = crawler,
+                extractor = extractor,
+                publisher = publisher,
+                alarm = alarm,
+            )
+
+            val collectCommand = CollectCommand(
+                target = target,
+            )
+
+            val result = engine.run(
+                command = collectCommand
+            )
+
+            return result
+
+        } catch (e: Exception) {
+            val failResult = CollectResult.of(target.source, e)
+
+            return failResult
+        }
+    }
+
+    override fun collect(targetName: String): CollectResult {
+        val target = getTargetPort.getTarget(targetName) ?: return CollectResult(
+            source = targetName,
+            count = 0,
+            status = CollectStatus.FAIL,
+            message = "not found targetName : $targetName"
+        )
+
+        return collect(target)
+    }
+}

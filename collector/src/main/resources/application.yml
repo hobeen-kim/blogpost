@@ -1,0 +1,14 @@
+server:
+  port: 8083
+
+alarm:
+  slack:
+    enabled: true
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydb
+    username: myuser
+    password: mypassword
+    driver-class-name: org.postgresql.Driver
+
