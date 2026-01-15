@@ -6,14 +6,14 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
-import java.net.http.HttpClient
+import org.springframework.web.client.RestTemplate
 import kotlin.apply
 
 @Configuration
 class CommonConfig {
 
     @Bean
-    fun httpClient() = HttpClient.newBuilder().build()
+    fun restTemplate() = RestTemplate()
 
     @Bean
     @Primary
