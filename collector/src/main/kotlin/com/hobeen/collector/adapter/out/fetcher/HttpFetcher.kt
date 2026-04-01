@@ -25,6 +25,8 @@ class HttpFetcher(
                 MediaType.TEXT_HTML,
                 MediaType.ALL
             )
+            set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+            set("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8")
         }
 
         val request = RequestEntity<Void>(headers, HttpMethod.GET, URI.create(url))

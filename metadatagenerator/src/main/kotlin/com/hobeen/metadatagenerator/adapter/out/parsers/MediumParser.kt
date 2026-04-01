@@ -15,7 +15,8 @@ class MediumParser: ParseHtmlMetadataPort {
     }
 
     override fun parse(url: String, parserProps: ParseProps): Html {
-        val doc = Jsoup.connect(url)
+        val fetchUrl = com.hobeen.metadatagenerator.common.resolveUrl(url, parserProps.props)
+        val doc = Jsoup.connect(fetchUrl)
             .userAgent(
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " +
                         "AppleWebKit/537.36 (KHTML, like Gecko) " +

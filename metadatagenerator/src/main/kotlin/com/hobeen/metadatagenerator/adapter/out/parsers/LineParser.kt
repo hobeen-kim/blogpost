@@ -15,7 +15,8 @@ class LineParser: ParseHtmlMetadataPort {
     }
 
     override fun parse(url: String, parserProps: ParseProps): Html {
-        val doc = Jsoup.connect(url).get()
+        val fetchUrl = com.hobeen.metadatagenerator.common.resolveUrl(url, parserProps.props)
+        val doc = Jsoup.connect(fetchUrl).get()
         val title = doc.title()
 
         val description = doc.select("p").subList(1, 3).map {

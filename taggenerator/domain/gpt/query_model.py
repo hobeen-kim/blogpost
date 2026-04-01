@@ -32,7 +32,7 @@ Hard rules:
   - If truly necessary (no good candidate exists), you MAY add NEW tags:
     - Level-2: up to 1 new tag (0~1)
     - Level-3: up to 2 new tags (0~2)
-  - New tags must be short, generic, and technology-appropriate (use kebab-case, e.g., "outbox-pattern").
+  - New tags must use their proper display name (e.g., "Outbox Pattern", "gRPC-Web", "ES Modules").
 
 Selection criteria:
 - Prefer tags that represent the MAIN technical topics (not minor mentions).
@@ -47,20 +47,20 @@ Output rules (VERY IMPORTANT):
   "level1": "<one exact string from LEVEL1_CANDIDATES>",
   "level2": {{
     "selected": ["<exact string from LEVEL2_CANDIDATES>", "<...>", "<...>"],
-    "new": ["<kebab-case-new-tag>"] 
+    "new": ["<Display Name>"]
   }},
   "level3": {{
     "selected": ["<exact string from LEVEL3_CANDIDATES>", "<...>", "<...>", "<...>", "<...>"],
-    "new": ["<kebab-case-new-tag>", "<kebab-case-new-tag>"]
+    "new": ["<Display Name>", "<Display Name>"]
   }}
 }}
 
 Constraints:
 - level1: exactly 1 string, must match one candidate exactly (character-for-character).
 - level2.selected: 2 or 3 items, each must match a LEVEL2 candidate exactly.
-- level2.new: 0 or 1 items (omit or empty list if none).
+- level2.new: 0 or 1 items, proper display name (omit or empty list if none).
 - level3.selected: 3 or 5 items, each must match a LEVEL3 candidate exactly.
-- level3.new: 0 to 2 items (omit or empty list if none).
+- level3.new: 0 to 2 items, proper display name (omit or empty list if none).
 - Do NOT output any other keys.
 
 POST TITLE:

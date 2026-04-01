@@ -38,12 +38,35 @@ class TagService:
         top_level2_by_score = tag_scorer.getTopScore(title, tags, content, abstracted_content, top_level2, 20)
         top_level3_by_score = tag_scorer.getTopScore(title, tags, content, abstracted_content, top_level3, 30)
 
-        level2_dict = {}
+        # level2: kebab-case → 임베딩 텍스트 매핑 + 표시명 매핑
+        level2_key_to_embed = {}  # kebab → 임베딩 텍스트 전체
+        level2_key_to_display = {}  # kebab → 표시명
 
         for tag in top_level2_by_score:
-            level2_dict[tag[0].split("|")[0].strip()] = tag[0]
+            embed_text = tag[0]
+            parts = embed_text.split("|")
+            kebab = parts[0].strip()
+            # 동의어의 첫 번째 값이 원래 표기 (예: "Apache Kafka, 카프카, ...")
+            synonyms = parts[2].strip().split(",") if len(parts) > 2 else []
+            display = synonyms[0].strip() if synonyms else kebab
+            level2_key_to_embed[kebab] = embed_text
+            level2_key_to_display[kebab] = display
 
-        result = chat_model.query(title, content, top_level1, level2_dict.keys(), top_level3_by_score)
+        # level3: 동일하게 표시명 매핑
+        level3_key_to_display = {}
+        level3_candidates = []
+
+        for tag in top_level3_by_score:
+            embed_text = tag[0]
+            parts = embed_text.split("|")
+            kebab = parts[0].strip()
+            synonyms = parts[2].strip().split(",") if len(parts) > 2 else []
+            display = synonyms[0].strip() if synonyms else kebab
+            level3_key_to_display[kebab] = display
+            level3_candidates.append(kebab)
+
+        # GPT 질의 (kebab-case로 전달 — 후보 매칭 정확도)
+        result = chat_model.query(title, content, top_level1, level2_key_to_display.keys(), level3_candidates)
 
         # 새 태그 자동 임베딩 (비동기 — 결과 반환 후 백그라운드 실행)
         new_level2 = result.get("level2", {}).get("new", [])
@@ -56,14 +79,15 @@ class TagService:
             if new_level3:
                 loop.run_in_executor(None, self._register_new_tags, new_level3, "level3")
 
+        # 결과를 표시명으로 변환하여 반환
         return {
                 "level1": result["level1"],
                 "level2": {
-                    "selected": [level2_dict[tag] for tag in result["level2"]["selected"]],
+                    "selected": [level2_key_to_display.get(tag, tag) for tag in result["level2"]["selected"]],
                     "new": result["level2"]["new"]
                 },
                 "level3": {
-                    "selected": result["level3"]["selected"],
+                    "selected": [level3_key_to_display.get(tag, tag) for tag in result["level3"]["selected"]],
                     "new": result["level3"]["new"]
                 },
         }
@@ -72,11 +96,13 @@ class TagService:
         """GPT가 추천한 새 태그의 메타데이터를 생성하고 임베딩하여 ChromaDB에 저장한다."""
         for tag_name in tags:
             try:
+                # ChromaDB 키는 kebab-case로 저장
+                kebab_key = tag_name.lower().replace(" ", "-")
                 metadata_text = self.chatModel.generate_tag_metadata(tag_name, level)
-                tag_docs = {tag_name: metadata_text}
+                tag_docs = {kebab_key: metadata_text}
                 embeddings = self.model.encode([metadata_text], is_query=False)
                 self.repository.upsert_tags(tag_docs, embeddings, level)
-                logger.info(f"새 태그 임베딩 완료: [{level}] {tag_name}")
+                logger.info(f"새 태그 임베딩 완료: [{level}] {tag_name} (key: {kebab_key})")
             except Exception as e:
                 logger.warning(f"새 태그 임베딩 실패: [{level}] {tag_name} - {e}")
 

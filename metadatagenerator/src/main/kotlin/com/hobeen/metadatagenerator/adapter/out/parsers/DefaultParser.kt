@@ -23,7 +23,8 @@ class DefaultParser: ParseHtmlMetadataPort {
     }
 
     override fun parse(url: String, parserProps: ParseProps): Html {
-        val doc = Jsoup.connect(url).get()
+        val fetchUrl = com.hobeen.metadatagenerator.common.resolveUrl(url, parserProps.props)
+        val doc = Jsoup.connect(fetchUrl).get()
 
         val title = getProperty(doc, parserProps.metadata.title) ?: getDefault(parserProps.props, "title-default") ?: ""
         val description = getProperty(doc, parserProps.metadata.description) ?: getDefault(parserProps.props, "description-default") ?: ""
