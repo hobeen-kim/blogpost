@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+custom:
+  cors:
+    allowed-origins: ${CUSTOM_CORS_ALLOWED_ORIGINS}
+  security:
+    cloudfront-secret: ${CUSTOM_SECURITY_CLOUDFRONT_SECRET}
+
+supabase:
+  jwt:
+    secret: ${SUPABASE_JWT_SECRET}

@@ -1,0 +1,90 @@
+name: Deploy API Server
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apiserver/**'
+      - 'apiserver/Dockerfile'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ap-northeast-2
+  ECR_REPOSITORY: blogpost
+  INFRA_REPO: hobeen-kim/jubianix-infra
+  VALUES_PATH: apps/server/blogpost/values-prod.yaml
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-24.04-arm
+    defaults:
+      run:
+        working-directory: apiserver
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build with Gradle
+        run: ./gradlew build -x test
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::589794546244:role/github-actions-cicd
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Generate image tag
+        id: tag
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          UUID=$(cat /proc/sys/kernel/random/uuid | cut -c1-6)
+          echo "IMAGE_TAG=${DATE}-${UUID}" >> $GITHUB_OUTPUT
+
+      - name: Build and push Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ steps.tag.outputs.IMAGE_TAG }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Create infra PR to update image tag
+        env:
+          IMAGE_TAG: ${{ steps.tag.outputs.IMAGE_TAG }}
+          GH_TOKEN: ${{ secrets.INFRA_REPO_TOKEN }}
+        run: |
+          cd /tmp
+          git clone https://x-access-token:${GH_TOKEN}@github.com/${INFRA_REPO}.git infra
+          cd infra
+          BRANCH="deploy/blogpost-${IMAGE_TAG}"
+          git checkout -b "$BRANCH"
+          sed -i "s/^\(\s*\)tag: .*/\1tag: \"${IMAGE_TAG}\"/" ${VALUES_PATH}
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ${VALUES_PATH}
+          if git diff --cached --quiet; then
+            echo "No changes to commit, skipping PR"
+            exit 0
+          fi
+          git commit -m "chore(blogpost): update image tag to ${IMAGE_TAG}"
+          git push origin "$BRANCH"
+          gh pr create \
+            --repo "${INFRA_REPO}" \
+            --base main \
+            --head "$BRANCH" \
+            --title "chore(blogpost): deploy ${IMAGE_TAG}" \
+            --body "Automated PR to update blogpost apiserver image tag to \`${IMAGE_TAG}\`."

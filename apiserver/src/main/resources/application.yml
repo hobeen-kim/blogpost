@@ -12,6 +12,10 @@ spring:
     password: mypassword
     driver-class-name: org.postgresql.Driver
 
+custom:
+  cors:
+    allowed-origins: http://localhost:8000,https://devtag.hobeenkim.com,https://www.developtag.com,https://developtag.com
+
 #  security:
 #    oauth2:
 #      resourceserver:

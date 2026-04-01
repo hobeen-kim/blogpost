@@ -24,8 +24,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val jwtAuthConverter: Converter<Jwt, out AbstractAuthenticationToken>
-
+    private val jwtAuthConverter: Converter<Jwt, out AbstractAuthenticationToken>,
+    @org.springframework.beans.factory.annotation.Value("\${custom.cors.allowed-origins}") private val allowedOrigins: List<String>
 ) {
 
     @Bean
@@ -66,7 +66,7 @@ class SecurityConfig(
     fun getCorsPolicy(): Customizer<CorsConfigurer<HttpSecurity>> {
         return Customizer<CorsConfigurer<HttpSecurity>> { cors: CorsConfigurer<HttpSecurity> ->
             val configuration = CorsConfiguration()
-            configuration.allowedOrigins = listOf("http://localhost:8000", "https://devtag.hobeenkim.com")
+            configuration.allowedOrigins = allowedOrigins
             configuration.addAllowedMethod("*")
             configuration.addAllowedHeader("*")
 
