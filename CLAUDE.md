@@ -27,7 +27,6 @@ collector → (collector-post) → deduplicator → (deduplicated-post) → buff
 | `buffer` | 대상 서버 부하 방지용 속도 제한 (~2.5건/초) |
 | `metadatagenerator` | 포스트 HTML 파싱 + OpenAI로 임베딩/태그 추출 (port 8084) |
 | `taggenerator` | AI 기반 3단계 태그 분류 (카테고리→기술→패턴), FastAPI (port 8085) |
-| `metadataExtractor` | newspaper3k로 URL 메타데이터 추출, FastAPI |
 | `inserter` | enriched-post를 PostgreSQL에 저장 (port 8081) |
 | `apiserver` | 포스트 조회/검색 REST API, QueryDSL (port 8080) |
 | `dlqprocessor` | 전체 파이프라인 DLQ 메시지 처리 + Slack 알림 |

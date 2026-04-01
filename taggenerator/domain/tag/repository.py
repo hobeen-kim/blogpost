@@ -3,7 +3,8 @@ from typing import List, Tuple
 
 class TagRepository:
     def __init__(self, path: str = "~/chroma_store"):
-        self.client = chromadb.PersistentClient(path=path)
+        import os
+        self.client = chromadb.PersistentClient(path=os.path.expanduser(path))
         self.level2collection = self.client.get_or_create_collection(
             name="level2",
             metadata={"hnsw:space": "cosine"}

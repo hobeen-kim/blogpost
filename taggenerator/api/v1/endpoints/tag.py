@@ -38,7 +38,7 @@ async def delete_tags(tag_list: TagList):
 @router.post("/extract")
 async def extract_tags(post: Post):
     try:
-        recommendations = tag_service.extract_tags(post.content, post.tags, post.content, post.abstracted_content)
+        recommendations = tag_service.extract_tags(post.title, post.tags, post.content, post.abstracted_content)
         return recommendations
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

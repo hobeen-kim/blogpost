@@ -6,9 +6,11 @@ import com.hobeen.metadatagenerator.application.port.out.ContentAbstractPort
 import com.hobeen.metadatagenerator.application.port.out.GetParsePropPort
 import com.hobeen.metadatagenerator.application.port.out.MetadataParserSelector
 import com.hobeen.metadatagenerator.application.port.out.SaveMessagePort
+import com.hobeen.metadatagenerator.application.port.out.TagExtractPort
 import com.hobeen.metadatagenerator.domain.EnrichedMessage
 import com.hobeen.metadatagenerator.domain.Html
 import com.hobeen.metadatagenerator.domain.RawMessage
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -18,7 +20,10 @@ class MetadataGenerateService(
     private val saveMessagePort: SaveMessagePort,
     private val getParsePropPort: GetParsePropPort,
     private val contentAbstractPort: ContentAbstractPort,
+    private val tagExtractPort: TagExtractPort,
 ): MetadataGenerator {
+
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun generate(message: RawMessage): EnrichedMessage {
 
@@ -36,12 +41,21 @@ class MetadataGenerateService(
         val content = html.content
         val abstractedContent = contentAbstractPort.abstract(title, description, tags, content)
 
+        // tag extraction via taggenerator
+        val enrichedTags = try {
+            val tagResult = tagExtractPort.extractTags(title, tags, content, abstractedContent)
+            (tags + tagResult.allTags()).distinct()
+        } catch (e: Exception) {
+            log.warn("TagGenerator 호출 실패, 기존 태그 유지: ${e.message}")
+            tags
+        }
+
         return EnrichedMessage(
             title = title,
             source = source,
             url = url,
             pubDate = pubDate,
-            tags = tags,
+            tags = enrichedTags,
             description = description,
             thumbnail = thumbnail,
             content = content,

@@ -4,7 +4,7 @@ from openai import OpenAI
 from core.settings import settings
 
 class OpenAIChatModel:
-    def __init__(self, model_name: str = "gpt-5.1"):
+    def __init__(self, model_name: str = "gpt-5.2"):
         self.client = OpenAI(api_key=settings.openai_api_key)
         self.model_name = model_name
 
@@ -95,5 +95,42 @@ LEVEL3_CANDIDATES:
         text = resp.output_text
         data = json.loads(text)
         return data
+
+    def generate_tag_metadata(self, tag_name: str, level: str) -> str:
+        """새 태그의 임베딩 텍스트를 GPT로 생성한다."""
+
+        level_desc = "구체적인 기술, 프레임워크, 라이브러리, 도구, 서비스" if level == "level2" else "아키텍처 패턴, 디자인 패턴, 방법론, 개념, 문제 도메인"
+
+        prompt = f"""
+You are a technical tag metadata generator for a Korean tech blog tagging system.
+
+Given a tag name, generate metadata in this exact format (single line, pipe-separated):
+영문명 | 한글명 | 동의어 | 관련어 | 짧은 설명 | 예시
+
+Rules:
+- 영문명: use the given tag name as-is
+- 한글명: common Korean name if exists, otherwise "-"
+- 동의어: alternative names, abbreviations, Korean variants (comma-separated, 3~6 items)
+- 관련어: unique keywords specific to THIS tag that appear in tech blog posts (comma-separated, 7~15 items). Must be SPECIFIC to this tag, not generic.
+- 짧은 설명: one Korean sentence (30~80 chars) describing the technical essence
+- 예시: starts with "예:", 1~2 concrete use cases in Korean
+
+This tag is a {level_desc}.
+
+Tag: {tag_name}
+Level: {level}
+
+Output ONLY the single pipe-separated line. No markdown, no explanation.
+""".strip()
+
+        resp = self.client.responses.create(
+            model=self.model_name,
+            input=[
+                {"role": "system", "content": "You generate precise technical metadata."},
+                {"role": "user", "content": prompt}
+            ],
+        )
+
+        return resp.output_text.strip()
 
 chat_model = OpenAIChatModel()
