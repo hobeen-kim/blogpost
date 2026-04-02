@@ -1,6 +1,12 @@
 
 
 spring:
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:sk-placeholder}
+      embedding:
+        options:
+          model: text-embedding-3-small
   kafka:
     consumer:
       bootstrap-servers: localhost:9092

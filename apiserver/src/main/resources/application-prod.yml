@@ -8,6 +8,10 @@ custom:
   cors:
     allowed-origins: ${CUSTOM_CORS_ALLOWED_ORIGINS}
 
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+
 supabase:
   jwt:
     secret: ${SUPABASE_JWT_SECRET}

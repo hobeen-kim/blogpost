@@ -194,3 +194,17 @@ export const updatePreferences = async (emailSubscription: boolean) => {
     body: JSON.stringify({ emailSubscription }),
   });
 };
+
+export const askQuestion = async (question: string, history: { role: string; content: string }[]) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+
+  return fetch(`${DOMAIN}/ask`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ question, history }),
+  });
+};

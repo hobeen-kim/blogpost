@@ -1,6 +1,16 @@
 spring:
   application:
     name: api-server
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:sk-placeholder}
+      embedding:
+        options:
+          model: text-embedding-3-small
+      chat:
+        options:
+          model: gpt-5-mini
+          temperature: 0.7
   jpa:
     database: postgresql
     properties:

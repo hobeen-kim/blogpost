@@ -34,6 +34,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
+    //openai
+    implementation(platform("org.springframework.ai:spring-ai-bom:1.0.0"))
+    implementation("org.springframework.ai:spring-ai-starter-model-openai")
+
     //db
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("org.postgresql:postgresql")

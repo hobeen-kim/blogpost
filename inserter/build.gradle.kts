@@ -36,6 +36,9 @@ dependencies {
     //db
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("org.postgresql:postgresql")
+    //openai
+    implementation(platform("org.springframework.ai:spring-ai-bom:1.0.0"))
+    implementation("org.springframework.ai:spring-ai-starter-model-openai")
     //dataformat
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
