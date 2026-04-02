@@ -3,6 +3,7 @@ package com.hobeen.metadatagenerator.adapter.out.taggenerator
 import com.hobeen.metadatagenerator.application.port.out.TagExtractPort
 import com.hobeen.metadatagenerator.application.port.out.TagExtractResult
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 
@@ -13,6 +14,7 @@ class TagGeneratorAdapter(
 
     private val restClient = RestClient.builder()
         .baseUrl(baseUrl)
+        .requestFactory(SimpleClientHttpRequestFactory())
         .build()
 
     override fun extractTags(
