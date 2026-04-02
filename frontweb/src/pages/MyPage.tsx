@@ -26,11 +26,11 @@ import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 const UserProfile = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [emailSubscription, setEmailSubscription] = useState(false);
+  const [emailSubscription, setEmailSubscription] = useState(true);
 
   useEffect(() => {
     getPreferences()
-      .then((data) => setEmailSubscription(data.emailSubscription))
+      .then((data) => setEmailSubscription(data.data.emailSubscription))
       .catch(() => {});
   }, []);
 
