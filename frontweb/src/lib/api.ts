@@ -179,3 +179,18 @@ export const updateComment = async (commentId: number, comment: string) => {
 export const getSources = async () => {
   return fetchWithoutAuth(`/posts/sources`)
 }
+
+export const addView = async (postId: string) => {
+  return fetchWithAuth(`/posts/${postId}/views`, { method: 'POST' });
+};
+
+export const getPreferences = async () => {
+  return fetchWithAuth('/users/me/preferences');
+};
+
+export const updatePreferences = async (emailSubscription: boolean) => {
+  return fetchWithAuth('/users/me/preferences', {
+    method: 'PUT',
+    body: JSON.stringify({ emailSubscription }),
+  });
+};

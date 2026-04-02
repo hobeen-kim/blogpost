@@ -82,6 +82,8 @@ class SecurityConfig(
             .requestMatchers( "/comments/**").authenticated()
             .requestMatchers("/bookmarks/**").authenticated()
             .requestMatchers("/likes/**").authenticated()
+            .requestMatchers(HttpMethod.POST, "/posts/*/views").authenticated()
+            .requestMatchers("/users/**").authenticated()
             .anyRequest().permitAll()
     }
 }

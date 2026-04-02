@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Calendar, User, Heart, MessageCircle, Share2, Bookmark, Plus, Folder } from "lucide-react";
-import { like, removeLike, getBookmarkGroupsWithPost, addBookmarkToGroup, createBookmarkGroup, removeBookmarkFromGroup } from '@/lib/api';
+import { like, removeLike, getBookmarkGroupsWithPost, addBookmarkToGroup, createBookmarkGroup, removeBookmarkFromGroup, addView } from '@/lib/api';
 import CommentDialog from '@/components/CommentDialog';
 import {
   Dialog,
@@ -244,6 +244,9 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   const handleCardClick = () => {
+    if (user) {
+      addView(postId).catch(() => {});
+    }
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 

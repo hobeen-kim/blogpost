@@ -1,0 +1,33 @@
+package com.hobeen.apiserver.entity
+
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
+import java.time.LocalDateTime
+
+@Entity
+@Table(name = "post_view")
+class PostView(
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null,
+
+    @Column(name = "user_id")
+    val userId: String,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    val post: Post,
+
+    @Column(name = "viewed_at")
+    val viewedAt: LocalDateTime = LocalDateTime.now(),
+) {
+    companion object {
+        fun create(userId: String, post: Post) = PostView(userId = userId, post = post)
+    }
+}

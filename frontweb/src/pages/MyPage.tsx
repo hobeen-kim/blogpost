@@ -13,7 +13,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from '@/lib/utils';
 import Header from '@/components/Header';
-import { getBookmarks, getLikes, getBookmarkGroups, createBookmarkGroup, updateBookmarkGroup, deleteBookmarkGroup } from '@/lib/api';
+import { getBookmarks, getLikes, getBookmarkGroups, createBookmarkGroup, updateBookmarkGroup, deleteBookmarkGroup, getPreferences, updatePreferences } from '@/lib/api';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import PostBookmarkCard from '@/components/PostBookmarkCard';
 import { PostBookmark, PostLike, SliceBookmarkResponse, SliceLikeResponse } from '@/types/bookmarkLike.ts';
 import PostLikeCard from "@/components/PostLikeCard.tsx";
@@ -24,6 +26,20 @@ import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 const UserProfile = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [emailSubscription, setEmailSubscription] = useState(false);
+
+  useEffect(() => {
+    getPreferences()
+      .then((data) => setEmailSubscription(data.emailSubscription))
+      .catch(() => {});
+  }, []);
+
+  const handleEmailSubscriptionToggle = async (checked: boolean) => {
+    setEmailSubscription(checked);
+    updatePreferences(checked).catch(() => {
+      setEmailSubscription(!checked);
+    });
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -44,6 +60,18 @@ const UserProfile = () => {
         <div>
           <p className="text-xl font-semibold">{user.name}</p>
           <p className="text-muted-foreground">{user.email}</p>
+        </div>
+      </div>
+
+      <div className="pt-6 border-t space-y-4">
+        <h3 className="text-lg font-semibold">알림 설정</h3>
+        <div className="flex items-center gap-3">
+          <Switch
+            id="email-subscription"
+            checked={emailSubscription}
+            onCheckedChange={handleEmailSubscriptionToggle}
+          />
+          <Label htmlFor="email-subscription">주간 추천 이메일 수신</Label>
         </div>
       </div>
 
