@@ -7,9 +7,12 @@ import com.hobeen.metadatagenerator.application.port.out.GetParsePropPort
 import com.hobeen.metadatagenerator.application.port.out.MetadataParserSelector
 import com.hobeen.metadatagenerator.application.port.out.SaveMessagePort
 import com.hobeen.metadatagenerator.application.port.out.TagExtractPort
+import com.hobeen.blogpostcommon.alarm.AlarmDto
+import com.hobeen.blogpostcommon.alarm.AlarmService
 import com.hobeen.metadatagenerator.domain.EnrichedMessage
 import com.hobeen.metadatagenerator.domain.Html
 import com.hobeen.metadatagenerator.domain.RawMessage
+import com.hobeen.metadatagenerator.domain.TagInfo
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -21,6 +24,7 @@ class MetadataGenerateService(
     private val getParsePropPort: GetParsePropPort,
     private val contentAbstractPort: ContentAbstractPort,
     private val tagExtractPort: TagExtractPort,
+    private val alarmService: AlarmService,
 ): MetadataGenerator {
 
     private val log = LoggerFactory.getLogger(javaClass)
@@ -44,10 +48,22 @@ class MetadataGenerateService(
         // tag extraction via taggenerator
         val enrichedTags = try {
             val tagResult = tagExtractPort.extractTags(title, tags, content, abstractedContent)
-            (tags + tagResult.allTags()).distinct()
+            val baseTags = tags.map { TagInfo(name = it) }
+            val level1Tag = listOf(TagInfo(name = tagResult.level1, level = 1))
+            val level2Tags = (tagResult.level2Selected + tagResult.level2New).map { TagInfo(name = it, level = 2) }
+            val level3Tags = (tagResult.level3Selected + tagResult.level3New).map { TagInfo(name = it, level = 3) }
+            (level1Tag + level2Tags + level3Tags + baseTags).distinctBy { it.name }
         } catch (e: Exception) {
             log.warn("TagGenerator 호출 실패, 기존 태그 유지: ${e.message}")
-            tags
+            alarmService.sendAlarm(AlarmDto(
+                alarmMsg = "MetadataGenerator:TagGenerator 호출 실패",
+                source = source,
+                url = url,
+                rawData = "title=$title, tags=$tags",
+                exception = e,
+                exceptionPrintStackDepth = 2,
+            ))
+            tags.map { TagInfo(name = it) }
         }
 
         return EnrichedMessage(

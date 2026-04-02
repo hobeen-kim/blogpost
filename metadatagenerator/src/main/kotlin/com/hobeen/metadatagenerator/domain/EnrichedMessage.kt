@@ -7,9 +7,14 @@ class EnrichedMessage (
     val source: String,
     val url: String,
     val pubDate: LocalDateTime,
-    val tags: List<String>,
+    val tags: List<TagInfo>,
     val description: String,
     val thumbnail: String,
     val content: String,
     val abstractedContent: String,
+)
+
+data class TagInfo(
+    val name: String,
+    val level: Int? = null,
 )

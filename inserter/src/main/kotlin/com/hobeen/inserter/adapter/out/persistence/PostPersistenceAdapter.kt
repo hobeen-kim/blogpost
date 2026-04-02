@@ -9,6 +9,7 @@ import com.hobeen.inserter.adapter.out.persistence.repository.PostTagRepository
 import com.hobeen.inserter.adapter.out.persistence.repository.TagRepository
 import com.hobeen.inserter.application.port.out.SaveMessagePort
 import com.hobeen.inserter.domain.EnrichedMessage
+import com.hobeen.inserter.domain.TagInfo
 import jakarta.transaction.Transactional
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Component
@@ -22,10 +23,6 @@ class PostPersistenceAdapter(
 ): SaveMessagePort {
     override fun save(message: EnrichedMessage) {
 
-        val tags = message.tags.map { tagName ->
-            saveTag(tagName)
-        }
-
         val post = Post.create(message)
 
         try {
@@ -34,8 +31,9 @@ class PostPersistenceAdapter(
             throw PostDuplicatedException(message.url)
         }
 
-        tags.forEach {
-            postTagRepository.save(PostTag.create(post = post, tag = it))
+        message.tags.forEach { tagInfo ->
+            val tag = saveTag(tagInfo.name)
+            postTagRepository.save(PostTag.create(post = post, tag = tag, tagLevel = tagInfo.level))
         }
     }
 
@@ -43,8 +41,8 @@ class PostPersistenceAdapter(
 
         val post = postRepository.findByUrl(message.url) ?: throw IllegalArgumentException("post save 실패 : url = ${message.url}")
 
-        val tags = message.tags.map { tagName ->
-            saveTag(tagName)
+        val tags = message.tags.map { tagInfo ->
+            saveTag(tagInfo.name)
         }
 
         post.updateTag(tags)

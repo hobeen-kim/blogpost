@@ -3,6 +3,7 @@ package com.hobeen.inserter.adapter.`in`.web
 import com.hobeen.inserter.adapter.`in`.web.dto.PostRequest
 import com.hobeen.inserter.application.port.`in`.SaveMessageUseCase
 import com.hobeen.inserter.domain.EnrichedMessage
+import com.hobeen.inserter.domain.TagInfo
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -25,7 +26,7 @@ class PostController(
             source = request.source,
             url = request.url,
             pubDate = request.pubDate,
-            tags = request.tags,
+            tags = request.tags.map { TagInfo(name = it) },
             description = request.description,
             thumbnail = request.thumbnail,
             content = "",
@@ -44,7 +45,7 @@ class PostController(
             source = request.source,
             url = request.url,
             pubDate = request.pubDate,
-            tags = request.tags,
+            tags = request.tags.map { TagInfo(name = it) },
             description = request.description,
             thumbnail = request.thumbnail,
             content = request.content,
