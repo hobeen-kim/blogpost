@@ -24,10 +24,12 @@ class TagGeneratorAdapter(
         abstractedContent: String,
     ): TagExtractResult {
 
+        val truncatedContent = if (content.length > 10000) content.take(10000) else content
+
         val request = TagExtractRequest(
             title = title,
             tags = tags,
-            content = content,
+            content = truncatedContent,
             abstracted_content = abstractedContent,
         )
 
