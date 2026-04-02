@@ -157,21 +157,20 @@ class WeeklyEmailStepConfig(
                             1 -> 1.0
                             2 -> 2.0
                             3 -> 3.0
-                            else -> 1.0
+                            else -> 0.7
                         }
                         tagScores[tagName] = (tagScores[tagName] ?: 0.0) + b.behaviorScore * timeWeight * tagLevelWeight
                     }
                 }
 
-                // 4. Get candidate posts (last Monday to Sunday)
+                // 4. Get candidate posts (last 7 days based on send date)
                 val today = LocalDate.now()
-                val lastMonday = today.minusWeeks(1).with(DayOfWeek.MONDAY)
-                val lastSunday = lastMonday.plusDays(6).atTime(23, 59, 59)
-                val lastMondayStart = lastMonday.atStartOfDay()
+                val periodEnd = today.minusDays(1).atTime(23, 59, 59)  // 어제까지
+                val periodStart = today.minusDays(7).atStartOfDay()     // 7일 전부터
 
                 val candidates = jdbcTemplate.queryForList(
                     "SELECT p.post_id, p.title, p.source, p.url, p.description, p.thumbnail FROM post p WHERE p.pub_date BETWEEN ? AND ?",
-                    lastMondayStart, lastSunday
+                    periodStart, periodEnd
                 )
 
                 // 5. Score each candidate
