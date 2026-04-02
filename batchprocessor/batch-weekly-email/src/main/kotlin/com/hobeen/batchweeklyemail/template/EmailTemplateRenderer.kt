@@ -24,12 +24,11 @@ class EmailTemplateRenderer(
             }
 
             val descriptionHtml = if (!post.description.isNullOrBlank()) {
-                """<p style="margin:0 0 12px 0;color:#6b7280;font-size:14px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(post.description)}</p>"""
-            } else {
-                ""
-            }
+                val desc = if (post.description.length > 120) post.description.take(120) + "..." else post.description
+                """<p style="margin:0 0 12px 0;color:#6b7280;font-size:14px;line-height:1.5;">${escapeHtml(desc)}</p>"""
+            } else ""
 
-            val tagsHtml = post.tags.joinToString(" ") { tag ->
+            val tagsHtml = post.tags.take(5).joinToString(" ") { tag ->
                 """<span style="display:inline-block;background:#f0ecf9;color:#7c3aed;font-size:12px;padding:2px 8px;border-radius:12px;margin-bottom:4px;">${escapeHtml(tag)}</span>"""
             }
 

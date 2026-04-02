@@ -154,14 +154,18 @@ class WeeklyEmailStepConfig(
                     val tags = postTagsMap[b.postId] ?: emptyList()
                     for ((tagName, tagLevel) in tags) {
                         val tagLevelWeight = when (tagLevel) {
-                            1 -> 1.0
+                            1 -> 3.0
                             2 -> 2.0
-                            3 -> 3.0
-                            else -> 0.7
+                            3 -> 1.0
+                            else -> 0.5
                         }
                         tagScores[tagName] = (tagScores[tagName] ?: 0.0) + b.behaviorScore * timeWeight * tagLevelWeight
                     }
                 }
+
+                // Log top tag scores
+                val topTags = tagScores.entries.sortedByDescending { it.value }.take(10)
+                log.info("  Tag scores for {}: {}", user.email, topTags.map { "${it.key}=${String.format("%.1f", it.value)}" })
 
                 // 4. Get candidate posts (last 7 days based on send date)
                 val today = LocalDate.now()
