@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- Beautiful Jekyll 5.0.0 | Copyright Dean Attali 2020 -->
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/nanumgothic.css">
+
+  
+
+  
+
+  
+
+  <title>404 - Page not found</title>
+
+  
+  <meta name="author" content="ESTsoft">
+  
+
+  <meta name="description" content="유효하지 않은
+    페이지입니다.
+  
+  
+    방문하시려는 페이지의 주소가 잘못
+    입력되었거나, 페이지의 주소가 변경 혹은
+    삭제되어 요청하신 페이지를 찾을 수 없습니다.
+    입력하신 주소가 정확한지 다시 한번
+    확인해주시기 바랍니다.
+  
+  메인으로 이동
+  ⓒ ESTsoft, All rights reserved.">
+
+  
+
+  
+
+  
+  <link rel="alternate" type="application/rss+xml" title="ESTsoft" href="https://blog.est.ai/feed.xml">
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    
+      
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+
+    
+      
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+
+
+    
+      
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
+
+
+    
+      
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
+
+
+    
+      
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+
+
+    
+  
+
+  
+    
+      <link rel="stylesheet" href="/assets/css/bootstrap-social.css">
+    
+      <link rel="stylesheet" href="/assets/css/beautifuljekyll.css">
+    
+  
+
+  
+
+  
+  
+  
+
+  
+
+  
+  <meta property="og:site_name" content="ESTsoft">
+  <meta property="og:title" content="404 - Page not found">
+  <meta property="og:description" content="유효하지 않은
+    페이지입니다.
+  
+  
+    방문하시려는 페이지의 주소가 잘못
+    입력되었거나, 페이지의 주소가 변경 혹은
+    삭제되어 요청하신 페이지를 찾을 수 없습니다.
+    입력하신 주소가 정확한지 다시 한번
+    확인해주시기 바랍니다.
+  
+  메인으로 이동
+  ⓒ ESTsoft, All rights reserved.">
+
+  
+
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://blog.est.ai/404.html">
+  <link rel="canonical" href="https://blog.est.ai/404.html">
+  
+
+  
+  <meta name="twitter:card" content="summary">
+  
+  <meta name="twitter:site" content="@">
+  <meta name="twitter:creator" content="@">
+
+  <meta property="twitter:title" content="404 - Page not found">
+  <meta property="twitter:description" content="유효하지 않은
+    페이지입니다.
+  
+  
+    방문하시려는 페이지의 주소가 잘못
+    입력되었거나, 페이지의 주소가 변경 혹은
+    삭제되어 요청하신 페이지를 찾을 수 없습니다.
+    입력하신 주소가 정확한지 다시 한번
+    확인해주시기 바랍니다.
+  
+  메인으로 이동
+  ⓒ ESTsoft, All rights reserved.">
+
+  
+
+  
+
+
+  
+
+  
+
+</head>
+
+  <body>
+    <div class="intro-header"></div>
+
+<div role="main" class=" container-md ">
+  
+
+  <div class="error text-center">
+  <i class="logo_estsoft_tech"></i>
+  <h1>
+    <span>유효하지 않은</span><br />
+    페이지입니다.
+  </h1>
+  <p>
+    방문하시려는 페이지의 주소가 잘못<br />
+    입력되었거나, 페이지의 주소가 변경 혹은<br />
+    삭제되어 요청하신 페이지를 찾을 수 없습니다.<br />
+    입력하신 주소가 정확한지 다시 한번<br />
+    확인해주시기 바랍니다.
+  </p>
+  <a class="btn_main" href="https://estsoft.github.io/">메인으로 이동</a>
+  <em>ⓒ ESTsoft, All rights reserved.</em>
+
+  <!-- <img
+    src="/assets/img/404-southpark.jpg"
+    alt="Not found"
+  /> -->
+</div>
+
+
+  
+</div>
+
+  </body>
+</html>

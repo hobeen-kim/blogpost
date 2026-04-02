@@ -11,6 +11,14 @@ description: >
 
 새로운 블로그 수집 소스를 시스템에 추가한다. 블로그 URL을 분석하여 collector와 metadatagenerator에 필요한 DB 레코드를 생성한다.
 
+## 소스 목록 관리
+
+**`sources.md` 파일을 반드시 참조하고 업데이트할 것.**
+- 소스 추가 시: 활성화 목록에 추가
+- 소스 비활성화 시: 비활성화 목록에 이유와 일시 기록
+- 소스 삭제 시: 삭제 목록에 이유와 일시 기록
+- 중복 등록 방지: 이미 있는 source인지 확인
+
 ## 전체 흐름
 
 1. **블로그 분석** — URL에서 RSS/sitemap/HTML 구조 파악
@@ -304,9 +312,13 @@ curl -sL 'https://{블로그도메인}/favicon.ico' -o /tmp/{source}.png
 
 # 2. S3 업로드
 aws s3 cp /tmp/{source}.png s3://blogpost-front-server/logo/{source}.png
+
+# 3. frontweb 로컬에도 추가 (git 관리 대상)
+cp /tmp/{source}.png /home/hobeenkim/blogpost/frontweb/public/logo/{source}.png
 ```
 
 기존 로고 사이즈는 16x16~32x32 수준. 블로그 상단 로고나 파비콘을 사용.
+S3와 frontweb/public/logo 둘 다 추가해야 한다. frontweb은 git push 시 CI/CD로 S3에 자동 배포됨.
 
 ## 사용 가능한 Command 목록
 
