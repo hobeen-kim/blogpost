@@ -18,7 +18,7 @@ class SlackAlarm(
                 alarmMsg = alarmData.message,
                 source = alarmData.source,
                 url = alarmData.url,
-                rawData = alarmData.rawData,
+                rawData = alarmData.truncatedRawData(),
                 exception = alarmData.exception,
                 exceptionPrintStackDepth = 2
             )
