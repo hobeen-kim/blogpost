@@ -23,7 +23,7 @@ class AskService(
         val embeddingStr = embedding.joinToString(", ", "[", "]")
 
         val similarPosts = postVectorRepository.findSimilarPosts(embeddingStr, 5)
-        val relevantPosts = similarPosts.filter { it.similarity >= 0.3 }
+        val relevantPosts = similarPosts.filter { it.similarity >= 0.1 }
 
         if (relevantPosts.isEmpty()) {
             emitter.send(SseEmitter.event().data(objectMapper.writeValueAsString(
