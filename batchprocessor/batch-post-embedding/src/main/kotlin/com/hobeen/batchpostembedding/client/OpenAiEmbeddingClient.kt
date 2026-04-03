@@ -31,10 +31,15 @@ class OpenAiEmbeddingClient(
 
         val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
 
+        if (response.statusCode() != 200) {
+            throw RuntimeException("OpenAI API error: ${response.statusCode()} ${response.body().take(200)}")
+        }
+
         val responseTree = objectMapper.readTree(response.body())
+        val data = responseTree["data"] ?: throw RuntimeException("OpenAI response missing 'data': ${response.body().take(200)}")
         @Suppress("UNCHECKED_CAST")
         return objectMapper.convertValue(
-            responseTree["data"][0]["embedding"],
+            data[0]["embedding"],
             List::class.java
         ) as List<Double>
     }

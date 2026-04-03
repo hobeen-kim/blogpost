@@ -21,7 +21,8 @@ import javax.sql.DataSource
 data class PostRow(
     val postId: Long,
     val title: String,
-    val abstractedContent: String?,
+    val description: String?,
+    val content: String?,
 )
 
 data class PostEmbedding(
@@ -63,7 +64,7 @@ class EmbeddingStepConfig(
             .name("embeddingReader")
             .dataSource(postDataSource)
             .sql("""
-                SELECT post_id, title, abstracted_content
+                SELECT post_id, title, description, content
                 FROM post
                 WHERE embedding IS NULL
                 ORDER BY pub_date DESC
@@ -73,23 +74,27 @@ class EmbeddingStepConfig(
                 PostRow(
                     postId = rs.getLong("post_id"),
                     title = rs.getString("title") ?: "",
-                    abstractedContent = rs.getString("abstracted_content"),
+                    description = rs.getString("description"),
+                    content = rs.getString("content"),
                 )
             }
             .build()
     }
 
     @Bean
-    fun embeddingProcessor(): ItemProcessor<PostRow, PostEmbedding> {
+    fun embeddingProcessor(): ItemProcessor<PostRow, PostEmbedding?> {
         return ItemProcessor { post ->
             try {
                 log.info("Embedding post [{}]: {}", post.postId, post.title)
-                val text = post.title + " " + (post.abstractedContent ?: "")
+                val text = listOfNotNull(post.title, post.description, post.content)
+                    .filter { it.isNotBlank() }
+                    .joinToString(" ")
+                    .take(15000)
                 val vector = openAiEmbeddingClient.embed(text)
                 PostEmbedding(post.postId, vector)
             } catch (e: Exception) {
                 log.error("Failed to embed post [{}]: {}", post.postId, e.message)
-                throw e
+                null // skip
             }
         }
     }
