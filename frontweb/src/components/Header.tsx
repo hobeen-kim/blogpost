@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Sun, Moon, Menu, Filter, User, Sparkles } from 'lucide-react';
-import AiChat from '@/components/AiChat';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -8,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Popover,
   PopoverContent,
@@ -63,7 +62,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   const isMobile = useIsMobile();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchInputValue, setSearchInputValue] = useState('');
-  const [aiChatOpen, setAiChatOpen] = useState(false);
+  const navigate = useNavigate();
   const [sources, setSources] = useState<Source[]>([]);
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
 
@@ -105,13 +104,12 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   const NavItems = () => (
     <>
       <Button
-        variant="ghost"
         size="sm"
-        onClick={() => setAiChatOpen(true)}
-        className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+        onClick={() => navigate('/chat')}
+        className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all"
       >
         <Sparkles className="h-4 w-4" />
-        <span className="md:hidden">AI 질문</span>
+        <span>AI 챗봇</span>
       </Button>
 
       <Button
@@ -409,7 +407,6 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
       </div>
     </header>
 
-    <AiChat open={aiChatOpen} onOpenChange={setAiChatOpen} />
     </>
   );
 };
