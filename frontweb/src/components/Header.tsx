@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Sun, Moon, Menu, Filter, User, Sparkles } from 'lucide-react';
+import { Search, Sun, Moon, Menu, Filter, User, Sparkles, X, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -61,6 +61,9 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   const { theme, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showAiBanner, setShowAiBanner] = useState(() => {
+    return localStorage.getItem('hideAiBanner') !== 'true';
+  });
   const [searchInputValue, setSearchInputValue] = useState('');
   const navigate = useNavigate();
   const [sources, setSources] = useState<Source[]>([]);
@@ -103,15 +106,6 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
 
   const NavItems = () => (
     <>
-      <Button
-        size="sm"
-        onClick={() => navigate('/chat')}
-        className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all"
-      >
-        <Sparkles className="h-4 w-4" />
-        <span>AI 챗봇</span>
-      </Button>
-
       <Button
         variant="ghost"
         size="sm"
@@ -264,6 +258,14 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
           <Button type="submit" size="sm" className="h-9" onClick={handleSearch}>
             <Search className="h-4 w-4" />
           </Button>
+          <Button
+            size="sm"
+            onClick={() => navigate('/chat')}
+            className="flex items-center gap-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-3 h-9 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all whitespace-nowrap"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>AI 챗봇</span>
+          </Button>
         </div>
 
         {/* Right Navigation */}
@@ -407,6 +409,27 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
       </div>
     </header>
 
+    {showAiBanner && (
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4 fade-in duration-500">
+        <div
+          onClick={() => navigate('/chat')}
+          className="flex items-center gap-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-5 py-3 rounded-full shadow-lg cursor-pointer hover:from-purple-700 hover:to-indigo-700 transition-all"
+        >
+          <MessageCircle className="h-5 w-5" />
+          <span className="font-medium text-sm">국내 기술 블로그를 기반으로 아키텍처를 설계해보세요!</span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowAiBanner(false);
+              localStorage.setItem('hideAiBanner', 'true');
+            }}
+            className="ml-1 p-0.5 rounded-full hover:bg-white/20 transition-colors"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    )}
     </>
   );
 };
