@@ -45,7 +45,8 @@ class PostPersistenceAdapter(
         }
 
         try {
-            val text = listOfNotNull(message.title, message.description, message.content)
+            val tags = message.tags.joinToString(" ") { it.name }
+            val text = listOfNotNull(message.title, tags.ifBlank { null }, message.content, message.description)
                 .filter { it.isNotBlank() }
                 .joinToString(" ")
                 .take(15000)

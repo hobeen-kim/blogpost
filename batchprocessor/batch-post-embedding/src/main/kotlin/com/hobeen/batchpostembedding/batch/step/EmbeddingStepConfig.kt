@@ -86,7 +86,11 @@ class EmbeddingStepConfig(
         return ItemProcessor { post ->
             try {
                 log.info("Embedding post [{}]: {}", post.postId, post.title)
-                val text = listOfNotNull(post.title, post.description, post.content)
+                val tags = jdbcTemplate.queryForList(
+                    "SELECT t.name FROM post_tag pt JOIN tag t ON pt.tag_id = t.tag_id WHERE pt.post_id = ?",
+                    String::class.java, post.postId
+                ).joinToString(" ")
+                val text = listOfNotNull(post.title, tags.ifBlank { null }, post.content, post.description)
                     .filter { it.isNotBlank() }
                     .joinToString(" ")
                     .take(15000)
