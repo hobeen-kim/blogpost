@@ -18,6 +18,8 @@ class PostVectorRepository(
 ) {
 
     fun findSimilarPosts(embedding: String, limit: Int): List<SimilarPost> {
+        // SET LOCAL로 현재 트랜잭션에서만 인덱스 스캔 비활성화 (IVFFlat recall 문제 회피)
+        jdbcTemplate.execute("SET LOCAL enable_indexscan = off")
         val sql = """
             SELECT post_id, title, source, url, LEFT(content, 3000) as content,
                    1 - (embedding <=> CAST(? AS vector)) as similarity
