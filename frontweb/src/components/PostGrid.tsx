@@ -27,7 +27,6 @@ const PostGrid: React.FC<PostGridProps> = ({ searchQuery, blogQuery }) => {
     setLoading(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
       const response = await getPosts(pageNum, query, blog);
       const newPosts = response.data;
       const pageInfo = response.pageInfo;
