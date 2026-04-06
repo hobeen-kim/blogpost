@@ -320,15 +320,19 @@ const PostHorizontalCard: React.FC<PostCardProps> = ({
                   <Calendar className="h-3.5 w-3.5" />
                   <span>{getFormattedDate(pubDate)}</span>
                 </div>
-                {tags.filter(t => t.level <= 2).map((t, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-0.5 text-xs font-medium rounded-full transition-colors bg-green-500/20 text-green-400"
-                  >
-                    #{t.name}
-                  </span>
-                ))}
               </div>
+              {tags.filter(t => t.level <= 2).length > 0 && (
+                <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
+                  {tags.filter(t => t.level <= 2).map((t, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-0.5 text-xs font-medium rounded-full transition-colors bg-green-500/20 text-green-400 whitespace-nowrap shrink-0"
+                    >
+                      #{t.name}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </CardHeader>
 
@@ -337,9 +341,11 @@ const PostHorizontalCard: React.FC<PostCardProps> = ({
             {abstractedContent ? (() => {
               let sentences: string[] = [];
               try {
-                sentences = JSON.parse(abstractedContent);
+                const parsed = JSON.parse(abstractedContent);
+                sentences = Array.isArray(parsed) ? parsed : [abstractedContent];
               } catch {
-                sentences = [abstractedContent];
+                sentences = abstractedContent.split(/(?<=[.!?다요죠음됨함])\s+/).filter(s => s.trim());
+                if (sentences.length <= 1) sentences = [abstractedContent];
               }
               return (
                 <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3 mb-3">

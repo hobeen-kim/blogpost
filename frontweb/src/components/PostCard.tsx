@@ -340,12 +340,12 @@ const PostCard: React.FC<PostCardProps> = ({
 
           {/* 태그 뱃지 */}
           {tags && tags.filter(t => t.level <= 2).length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="flex gap-2 mt-2 overflow-x-auto scrollbar-hide">
               {tags.filter(t => t.level <= 2).map((t, index) => (
                 <span
                   key={index}
                   className={cn(
-                    "px-2 py-1 text-xs font-medium rounded-full transition-colors",
+                    "px-2 py-1 text-xs font-medium rounded-full transition-colors whitespace-nowrap shrink-0",
                     theme === 'dark'
                       ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
                       : "bg-green-100 text-green-700 hover:bg-green-200"
@@ -363,9 +363,11 @@ const PostCard: React.FC<PostCardProps> = ({
           {abstractedContent ? (() => {
             let sentences: string[] = [];
             try {
-              sentences = JSON.parse(abstractedContent);
+              const parsed = JSON.parse(abstractedContent);
+              sentences = Array.isArray(parsed) ? parsed : [abstractedContent];
             } catch {
-              sentences = [abstractedContent];
+              sentences = abstractedContent.split(/(?<=[.!?다요죠음됨함])\s+/).filter(s => s.trim());
+              if (sentences.length <= 1) sentences = [abstractedContent];
             }
             return (
               <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3 mb-4">
