@@ -314,49 +314,48 @@ const PostCard: React.FC<PostCardProps> = ({
             {title}
           </h3>
 
-          {/* 작성자/날짜 + 태그 */}
-          <div className="flex items-center justify-between gap-4">
-            <div className={cn(
-              "flex items-center gap-4 text-sm shrink-0",
-              theme === 'dark' ? "text-gray-400" : "text-gray-600"
-            )}>
-              <div className="flex items-center gap-1">
-                {!logoError ? (
-                  <img
-                    src={`/logo/${source}.png`}
-                    alt={source}
-                    className="h-4 w-4 rounded-sm"
-                    onError={() => setLogoError(true)}
-                  />
-                ) : (
-                  <User className="h-4 w-4" />
-                )}
-                <span>{metadata['ko'] ?? source}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                <span>{getFormattedDate(pubDate)}</span>
-              </div>
+          {/* 작성자 및 날짜 정보 */}
+          <div className={cn(
+            "flex items-center gap-4 text-sm",
+            theme === 'dark' ? "text-gray-400" : "text-gray-600"
+          )}>
+            <div className="flex items-center gap-1">
+              {!logoError ? (
+                <img
+                  src={`/logo/${source}.png`}
+                  alt={source}
+                  className="h-4 w-4 rounded-sm"
+                  onError={() => setLogoError(true)}
+                />
+              ) : (
+                <User className="h-4 w-4" />
+              )}
+              <span>{metadata['ko'] ?? source}</span>
             </div>
-
-            {tags && tags.filter(t => t.level <= 2).length > 0 && (
-              <div className="flex gap-1.5 overflow-x-auto scrollbar-hide justify-end min-w-0">
-                {tags.filter(t => t.level <= 2).map((t, index) => (
-                  <span
-                    key={index}
-                    className={cn(
-                      "px-2 py-0.5 text-xs font-medium rounded-full transition-colors whitespace-nowrap shrink-0",
-                      theme === 'dark'
-                        ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
-                        : "bg-green-100 text-green-700 hover:bg-green-200"
-                    )}
-                  >
-                    #{t.name}
-                  </span>
-                ))}
-              </div>
-            )}
+            <div className="flex items-center gap-1">
+              <Calendar className="h-4 w-4" />
+              <span>{getFormattedDate(pubDate)}</span>
+            </div>
           </div>
+
+          {/* 태그 뱃지 */}
+          {tags && tags.filter(t => t.level <= 2).length > 0 && (
+            <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
+              {tags.filter(t => t.level <= 2).map((t, index) => (
+                <span
+                  key={index}
+                  className={cn(
+                    "px-2 py-0.5 text-xs font-medium rounded-full transition-colors whitespace-nowrap shrink-0",
+                    theme === 'dark'
+                      ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
+                      : "bg-green-100 text-green-700 hover:bg-green-200"
+                  )}
+                >
+                  #{t.name}
+                </span>
+              ))}
+            </div>
+          )}
         </CardHeader>
 
         <CardContent className="pt-0">
