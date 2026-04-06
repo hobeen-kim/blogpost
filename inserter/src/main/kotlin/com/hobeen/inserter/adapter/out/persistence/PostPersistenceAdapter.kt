@@ -49,7 +49,7 @@ class PostPersistenceAdapter(
             val text = listOfNotNull(message.title, tags.ifBlank { null }, message.content, message.description)
                 .filter { it.isNotBlank() }
                 .joinToString(" ")
-                .take(15000)
+                .take(6000)
             val embeddingVector = embeddingModel.embed(text)
             val vectorString = embeddingVector.joinToString(",", "[", "]")
             jdbcTemplate.update(

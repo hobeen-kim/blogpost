@@ -93,7 +93,7 @@ class EmbeddingStepConfig(
                 val text = listOfNotNull(post.title, tags.ifBlank { null }, post.content, post.description)
                     .filter { it.isNotBlank() }
                     .joinToString(" ")
-                    .take(15000)
+                    .take(6000)
                 val vector = openAiEmbeddingClient.embed(text)
                 PostEmbedding(post.postId, vector)
             } catch (e: Exception) {

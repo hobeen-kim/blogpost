@@ -334,12 +334,31 @@ const PostHorizontalCard: React.FC<PostCardProps> = ({
 
           <CardContent className="pt-0 px-4 pb-4 flex-1 flex flex-col">
             {/* 포스트 요약 */}
-            <p className={cn(
-              "text-sm line-clamp-2 mb-3 leading-relaxed",
-              theme === 'dark' ? "text-gray-300" : "text-gray-700"
-            )}>
-              {abstractedContent || description}
-            </p>
+            {abstractedContent ? (() => {
+              let sentences: string[] = [];
+              try {
+                sentences = JSON.parse(abstractedContent);
+              } catch {
+                sentences = [abstractedContent];
+              }
+              return (
+                <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3 mb-3">
+                  <p className="text-purple-400 text-xs font-medium mb-2">✨ AI 요약</p>
+                  <ul className="space-y-1">
+                    {sentences.slice(0, 3).map((sentence, index) => (
+                      <li key={index} className="text-sm text-purple-200/80">{sentence}</li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })() : (
+              <p className={cn(
+                "text-sm line-clamp-2 mb-3 leading-relaxed",
+                theme === 'dark' ? "text-gray-300" : "text-gray-700"
+              )}>
+                {description}
+              </p>
+            )}
 
             {/* 액션 버튼들 */}
             <div className="flex items-center justify-between pt-3 border-t border-gray-200/50 dark:border-gray-700/50 mt-auto">
