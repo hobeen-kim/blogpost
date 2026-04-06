@@ -1,5 +1,7 @@
 package com.hobeen.metadatagenerator.adapter.out.gpt
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.hobeen.blogpostcommon.exception.OpenAiAbstractException
 import com.hobeen.metadatagenerator.application.port.out.ContentAbstractPort
 import org.springframework.ai.chat.client.ChatClient
@@ -9,19 +11,20 @@ import org.springframework.stereotype.Component
 class OpenaiAdapter(
     private val chatClient: ChatClient,
 ): ContentAbstractPort {
-    private val sentenceLength = 5
-    // 시스템 프롬프트: 역할/출력 규칙/금지사항을 강하게
+    private val objectMapper = jacksonObjectMapper()
+
+    // System prompt: return 3 key sentences as a JSON array in Korean
     private val systemMsg = """
-        You are a technical blog editor.
-        Your task is to produce a concise abstract for a blog post.
-        
-        Rules:
-        - Output MUST be Korean.
-        - Output MUST be plain text (no markdown, no bullet points).
-        - Length: ${sentenceLength}~${sentenceLength + 1} sentences.
-        - Focus on the technical problem, approach, and outcome.
-        - Do not mention that you are an AI or refer to system/user prompts.
-        - Do not invent details that are not present in the input.
+        당신은 기술 블로그 편집자입니다.
+        블로그 포스트의 핵심 내용을 3개의 문장으로 요약하세요.
+
+        규칙:
+        - 반드시 한국어로 작성하세요.
+        - 반드시 JSON 배열 형식으로만 반환하세요. 예: ["핵심 문장 1", "핵심 문장 2", "핵심 문장 3"]
+        - JSON 배열 외에 다른 텍스트, 마크다운, 설명을 절대 포함하지 마세요.
+        - 정확히 3개의 문장을 반환하세요.
+        - 기술적 문제, 접근 방식, 결과에 초점을 맞추세요.
+        - 입력에 없는 내용을 만들어내지 마세요.
     """.trimIndent()
 
     private val maxChars = 10000
@@ -42,14 +45,23 @@ class OpenaiAdapter(
                 .call()
                 .content()
 
-            // 모델/네트워크 이슈 등으로 null/빈값이 오면 실패로 처리
+            // Treat null/blank response as failure
             if (result.isNullOrBlank()) {
                 throw OpenAiAbstractException("OpenAI returned empty content.")
             }
 
-            return result.trim()
+            // Parse JSON array response; fall back to single-element list on failure
+            val list: List<String> = try {
+                objectMapper.readValue(result.trim(), object : TypeReference<List<String>>() {})
+            } catch (e: Exception) {
+                listOf(result.trim())
+            }
+
+            return objectMapper.writeValueAsString(list)
+        } catch (e: OpenAiAbstractException) {
+            throw e
         } catch (e: Exception) {
-            // 요청 에러(400/401/429/500), 토큰/키 없음 등 모두 예외로 승격
+            // Propagate request errors (400/401/429/500), missing token/key, etc.
             throw OpenAiAbstractException("Failed to generate abstract via OpenAI. ${e.message}")
         }
     }
@@ -76,8 +88,8 @@ class OpenaiAdapter(
             "TAGS: (none)"
 
         return """
-            Create an abstract (${sentenceLength}~${sentenceLength + 1} Korean sentences) for the following technical blog post.
-            
+            Summarize the following technical blog post into exactly 3 key Korean sentences as a JSON array.
+
             TITLE: $safeTitle
             DESCRIPTION: $safeDesc
             $tagLine

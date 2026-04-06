@@ -12,7 +12,8 @@ data class PostResponse (
     val pubDate: LocalDateTime,
     val description: String,
     val thumbnail: String,
-    val tags: List<String>,
+    val tags: List<TagResponse>,
+    val abstractedContent: String?,
     val bookmarked: Boolean,
     val bookmarkCount: Int,
     val liked: Boolean,
@@ -37,7 +38,8 @@ data class PostResponse (
                 pubDate = post.pubDate,
                 description = post.description,
                 thumbnail = post.thumbnail,
-                tags = post.tags.map { it.tag.name },
+                tags = post.tags.map { TagResponse(name = it.tag.name, level = it.tagLevel) },
+                abstractedContent = post.abstractedContent,
                 bookmarked = bookmarked,
                 bookmarkCount = post.bookmarks.size,
                 liked = liked,
@@ -60,7 +62,8 @@ data class PostResponse (
                 pubDate = post.pubDate,
                 description = post.description,
                 thumbnail = post.thumbnail,
-                tags = post.tags.map { it.tag.name },
+                tags = post.tags.map { TagResponse(name = it.tag.name, level = it.tagLevel) },
+                abstractedContent = post.abstractedContent,
                 bookmarked = false,
                 bookmarkCount = 0,
                 liked = false,
@@ -71,3 +74,8 @@ data class PostResponse (
         }
     }
 }
+
+data class TagResponse(
+    val name: String,
+    val level: Int?,
+)

@@ -1,5 +1,6 @@
 package com.hobeen.apiserver.entity
 
+import jakarta.persistence.Column
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -21,6 +22,9 @@ class PostTag (
     @MapsId("tagId")
     @JoinColumn(name = "tag_id")
     val tag: Tag,
+
+    @Column(name = "tag_level")
+    val tagLevel: Int? = null,
 ) {
     companion object {
         fun create(post: Post, tag: Tag): PostTag {

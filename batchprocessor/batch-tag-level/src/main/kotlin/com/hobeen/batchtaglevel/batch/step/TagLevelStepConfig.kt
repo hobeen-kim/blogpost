@@ -1,5 +1,7 @@
 package com.hobeen.batchtaglevel.batch.step
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.hobeen.batchtaglevel.client.TagGeneratorClient
 import com.hobeen.batchtaglevel.entity.post.Post
 import org.slf4j.LoggerFactory
@@ -32,6 +34,7 @@ class TagLevelStepConfig(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
     private val jdbcTemplate by lazy { JdbcTemplate(postDataSource) }
+    private val objectMapper = jacksonObjectMapper()
 
     @Bean
     fun tagLevelStep(
@@ -93,11 +96,19 @@ class TagLevelStepConfig(
                     post.postId
                 )
 
+                val rawAbstractedContent = post.abstractedContent ?: ""
+                val abstractedContentText = try {
+                    val parsed = objectMapper.readValue<List<String>>(rawAbstractedContent)
+                    parsed.joinToString(" ")
+                } catch (e: Exception) {
+                    rawAbstractedContent
+                }
+
                 val response = tagGeneratorClient.extractTags(
                     title = post.title,
                     tags = existingTags,
                     content = post.content ?: "",
-                    abstractedContent = post.abstractedContent ?: "",
+                    abstractedContent = abstractedContentText,
                 )
 
                 val items = mutableListOf<TagWriteItem>()

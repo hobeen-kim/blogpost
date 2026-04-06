@@ -26,7 +26,8 @@ interface PostCardProps {
   source: string;
   pubDate?: string;
   readTime?: string;
-  tags: string[];
+  tags: { name: string; level: number }[];
+  abstractedContent?: string;
   thumbnail?: string;
   bookmarked: boolean;
   bookmarkCount: number;
@@ -56,6 +57,7 @@ const PostHorizontalCard: React.FC<PostCardProps> = ({
   pubDate,
   readTime,
   tags,
+  abstractedContent,
   thumbnail,
   bookmarkCount,
   bookmarked,
@@ -211,7 +213,7 @@ const PostHorizontalCard: React.FC<PostCardProps> = ({
       if (navigator.share) {
         await navigator.share({
           title: title,
-          text: description,
+          text: title,
           url: window.location.href
         });
       } else {
@@ -318,6 +320,14 @@ const PostHorizontalCard: React.FC<PostCardProps> = ({
                   <Calendar className="h-3.5 w-3.5" />
                   <span>{getFormattedDate(pubDate)}</span>
                 </div>
+                {tags.filter(t => t.level <= 2).map((t, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-0.5 text-xs font-medium rounded-full transition-colors bg-green-500/20 text-green-400"
+                  >
+                    #{t.name}
+                  </span>
+                ))}
               </div>
             </div>
           </CardHeader>
@@ -328,27 +338,8 @@ const PostHorizontalCard: React.FC<PostCardProps> = ({
               "text-sm line-clamp-2 mb-3 leading-relaxed",
               theme === 'dark' ? "text-gray-300" : "text-gray-700"
             )}>
-              {description}
+              {abstractedContent || description}
             </p>
-
-            {/* 태그들 */}
-            {tags && tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className={cn(
-                      "px-2 py-0.5 text-xs font-medium rounded-full transition-colors",
-                      theme === 'dark'
-                        ? "bg-green-500/20 text-green-400"
-                        : "bg-green-100 text-green-700"
-                    )}
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            )}
 
             {/* 액션 버튼들 */}
             <div className="flex items-center justify-between pt-3 border-t border-gray-200/50 dark:border-gray-700/50 mt-auto">

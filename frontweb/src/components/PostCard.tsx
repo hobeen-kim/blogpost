@@ -26,7 +26,8 @@ interface PostCardProps {
   source: string;
   pubDate?: string;
   readTime?: string;
-  tags: string[];
+  tags: { name: string; level: number }[];
+  abstractedContent?: string;
   thumbnail?: string;
   bookmarked: boolean;
   bookmarkCount: number;
@@ -56,6 +57,7 @@ const PostCard: React.FC<PostCardProps> = ({
   pubDate,
   readTime,
   tags,
+  abstractedContent,
   thumbnail,
   bookmarkCount,
   bookmarked,
@@ -210,7 +212,7 @@ const PostCard: React.FC<PostCardProps> = ({
       if (navigator.share) {
         await navigator.share({
           title: title,
-          text: description,
+          text: title,
           url: window.location.href
         });
       } else {
@@ -335,21 +337,11 @@ const PostCard: React.FC<PostCardProps> = ({
               <span>{getFormattedDate(pubDate)}</span>
             </div>
           </div>
-        </CardHeader>
 
-        <CardContent className="pt-0">
-          {/* 포스트 요약 */}
-          <p className={cn(
-            "text-sm md:text-base line-clamp-3 mb-4 leading-relaxed",
-            theme === 'dark' ? "text-gray-300" : "text-gray-700"
-          )}>
-            {description}
-          </p>
-
-          {/* 태그들 */}
-          {tags && tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
-              {tags.map((tag, index) => (
+          {/* 태그 뱃지 */}
+          {tags && tags.filter(t => t.level <= 2).length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {tags.filter(t => t.level <= 2).map((t, index) => (
                 <span
                   key={index}
                   className={cn(
@@ -359,11 +351,21 @@ const PostCard: React.FC<PostCardProps> = ({
                       : "bg-green-100 text-green-700 hover:bg-green-200"
                   )}
                 >
-                  #{tag}
+                  #{t.name}
                 </span>
               ))}
             </div>
           )}
+        </CardHeader>
+
+        <CardContent className="pt-0">
+          {/* 포스트 요약 */}
+          <p className={cn(
+            "text-sm md:text-base line-clamp-3 mb-4 leading-relaxed",
+            theme === 'dark' ? "text-gray-300" : "text-gray-700"
+          )}>
+            {abstractedContent || description}
+          </p>
 
           {/* 액션 버튼들 */}
           <div className="flex items-center justify-between pt-3 border-t border-gray-200/50 dark:border-gray-700/50">

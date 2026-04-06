@@ -26,8 +26,9 @@ export interface Post {
   source: string;
   pubDate: string;
   readTime: string;
-  tags: string[];
+  tags: { name: string; level: number }[];
   thumbnail?: string;
+  abstractedContent?: string;
   bookmarked: boolean;
   bookmarkCount: number;
   liked: boolean;

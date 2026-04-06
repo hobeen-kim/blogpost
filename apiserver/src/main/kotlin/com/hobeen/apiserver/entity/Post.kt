@@ -15,6 +15,9 @@ class Post (
     val description: String,
     val thumbnail: String,
 
+    @Column(name = "abstracted_content", columnDefinition = "TEXT")
+    val abstractedContent: String,
+
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
     val tags: MutableList<PostTag>,
 
