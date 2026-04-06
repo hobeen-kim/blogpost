@@ -180,27 +180,10 @@ const PostLikeCard: React.FC<PostLikeCardProps> = ({
         )}>
           {description}
         </p>
-        {/* 태그들 */}
-        <div className="flex flex-wrap gap-1.5">
-          {tags.slice(0, 3).map((tag, index) => (
-              <span
-                  key={index}
-                  className={cn(
-                      "px-1.5 py-0.5 text-[10px] font-medium rounded-full transition-colors",
-                      theme === 'dark'
-                          ? "bg-green-500/20 text-green-400"
-                          : "bg-green-100 text-green-700"
-                  )}
-              >
-              #{tag}
-            </span>
-          ))}
-        </div>
-
         {/* 하단 정보 */}
         <div className="flex items-center justify-between pt-3 border-t border-gray-200/50 dark:border-gray-700/50 mt-auto">
           <div className={cn(
-            "flex items-center gap-2 text-xs",
+            "flex items-center gap-2 text-xs shrink-0",
             theme === 'dark' ? "text-gray-500" : "text-gray-500"
           )}>
             {!logoError ? (
@@ -217,6 +200,23 @@ const PostLikeCard: React.FC<PostLikeCardProps> = ({
             <span>•</span>
             <span>{getFormattedDate(pubDate)}</span>
           </div>
+          {tags.length > 0 && (
+            <div className="flex gap-1 overflow-x-auto scrollbar-hide justify-end min-w-0 ml-2">
+              {tags.slice(0, 3).map((tag, index) => (
+                <span
+                  key={index}
+                  className={cn(
+                    "px-1.5 py-0.5 text-[10px] font-medium rounded-full transition-colors whitespace-nowrap shrink-0",
+                    theme === 'dark'
+                      ? "bg-green-500/20 text-green-400"
+                      : "bg-green-100 text-green-700"
+                  )}
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
 
           {/* 공유 버튼 */}
           <Button
