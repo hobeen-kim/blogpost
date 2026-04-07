@@ -195,9 +195,27 @@ export const updatePreferences = async (emailSubscription: boolean) => {
   });
 };
 
-export const askQuestion = async (question: string, history: { role: string; content: string }[]) => {
+export interface AskOptions {
+  question: string;
+  history: Array<{ role: string; content: string }>;
+  step?: string; // "initial" | "plan" | "architecture"
+  formData?: Record<string, string>;
+  approval?: boolean;
+  feedback?: string;
+}
+
+export const askQuestion = async (options: AskOptions) => {
   const { data: { session } } = await supabase.auth.getSession();
   const token = session?.access_token;
+
+  const body = {
+    question: options.question,
+    history: options.history,
+    ...(options.step && { step: options.step }),
+    ...(options.formData && { formData: options.formData }),
+    ...(options.approval !== undefined && { approval: options.approval }),
+    ...(options.feedback && { feedback: options.feedback }),
+  };
 
   return fetch(`${DOMAIN}/ask`, {
     method: 'POST',
@@ -205,6 +223,6 @@ export const askQuestion = async (question: string, history: { role: string; con
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify({ question, history }),
+    body: JSON.stringify(body),
   });
 };

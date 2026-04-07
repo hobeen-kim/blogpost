@@ -4,11 +4,27 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { askQuestion } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
+import FormMessage from '@/components/chat/FormMessage';
+import PlanMessage from '@/components/chat/PlanMessage';
+import ArchitectureMessage from '@/components/chat/ArchitectureMessage';
 
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-  sources?: Source[];
+interface FormField {
+  id: string;
+  label: string;
+  type: 'radio' | 'text';
+  options?: string[];
+  recommended?: string;
+}
+
+interface PlanSection {
+  title: string;
+  items: string[];
+}
+
+interface ArchitectureComponent {
+  name: string;
+  description: string;
+  tech?: string;
 }
 
 interface Source {
@@ -16,6 +32,17 @@ interface Source {
   url: string;
   source: string;
   thumbnail?: string;
+}
+
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+  sources?: Source[];
+  widgetType?: 'form' | 'plan' | 'architecture';
+  formFields?: FormField[];
+  planSections?: PlanSection[];
+  architectureDiagram?: string;
+  architectureComponents?: ArchitectureComponent[];
 }
 
 const TypingDots = () => (
@@ -61,6 +88,7 @@ const ChatPage: React.FC = () => {
   const [allSources, setAllSources] = useState<Source[]>([]);
   const [latestSources, setLatestSources] = useState<Source[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [originalQuestion, setOriginalQuestion] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -75,10 +103,113 @@ const ChatPage: React.FC = () => {
     }
   }, [input]);
 
+  const processSSEStream = async (response: Response) => {
+    if (!response.body) {
+      throw new Error('No response body');
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let assistantContent = '';
+    let currentSources: Source[] = [];
+
+    setMessages(prev => [...prev, { role: 'assistant', content: '', sources: [] }]);
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() ?? '';
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if (!raw) continue;
+
+        try {
+          const event = JSON.parse(raw);
+
+          if (event.type === 'source') {
+            currentSources = event.sources ?? [];
+            setLatestSources(currentSources);
+            setAllSources(prev => {
+              const existingUrls = new Set(prev.map(s => s.url));
+              const newSources = currentSources.filter(s => !existingUrls.has(s.url));
+              return [...prev, ...newSources];
+            });
+          } else if (event.type === 'token') {
+            assistantContent += event.content ?? '';
+            setMessages(prev => {
+              const updated = [...prev];
+              updated[updated.length - 1] = {
+                role: 'assistant',
+                content: assistantContent,
+                sources: currentSources,
+              };
+              return updated;
+            });
+          } else if (event.type === 'form') {
+            setMessages(prev => {
+              const updated = [...prev];
+              updated[updated.length - 1] = {
+                role: 'assistant',
+                content: assistantContent,
+                sources: currentSources,
+                widgetType: 'form',
+                formFields: event.fields,
+              };
+              return updated;
+            });
+          } else if (event.type === 'plan') {
+            setMessages(prev => {
+              const updated = [...prev];
+              updated[updated.length - 1] = {
+                ...updated[updated.length - 1],
+                widgetType: 'plan',
+                planSections: event.sections,
+              };
+              return updated;
+            });
+          } else if (event.type === 'architecture') {
+            setMessages(prev => {
+              const updated = [...prev];
+              updated[updated.length - 1] = {
+                ...updated[updated.length - 1],
+                widgetType: 'architecture',
+                architectureDiagram: event.diagram,
+                architectureComponents: event.components,
+              };
+              return updated;
+            });
+          } else if (event.type === 'done') {
+            setIsLoading(false);
+          } else if (event.type === 'error') {
+            setMessages(prev => {
+              const updated = [...prev];
+              updated[updated.length - 1] = {
+                role: 'assistant',
+                content: event.message ?? '오류가 발생했습니다.',
+                sources: [],
+              };
+              return updated;
+            });
+            setIsLoading(false);
+          }
+        } catch {
+          // Skip malformed JSON
+        }
+      }
+    }
+  };
+
   const handleSubmit = async () => {
     const question = input.trim();
     if (!question || isLoading) return;
 
+    setOriginalQuestion(question);
     const userMessage: Message = { role: 'user', content: question };
     const history = messages.slice(-20).map(m => ({ role: m.role, content: m.content }));
     setMessages(prev => [...prev, userMessage]);
@@ -86,76 +217,9 @@ const ChatPage: React.FC = () => {
     setIsLoading(true);
     setLatestSources([]);
 
-    let assistantContent = '';
-    let currentSources: Source[] = [];
-
     try {
-      const response = await askQuestion(question, history);
-
-      if (!response.body) {
-        throw new Error('No response body');
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      setMessages(prev => [...prev, { role: 'assistant', content: '', sources: [] }]);
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() ?? '';
-
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          const raw = line.slice(6).trim();
-          if (!raw) continue;
-
-          try {
-            const event = JSON.parse(raw);
-
-            if (event.type === 'source') {
-              currentSources = event.sources ?? [];
-              setLatestSources(currentSources);
-              setAllSources(prev => {
-                const existingUrls = new Set(prev.map(s => s.url));
-                const newSources = currentSources.filter(s => !existingUrls.has(s.url));
-                return [...prev, ...newSources];
-              });
-            } else if (event.type === 'token') {
-              assistantContent += event.content ?? '';
-              setMessages(prev => {
-                const updated = [...prev];
-                updated[updated.length - 1] = {
-                  role: 'assistant',
-                  content: assistantContent,
-                  sources: currentSources,
-                };
-                return updated;
-              });
-            } else if (event.type === 'done') {
-              setIsLoading(false);
-            } else if (event.type === 'error') {
-              setMessages(prev => {
-                const updated = [...prev];
-                updated[updated.length - 1] = {
-                  role: 'assistant',
-                  content: event.message ?? '오류가 발생했습니다.',
-                  sources: [],
-                };
-                return updated;
-              });
-              setIsLoading(false);
-            }
-          } catch {
-            // Skip malformed JSON
-          }
-        }
-      }
+      const response = await askQuestion({ question, history });
+      await processSSEStream(response);
     } catch {
       setMessages(prev => {
         const last = prev[prev.length - 1];
@@ -175,6 +239,76 @@ const ChatPage: React.FC = () => {
     }
   };
 
+  const handleFormSubmit = async (formData: Record<string, string>) => {
+    const history = messages.slice(-20).map(m => ({ role: m.role, content: m.content }));
+    setIsLoading(true);
+    setMessages(prev => [...prev, { role: 'user', content: '정보를 제출했습니다.' }]);
+
+    try {
+      const response = await askQuestion({
+        question: originalQuestion,
+        history,
+        step: 'plan',
+        formData,
+      });
+      await processSSEStream(response);
+    } catch {
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: '요청 중 오류가 발생했습니다.', sources: [] },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePlanApprove = async () => {
+    const history = messages.slice(-20).map(m => ({ role: m.role, content: m.content }));
+    setIsLoading(true);
+    setMessages(prev => [...prev, { role: 'user', content: '계획을 승인했습니다.' }]);
+
+    try {
+      const response = await askQuestion({
+        question: originalQuestion,
+        history,
+        step: 'architecture',
+        approval: true,
+      });
+      await processSSEStream(response);
+    } catch {
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: '요청 중 오류가 발생했습니다.', sources: [] },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePlanRevision = async (feedback: string) => {
+    const history = messages.slice(-20).map(m => ({ role: m.role, content: m.content }));
+    setIsLoading(true);
+    setMessages(prev => [...prev, { role: 'user', content: `수정 요청: ${feedback}` }]);
+
+    try {
+      const response = await askQuestion({
+        question: originalQuestion,
+        history,
+        step: 'plan',
+        approval: false,
+        feedback,
+      });
+      await processSSEStream(response);
+    } catch {
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: '요청 중 오류가 발생했습니다.', sources: [] },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -188,7 +322,7 @@ const ChatPage: React.FC = () => {
         <div className="text-center space-y-4">
           <Sparkles className="h-12 w-12 text-purple-500 mx-auto" />
           <h2 className="text-xl font-semibold">로그인이 필요합니다</h2>
-          <p className="text-muted-foreground">AI 챗봇을 사용하려면 로그인해주세요.</p>
+          <p className="text-muted-foreground">AI 아키텍처 설계를 사용하려면 로그인해주세요.</p>
           <div className="flex gap-3 justify-center">
             <Button variant="outline" onClick={() => navigate('/')}>돌아가기</Button>
             <Button onClick={() => signInWithGoogle()} className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
@@ -283,8 +417,8 @@ const ChatPage: React.FC = () => {
             {messages.length === 0 && (
               <div className="text-center text-muted-foreground text-sm pt-20">
                 <Sparkles className="h-10 w-10 text-purple-400 mx-auto mb-4" />
-                <p className="text-lg font-medium mb-1">무엇이든 물어보세요</p>
-                <p>수집된 기술 블로그를 기반으로 답변합니다.</p>
+                <p className="text-lg font-medium mb-1">어떤 시스템을 설계할까요?</p>
+                <p>질문을 입력하면 AI가 필요한 정보를 수집하고 아키텍처를 설계합니다.</p>
               </div>
             )}
             {messages.map((msg, idx) => (
@@ -293,15 +427,46 @@ const ChatPage: React.FC = () => {
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap ${
+                  className={`${msg.widgetType ? 'max-w-[90%]' : 'max-w-[80%]'} rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap ${
                     msg.role === 'user'
                       ? 'bg-purple-600 text-white'
                       : 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
                   }`}
                 >
-                  {msg.role === 'assistant'
-                    ? renderMessageContent(msg.content, msg.sources ?? [])
-                    : msg.content}
+                  {msg.role === 'assistant' ? (
+                    <>
+                      {msg.content && renderMessageContent(msg.content, msg.sources ?? [])}
+                      {msg.widgetType === 'form' && msg.formFields && (
+                        <div className="mt-3">
+                          <FormMessage
+                            fields={msg.formFields}
+                            onSubmit={handleFormSubmit}
+                            disabled={isLoading}
+                          />
+                        </div>
+                      )}
+                      {msg.widgetType === 'plan' && msg.planSections && (
+                        <div className="mt-3">
+                          <PlanMessage
+                            sections={msg.planSections}
+                            onApprove={handlePlanApprove}
+                            onRequestRevision={handlePlanRevision}
+                            disabled={isLoading}
+                          />
+                        </div>
+                      )}
+                      {msg.widgetType === 'architecture' && (
+                        <div className="mt-3">
+                          <ArchitectureMessage
+                            diagram={msg.architectureDiagram ?? ''}
+                            components={msg.architectureComponents ?? []}
+                          />
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    msg.content
+                  )}
                 </div>
               </div>
             ))}
@@ -324,7 +489,7 @@ const ChatPage: React.FC = () => {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="기술 관련 질문을 해보세요..."
+              placeholder="설계하고 싶은 시스템을 설명해주세요..."
               disabled={isLoading}
               rows={1}
               className="flex-1 resize-none rounded-xl border border-input bg-background px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"

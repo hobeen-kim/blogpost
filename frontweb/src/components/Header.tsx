@@ -264,7 +264,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             className="flex items-center gap-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-3 h-9 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all whitespace-nowrap"
           >
             <Sparkles className="h-4 w-4" />
-            <span>AI 챗봇</span>
+            <span>AI 아키텍처 설계</span>
           </Button>
         </div>
 

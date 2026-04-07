@@ -20,7 +20,7 @@ class AskController(
         @RequestBody request: AskRequest,
         @AuthenticationPrincipal jwt: Jwt,
     ): SseEmitter {
-        val emitter = SseEmitter(60_000L)
+        val emitter = SseEmitter(120_000L)
         Thread {
             try {
                 askService.ask(request, emitter)
