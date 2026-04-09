@@ -370,7 +370,7 @@ const PostCard: React.FC<PostCardProps> = ({
               if (sentences.length <= 1) sentences = [abstractedContent];
             }
             return (
-              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3 mb-4 max-w-[90%]">
+              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3 mb-4">
                 <p className="text-purple-400 text-xs font-medium mb-2">✨ AI 요약</p>
                 <ul className="space-y-1">
                   {sentences.slice(0, 3).map((sentence, index) => (

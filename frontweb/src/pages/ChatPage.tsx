@@ -89,6 +89,7 @@ const ChatPage: React.FC = () => {
   const [latestSources, setLatestSources] = useState<Source[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [originalQuestion, setOriginalQuestion] = useState('');
+  const [lastFormData, setLastFormData] = useState<Record<string, string>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -240,6 +241,7 @@ const ChatPage: React.FC = () => {
   };
 
   const handleFormSubmit = async (formData: Record<string, string>) => {
+    setLastFormData(formData);
     const history = messages.slice(-20).map(m => ({ role: m.role, content: m.content }));
     setIsLoading(true);
     setMessages(prev => [...prev, { role: 'user', content: '정보를 제출했습니다.' }]);
@@ -273,6 +275,7 @@ const ChatPage: React.FC = () => {
         history,
         step: 'architecture',
         approval: true,
+        formData: lastFormData,
       });
       await processSSEStream(response);
     } catch {
@@ -297,6 +300,7 @@ const ChatPage: React.FC = () => {
         step: 'plan',
         approval: false,
         feedback,
+        formData: lastFormData,
       });
       await processSSEStream(response);
     } catch {
