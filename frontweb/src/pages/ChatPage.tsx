@@ -11,9 +11,12 @@ import ArchitectureMessage from '@/components/chat/ArchitectureMessage';
 interface FormField {
   id: string;
   label: string;
-  type: 'radio' | 'text';
+  type: 'radio' | 'text' | 'checkbox' | 'select' | 'slider' | 'number';
   options?: string[];
   recommended?: string;
+  min?: number;
+  max?: number;
+  step?: number;
 }
 
 interface PlanSection {
@@ -64,9 +67,10 @@ const SourceBadge: React.FC<{ index: number; source: Source }> = ({ index, sourc
 );
 
 const renderMessageContent = (content: string, sources: Source[]) => {
-  if (!sources.length) return content;
+  // Add line break after sentence-ending ". " if not already followed by newline
+  let processed = content.replace(/\. (?!\n)(?!$)/g, '.\n');
 
-  const parts = content.split(/(\[\d+\])/g);
+  const parts = processed.split(/(\[\d+\])/g);
   return parts.map((part, i) => {
     const match = part.match(/^\[(\d+)\]$/);
     if (match) {
@@ -75,7 +79,25 @@ const renderMessageContent = (content: string, sources: Source[]) => {
         return <SourceBadge key={i} index={idx} source={sources[idx]} />;
       }
     }
-    return <span key={i}>{part}</span>;
+    // Process bold and bullet syntax
+    const lines = part.split('\n');
+    const rendered = lines.map((line, li) => {
+      const isBullet = line.startsWith('- ');
+      const lineText = isBullet ? '• ' + line.slice(2) : line;
+      const boldParts = lineText.split(/(\*\*[^*]+\*\*)/g);
+      const nodes = boldParts.map((bp, bi) => {
+        const boldMatch = bp.match(/^\*\*([^*]+)\*\*$/);
+        if (boldMatch) return <strong key={bi}>{boldMatch[1]}</strong>;
+        return <span key={bi}>{bp}</span>;
+      });
+      return (
+        <span key={li}>
+          {nodes}
+          {li < lines.length - 1 && '\n'}
+        </span>
+      );
+    });
+    return <span key={i}>{rendered}</span>;
   });
 };
 
@@ -90,6 +112,7 @@ const ChatPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [originalQuestion, setOriginalQuestion] = useState('');
   const [lastFormData, setLastFormData] = useState<Record<string, string>>({});
+  const [formReceived, setFormReceived] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -153,6 +176,7 @@ const ChatPage: React.FC = () => {
               return updated;
             });
           } else if (event.type === 'form') {
+            setFormReceived(true);
             setMessages(prev => {
               const updated = [...prev];
               updated[updated.length - 1] = {
@@ -186,6 +210,15 @@ const ChatPage: React.FC = () => {
               return updated;
             });
           } else if (event.type === 'done') {
+            assistantContent = assistantContent.replace('READY_FOR_FORM', '').trimEnd();
+            setMessages(prev => {
+              const updated = [...prev];
+              const last = updated[updated.length - 1];
+              if (last?.role === 'assistant') {
+                updated[updated.length - 1] = { ...last, content: assistantContent };
+              }
+              return updated;
+            });
             setIsLoading(false);
           } else if (event.type === 'error') {
             setMessages(prev => {
@@ -210,7 +243,12 @@ const ChatPage: React.FC = () => {
     const question = input.trim();
     if (!question || isLoading) return;
 
-    setOriginalQuestion(question);
+    const isFirstMessage = messages.length === 0;
+    if (isFirstMessage) {
+      setOriginalQuestion(question);
+      setFormReceived(false);
+    }
+
     const userMessage: Message = { role: 'user', content: question };
     const history = messages.slice(-20).map(m => ({ role: m.role, content: m.content }));
     setMessages(prev => [...prev, userMessage]);
@@ -219,7 +257,9 @@ const ChatPage: React.FC = () => {
     setLatestSources([]);
 
     try {
-      const response = await askQuestion({ question, history });
+      const response = formReceived
+        ? await askQuestion({ question, history })
+        : await askQuestion({ question, history, step: 'initial' });
       await processSSEStream(response);
     } catch {
       setMessages(prev => {
@@ -431,7 +471,7 @@ const ChatPage: React.FC = () => {
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`${msg.widgetType ? 'max-w-[90%]' : 'max-w-[80%]'} rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap ${
+                  className={`${msg.widgetType ? 'max-w-[90%]' : 'max-w-[80%]'} rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap leading-relaxed ${
                     msg.role === 'user'
                       ? 'bg-purple-600 text-white'
                       : 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'

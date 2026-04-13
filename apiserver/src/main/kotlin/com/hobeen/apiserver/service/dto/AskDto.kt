@@ -23,9 +23,12 @@ data class SourceInfo(
 data class FormField(
     val id: String,
     val label: String,
-    val type: String, // "radio", "text"
+    val type: String, // "radio" | "text" | "checkbox" | "select" | "slider" | "number"
     val options: List<String>? = null,
     val recommended: String? = null,
+    val min: Double? = null,
+    val max: Double? = null,
+    val step: Double? = null,
 )
 
 data class PlanSection(

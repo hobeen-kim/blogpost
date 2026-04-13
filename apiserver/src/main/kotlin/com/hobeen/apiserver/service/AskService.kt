@@ -1,9 +1,9 @@
 package com.hobeen.apiserver.service
 
-import com.hobeen.apiserver.repository.PostVectorRepository
-import com.hobeen.apiserver.repository.SimilarPost
 import com.hobeen.apiserver.service.dto.AskRequest
 import com.hobeen.apiserver.service.dto.SourceInfo
+import com.hobeen.apiserver.repository.PostVectorRepository
+import com.hobeen.apiserver.repository.SimilarPost
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.stereotype.Service
@@ -28,24 +28,31 @@ class AskService(
     }
 
     private fun handleInitial(request: AskRequest, emitter: SseEmitter) {
-        val embedding = embeddingService.embed(request.question)
-        val embeddingStr = embedding.joinToString(", ", "[", "]")
+        val systemPrompt = """
+            당신은 아키텍처 설계 어시스턴트입니다. 사용자의 질문을 분석하고, 좋은 아키텍처 설계를 위해 필요한 맥락 정보를 파악하는 후속 질문을 하세요.
 
-        val similarPosts = postVectorRepository.findSimilarPosts(embeddingStr, 5)
-        val relevantPosts = similarPosts.filter { it.similarity >= 0.1 }
+            파악해야 할 정보:
+            - 도메인/비즈니스 컨텍스트 (어떤 서비스/시스템인지)
+            - 현재 기술 스택
+            - 예상 규모 (사용자 수, 트래픽)
+            - 주요 제약사항이나 요구사항
 
-        if (relevantPosts.isEmpty()) {
-            sendEvent(emitter, mapOf("type" to "error", "content" to "관련된 포스트를 찾을 수 없습니다"))
-            sendEvent(emitter, mapOf("type" to "done"))
-            emitter.complete()
-            return
+            대화 기록을 보고, 아키텍처 설계에 충분한 맥락이 모였다고 판단되면 응답 마지막에 정확히 'READY_FOR_FORM'이라고 표시하세요. 아직 부족하면 추가 질문을 하세요.
+
+            중요: READY_FOR_FORM은 반드시 응답의 맨 마지막에만 표시하세요.
+        """.trimIndent()
+
+        val userPrompt = buildString {
+            val history = request.history.takeLast(10).joinToString("\n") { "${it.role}: ${it.content}" }
+            if (history.isNotBlank()) {
+                appendLine("대화 기록:")
+                appendLine(history)
+                appendLine()
+            }
+            appendLine("질문: ${request.question}")
         }
 
-        val sources = relevantPosts.map { SourceInfo(title = it.title, url = it.url, source = it.source) }
-        sendEvent(emitter, mapOf("type" to "source", "sources" to sources))
-
-        val systemPrompt = "당신은 한국 기술 블로그 포스트를 기반으로 답변하는 AI 어시스턴트입니다. 반드시 제공된 Context의 내용만을 기반으로 답변하세요. 답변 마지막에 참고한 포스트 번호를 [1], [2] 형태로 표시하세요."
-        val userPrompt = buildUserPrompt(relevantPosts, request)
+        val responseBuffer = StringBuilder()
 
         val chatClient = chatClientBuilder.build()
         val flux = chatClient.prompt()
@@ -57,6 +64,7 @@ class AskService(
         flux.subscribe(
             { token ->
                 try {
+                    responseBuffer.append(token)
                     sendEvent(emitter, mapOf("type" to "token", "content" to token))
                 } catch (_: Exception) {}
             },
@@ -68,7 +76,13 @@ class AskService(
             },
             {
                 try {
-                    generateForm(request, emitter)
+                    val fullText = responseBuffer.toString()
+                    if (fullText.contains("READY_FOR_FORM")) {
+                        generateForm(request, emitter)
+                    } else {
+                        sendEvent(emitter, mapOf("type" to "done"))
+                        emitter.complete()
+                    }
                 } catch (_: Exception) {
                     try {
                         sendEvent(emitter, mapOf("type" to "done"))
@@ -83,15 +97,27 @@ class AskService(
         val formSystemPrompt = """
             You are an architecture design assistant. The user asked a question about system design.
             Analyze the question and determine what specific information you need to create a good architecture design.
-            Return ONLY a JSON array of form fields. Each field has: id, label, type ("radio" or "text"), options (for radio), recommended (suggested value).
-            Generate 3-6 fields that capture the most important design decisions.
+            Return ONLY a JSON array of form fields. Each field has: id, label, type, and type-specific properties.
+            Generate 3-8 fields that capture the most important design decisions.
+            Choose the most appropriate type for each field from the list below.
             Always include a final text field with id "extra" and label "추가 요구사항" for free-form input.
             Return ONLY valid JSON, no markdown, no explanation.
 
+            Field types:
+            - "radio": single choice from options. Requires "options" (string array). Optional "recommended" (string).
+            - "text": free-form text input. Optional "recommended" (string).
+            - "checkbox": multiple choices from options. Requires "options" (string array). Optional "recommended" (string array).
+            - "select": dropdown single choice. Requires "options" (string array). Optional "recommended" (string).
+            - "slider": range selection. Requires "min" (number), "max" (number), "step" (number). Optional "recommended" (number string).
+            - "number": numeric input. Requires "min" (number), "max" (number), "step" (number). Optional "recommended" (number string).
+
             Example:
             [
-              {"id": "scale", "label": "예상 사용자 규모", "type": "radio", "options": ["~1,000", "1,000~10,000", "10,000+"], "recommended": "1,000~10,000"},
-              {"id": "db", "label": "선호하는 데이터베이스", "type": "radio", "options": ["PostgreSQL", "MySQL", "MongoDB", "기타"], "recommended": "PostgreSQL"},
+              {"id": "scale", "label": "예상 동시 접속자 수", "type": "slider", "min": 100, "max": 10000, "step": 100, "recommended": "1000"},
+              {"id": "db", "label": "선호하는 데이터베이스", "type": "select", "options": ["PostgreSQL", "MySQL", "MongoDB", "Redis", "기타"], "recommended": "PostgreSQL"},
+              {"id": "features", "label": "필요한 기능", "type": "checkbox", "options": ["인증/인가", "실시간 알림", "파일 업로드", "검색", "결제"], "recommended": ["인증/인가"]},
+              {"id": "region", "label": "배포 리전", "type": "radio", "options": ["AWS ap-northeast-2", "GCP asia-northeast3", "온프레미스"], "recommended": "AWS ap-northeast-2"},
+              {"id": "retention", "label": "데이터 보존 기간 (일)", "type": "number", "min": 1, "max": 3650, "step": 1, "recommended": "90"},
               {"id": "extra", "label": "추가 요구사항", "type": "text"}
             ]
         """.trimIndent()
@@ -159,9 +185,51 @@ class AskService(
 
             The diagram should show the main components and their relationships.
             Return ONLY valid JSON, no markdown, no explanation.
+            If reference blog posts are provided in the Context, incorporate relevant architectural patterns and insights from them into your design.
         """.trimIndent()
 
-        val userPrompt = buildArchitectureUserPrompt(request)
+        // Build search query from question + formData
+        val searchQuery = buildString {
+            append(request.question)
+            if (!request.formData.isNullOrEmpty()) {
+                request.formData.forEach { (k, v) -> append(" $k: $v") }
+            }
+        }
+
+        // Embed query and find similar posts
+        val embedding = embeddingService.embed(searchQuery)
+        val embeddingStr = embedding.joinToString(", ", "[", "]")
+        val similarPosts = postVectorRepository.findSimilarPosts(embeddingStr, 5)
+        val relevantPosts = similarPosts.filter { it.similarity >= 0.1 }
+
+        // Send source SSE event if posts found
+        if (relevantPosts.isNotEmpty()) {
+            val sources = relevantPosts.map { SourceInfo(title = it.title, url = it.url, source = it.source) }
+            sendEvent(emitter, mapOf("type" to "source", "sources" to sources))
+        }
+
+        val userPrompt = buildString {
+            appendLine("질문: ${request.question}")
+            if (!request.formData.isNullOrEmpty()) {
+                appendLine("사용자 설정:")
+                request.formData.forEach { (k, v) -> appendLine("- $k: $v") }
+            }
+            val history = request.history.takeLast(10).joinToString("\n") { "${it.role}: ${it.content}" }
+            if (history.isNotBlank()) {
+                appendLine("대화 기록:")
+                appendLine(history)
+            }
+            if (relevantPosts.isNotEmpty()) {
+                appendLine()
+                appendLine("참고 기술 블로그:")
+                relevantPosts.forEachIndexed { index, post ->
+                    appendLine("[${index + 1}] 제목: ${post.title}")
+                    appendLine("출처: ${post.source}")
+                    appendLine("내용: ${post.content}")
+                    appendLine()
+                }
+            }
+        }
 
         try {
             val chatClient = chatClientBuilder.build()
@@ -222,28 +290,6 @@ class AskService(
         } finally {
             sendEvent(emitter, mapOf("type" to "done"))
             emitter.complete()
-        }
-    }
-
-    private fun buildUserPrompt(posts: List<SimilarPost>, request: AskRequest): String {
-        val context = posts.mapIndexed { index, post ->
-            "[${index + 1}] 제목: ${post.title}\n출처: ${post.source}\n내용: ${post.content}"
-        }.joinToString("\n\n")
-
-        val history = request.history.takeLast(10).joinToString("\n") { msg ->
-            "${msg.role}: ${msg.content}"
-        }
-
-        return buildString {
-            appendLine("Context:")
-            appendLine(context)
-            if (history.isNotBlank()) {
-                appendLine()
-                appendLine("대화 기록:")
-                appendLine(history)
-            }
-            appendLine()
-            appendLine("질문: ${request.question}")
         }
     }
 

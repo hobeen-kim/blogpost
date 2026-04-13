@@ -34,7 +34,12 @@ export default function ArchitectureMessage({ diagram, components }: Architectur
 
     const renderDiagram = async () => {
       try {
-        const { svg } = await mermaid.render('arch-diagram-' + Date.now(), diagram);
+        let cleanDiagram = diagram;
+        cleanDiagram = cleanDiagram.replace(/^```mermaid\n([\s\S]*)\n```$/, '$1');
+        cleanDiagram = cleanDiagram.replace(/^```\n([\s\S]*)\n```$/, '$1');
+        cleanDiagram = cleanDiagram.trim();
+        cleanDiagram = cleanDiagram.replace(/\n{3,}/g, '\n');
+        const { svg } = await mermaid.render('arch-diagram-' + Date.now(), cleanDiagram);
         if (diagramRef.current) {
           diagramRef.current.innerHTML = svg;
         }
