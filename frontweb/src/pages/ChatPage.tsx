@@ -192,7 +192,7 @@ const ChatPage: React.FC = () => {
               const updated = [...prev];
               updated[updated.length - 1] = {
                 role: 'assistant',
-                content: event.message ?? '오류가 발생했습니다.',
+                content: event.content ?? '오류가 발생했습니다.',
                 sources: [],
               };
               return updated;
