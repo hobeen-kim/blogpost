@@ -126,8 +126,8 @@ const ChatPage: React.FC = () => {
       buffer = lines.pop() ?? '';
 
       for (const line of lines) {
-        if (!line.startsWith('data: ')) continue;
-        const raw = line.slice(6).trim();
+        if (!line.startsWith('data:')) continue;
+        const raw = line.slice(5).trim();
         if (!raw) continue;
 
         try {
