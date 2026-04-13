@@ -28,69 +28,7 @@ class AskService(
     }
 
     private fun handleInitial(request: AskRequest, emitter: SseEmitter) {
-        val systemPrompt = """
-            당신은 아키텍처 설계 어시스턴트입니다. 사용자의 질문을 분석하고, 좋은 아키텍처 설계를 위해 필요한 맥락 정보를 파악하는 후속 질문을 하세요.
-
-            파악해야 할 정보:
-            - 도메인/비즈니스 컨텍스트 (어떤 서비스/시스템인지)
-            - 현재 기술 스택
-            - 예상 규모 (사용자 수, 트래픽)
-            - 주요 제약사항이나 요구사항
-
-            대화 기록을 보고, 아키텍처 설계에 충분한 맥락이 모였다고 판단되면 응답 마지막에 정확히 'READY_FOR_FORM'이라고 표시하세요. 아직 부족하면 추가 질문을 하세요.
-
-            중요: READY_FOR_FORM은 반드시 응답의 맨 마지막에만 표시하세요.
-        """.trimIndent()
-
-        val userPrompt = buildString {
-            val history = request.history.takeLast(10).joinToString("\n") { "${it.role}: ${it.content}" }
-            if (history.isNotBlank()) {
-                appendLine("대화 기록:")
-                appendLine(history)
-                appendLine()
-            }
-            appendLine("질문: ${request.question}")
-        }
-
-        val responseBuffer = StringBuilder()
-
-        val chatClient = chatClientBuilder.build()
-        val flux = chatClient.prompt()
-            .system(systemPrompt)
-            .user(userPrompt)
-            .stream()
-            .content()
-
-        flux.subscribe(
-            { token ->
-                try {
-                    responseBuffer.append(token)
-                    sendEvent(emitter, mapOf("type" to "token", "content" to token))
-                } catch (_: Exception) {}
-            },
-            { _ ->
-                try {
-                    sendEvent(emitter, mapOf("type" to "error", "content" to "답변 생성 중 오류가 발생했습니다"))
-                    emitter.complete()
-                } catch (_: Exception) {}
-            },
-            {
-                try {
-                    val fullText = responseBuffer.toString()
-                    if (fullText.contains("READY_FOR_FORM")) {
-                        generateForm(request, emitter)
-                    } else {
-                        sendEvent(emitter, mapOf("type" to "done"))
-                        emitter.complete()
-                    }
-                } catch (_: Exception) {
-                    try {
-                        sendEvent(emitter, mapOf("type" to "done"))
-                        emitter.complete()
-                    } catch (_: Exception) {}
-                }
-            }
-        )
+        generateForm(request, emitter)
     }
 
     private fun generateForm(request: AskRequest, emitter: SseEmitter) {

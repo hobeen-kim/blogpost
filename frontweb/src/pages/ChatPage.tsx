@@ -112,7 +112,6 @@ const ChatPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [originalQuestion, setOriginalQuestion] = useState('');
   const [lastFormData, setLastFormData] = useState<Record<string, string>>({});
-  const [formReceived, setFormReceived] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -176,7 +175,6 @@ const ChatPage: React.FC = () => {
               return updated;
             });
           } else if (event.type === 'form') {
-            setFormReceived(true);
             setMessages(prev => {
               const updated = [...prev];
               updated[updated.length - 1] = {
@@ -210,15 +208,6 @@ const ChatPage: React.FC = () => {
               return updated;
             });
           } else if (event.type === 'done') {
-            assistantContent = assistantContent.replace('READY_FOR_FORM', '').trimEnd();
-            setMessages(prev => {
-              const updated = [...prev];
-              const last = updated[updated.length - 1];
-              if (last?.role === 'assistant') {
-                updated[updated.length - 1] = { ...last, content: assistantContent };
-              }
-              return updated;
-            });
             setIsLoading(false);
           } else if (event.type === 'error') {
             setMessages(prev => {
@@ -243,10 +232,8 @@ const ChatPage: React.FC = () => {
     const question = input.trim();
     if (!question || isLoading) return;
 
-    const isFirstMessage = messages.length === 0;
-    if (isFirstMessage) {
+    if (messages.length === 0) {
       setOriginalQuestion(question);
-      setFormReceived(false);
     }
 
     const userMessage: Message = { role: 'user', content: question };
@@ -257,9 +244,7 @@ const ChatPage: React.FC = () => {
     setLatestSources([]);
 
     try {
-      const response = formReceived
-        ? await askQuestion({ question, history })
-        : await askQuestion({ question, history, step: 'initial' });
+      const response = await askQuestion({ question, history });
       await processSSEStream(response);
     } catch {
       setMessages(prev => {
