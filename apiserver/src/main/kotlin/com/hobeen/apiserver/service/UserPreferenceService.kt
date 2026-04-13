@@ -12,14 +12,11 @@ class UserPreferenceService(
     private val userPreferenceRepository: UserPreferenceRepository,
 ) {
 
-    @Transactional(readOnly = true)
     fun getPreference(userId: String): UserPreferenceResponse {
-        val preference = userPreferenceRepository.findById(userId).orElse(null)
-        return if (preference != null) {
-            UserPreferenceResponse(emailSubscription = preference.emailSubscription)
-        } else {
-            UserPreferenceResponse(emailSubscription = true)
+        val preference = userPreferenceRepository.findById(userId).orElseGet {
+            userPreferenceRepository.save(UserPreference(userId = userId, emailSubscription = true))
         }
+        return UserPreferenceResponse(emailSubscription = preference.emailSubscription)
     }
 
     fun updatePreference(userId: String, emailSubscription: Boolean) {
