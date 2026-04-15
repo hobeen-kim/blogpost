@@ -25,12 +25,22 @@ class PostController (
         @PageableDefault(size = 20, sort = ["pubDate"], direction = Sort.Direction.DESC) pageable: Pageable,
         @RequestParam(value = "q", required = false) query: String?,
         @RequestParam(value = "blog", required = false) sources: List<String>?,
+        @RequestParam(value = "searchType", required = false, defaultValue = "keyword") searchType: String,
     ): PagedApiResponse<PostResponse> {
-        return PagedApiResponse.of(postService.getPosts(
-            search = query,
-            sources = sources,
-            pageable = pageable
-        ))
+        val result = if (searchType == "semantic" && query != null) {
+            postService.getPostsSemantic(
+                search = query,
+                sources = sources,
+                pageable = pageable
+            )
+        } else {
+            postService.getPosts(
+                search = query,
+                sources = sources,
+                pageable = pageable
+            )
+        }
+        return PagedApiResponse.of(result)
     }
 
     @GetMapping("/sources")

@@ -20,6 +20,7 @@ data class PostResponse (
     val likeCount: Int,
     val commented: Boolean,
     val commentCount: Int,
+    val similarity: Double? = null,
 ) {
     companion object {
         fun of(
@@ -28,6 +29,7 @@ data class PostResponse (
             bookmarked: Boolean,
             liked: Boolean,
             commented: Boolean,
+            similarity: Double? = null,
         ): PostResponse {
             return PostResponse(
                 postId = post.postId,
@@ -45,13 +47,15 @@ data class PostResponse (
                 liked = liked,
                 likeCount = post.likes.size,
                 commented = commented,
-                commentCount = post.comments.size
+                commentCount = post.comments.size,
+                similarity = similarity
             )
         }
 
         fun ofOnlyPost(
             post: Post,
             metadata: SourceMetadataCache,
+            similarity: Double? = null,
         ): PostResponse {
             return PostResponse(
                 postId = post.postId,
@@ -70,6 +74,7 @@ data class PostResponse (
                 likeCount = 0,
                 commented = false,
                 commentCount = 0,
+                similarity = similarity,
             )
         }
     }

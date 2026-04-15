@@ -4,11 +4,13 @@ import com.hobeen.apiserver.repository.BookmarkRepository
 import com.hobeen.apiserver.repository.CommentRepository
 import com.hobeen.apiserver.repository.LikeRepository
 import com.hobeen.apiserver.repository.PostRepository
+import com.hobeen.apiserver.repository.PostVectorRepository
 import com.hobeen.apiserver.service.dto.PostResponse
 import com.hobeen.apiserver.service.dto.SourceResponse
 import com.hobeen.apiserver.util.auth.authUserId
 import com.hobeen.apiserver.util.auth.isLogin
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -21,6 +23,8 @@ class PostService(
     private val commentRepository: CommentRepository,
 
     private val metadataService: MetadataService,
+    private val postVectorRepository: PostVectorRepository,
+    private val embeddingService: EmbeddingService,
 ) {
 
     private val sources = mutableMapOf<String, SourceResponse>()
@@ -53,6 +57,55 @@ class PostService(
                 commented = false,
             ) }
         }
+    }
+
+    fun getPostsSemantic(search: String, sources: List<String>?, pageable: Pageable): Page<PostResponse> {
+        // 1. Embed search query
+        val embedding = embeddingService.embed(search)
+        val embeddingStr = embedding.joinToString(", ", "[", "]")
+
+        // 2. Vector search with paging
+        val similarPosts = postVectorRepository.findSimilarPostsPaged(
+            embeddingStr, sources, pageable.pageSize, pageable.offset
+        )
+        val totalCount = postVectorRepository.countSimilarPosts(embeddingStr, sources)
+
+        // 3. Get full Post entities by IDs (maintain similarity order)
+        val postIds = similarPosts.map { it.postId }
+        val similarityMap = similarPosts.associate { it.postId to it.similarity }
+        val posts = postRepository.findAllById(postIds).associateBy { it.postId }
+
+        // 4. Map to PostResponse maintaining similarity order
+        val postResponses = if (isLogin()) {
+            val bookmarked = bookmarkRepository.existsByPostIds(authUserId(), postIds)
+            val liked = likeRepository.existsByPostIds(authUserId(), postIds)
+            val commented = commentRepository.existsByPostIds(authUserId(), postIds)
+
+            postIds.mapNotNull { id ->
+                posts[id]?.let { post ->
+                    PostResponse.of(
+                        post = post,
+                        metadata = metadataService.getMetadata(post.source),
+                        bookmarked = bookmarked[id] == true,
+                        liked = liked[id] == true,
+                        commented = commented[id] == true,
+                        similarity = similarityMap[id],
+                    )
+                }
+            }
+        } else {
+            postIds.mapNotNull { id ->
+                posts[id]?.let { post ->
+                    PostResponse.ofOnlyPost(
+                        post = post,
+                        metadata = metadataService.getMetadata(post.source),
+                        similarity = similarityMap[id],
+                    )
+                }
+            }
+        }
+
+        return PageImpl(postResponses, pageable, totalCount)
     }
 
     fun getSources(): List<SourceResponse> {
